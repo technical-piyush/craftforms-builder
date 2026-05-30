@@ -86,7 +86,7 @@ final class CF7VB_Validation {
 			if ( empty( $consent ) ) {
 				$result->invalidate(
 					null,
-					$gdpr['errorMessage'] ?? __( 'You must accept the privacy policy.', 'cf7-visual-form-builder' )
+					$gdpr['errorMessage'] ?? __( 'You must accept the privacy policy.', 'form-studio-for-contact-form-7' )
 				);
 			}
 		}
@@ -108,13 +108,13 @@ final class CF7VB_Validation {
 		switch ( $type ) {
 			case 'required':
 				/* translators: %s: field label. */
-				return sprintf( __( '%s is required.', 'cf7-visual-form-builder' ), $label );
+				return sprintf( __( '%s is required.', 'form-studio-for-contact-form-7' ), $label );
 			case 'email':
 				/* translators: %s: field label. */
-				return sprintf( __( '%s must be a valid email.', 'cf7-visual-form-builder' ), $label );
+				return sprintf( __( '%s must be a valid email.', 'form-studio-for-contact-form-7' ), $label );
 			default:
 				/* translators: %s: field label. */
-				return sprintf( __( '%s is invalid.', 'cf7-visual-form-builder' ), $label );
+				return sprintf( __( '%s is invalid.', 'form-studio-for-contact-form-7' ), $label );
 		}
 	}
 

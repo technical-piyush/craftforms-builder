@@ -24,16 +24,16 @@ final class CF7VB_Parser {
 				'steps'    => array(
 					array(
 						'id'       => 'step-1',
-						'title'    => __( 'Step 1', 'cf7-visual-form-builder' ),
+						'title'    => __( 'Step 1', 'form-studio-for-contact-form-7' ),
 						'sections' => array(
 							array(
 								'id'     => 'section-1',
 								'title'  => '',
 								'fields' => array(
-									self::default_field( 'text', 'your-name', __( 'Your Name', 'cf7-visual-form-builder' ) ),
-									self::default_field( 'email', 'your-email', __( 'Your Email', 'cf7-visual-form-builder' ) ),
-									self::default_field( 'textarea', 'your-message', __( 'Your Message', 'cf7-visual-form-builder' ) ),
-									self::default_field( 'submit', 'submit', __( 'Send', 'cf7-visual-form-builder' ), false ),
+									self::default_field( 'text', 'your-name', __( 'Your Name', 'form-studio-for-contact-form-7' ) ),
+									self::default_field( 'email', 'your-email', __( 'Your Email', 'form-studio-for-contact-form-7' ) ),
+									self::default_field( 'textarea', 'your-message', __( 'Your Message', 'form-studio-for-contact-form-7' ) ),
+									self::default_field( 'submit', 'submit', __( 'Send', 'form-studio-for-contact-form-7' ), false ),
 								),
 							),
 						),
@@ -85,7 +85,7 @@ final class CF7VB_Parser {
 			$schema['steps'] = array(
 				array(
 					'id'       => 'step-1',
-					'title'    => __( 'Step 1', 'cf7-visual-form-builder' ),
+					'title'    => __( 'Step 1', 'form-studio-for-contact-form-7' ),
 					'sections' => array(
 						array(
 							'id'     => 'section-1',
@@ -104,7 +104,7 @@ final class CF7VB_Parser {
 			}
 			if ( ! array_key_exists( 'title', $step ) ) {
 				/* translators: %d: step number. */
-				$step['title'] = sprintf( __( 'Step %d', 'cf7-visual-form-builder' ), $si + 1 );
+				$step['title'] = sprintf( __( 'Step %d', 'form-studio-for-contact-form-7' ), $si + 1 );
 			} else {
 				$step['title'] = sanitize_text_field( (string) $step['title'] );
 			}
@@ -168,8 +168,8 @@ final class CF7VB_Parser {
 			'gdpr'                => array(
 				'enabled'      => false,
 				'fieldName'    => 'gdpr-consent',
-				'label'        => __( 'I agree to the privacy policy.', 'cf7-visual-form-builder' ),
-				'errorMessage' => __( 'You must accept the privacy policy.', 'cf7-visual-form-builder' ),
+				'label'        => __( 'I agree to the privacy policy.', 'form-studio-for-contact-form-7' ),
+				'errorMessage' => __( 'You must accept the privacy policy.', 'form-studio-for-contact-form-7' ),
 			),
 			'accessibility'       => array(
 				'ariaLabels'   => true,
@@ -185,7 +185,7 @@ final class CF7VB_Parser {
 			),
 			'thankYou'            => array(
 				'type'        => 'message',
-				'message'     => __( 'Thank you for your message. It has been sent.', 'cf7-visual-form-builder' ),
+				'message'     => __( 'Thank you for your message. It has been sent.', 'form-studio-for-contact-form-7' ),
 				'redirectUrl' => '',
 				'pageId'      => 0,
 			),

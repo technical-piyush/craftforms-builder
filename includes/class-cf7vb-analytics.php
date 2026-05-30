@@ -34,8 +34,8 @@ final class CF7VB_Analytics {
 	public static function menu() {
 		add_submenu_page(
 			'wpcf7',
-			__( 'Form Analytics', 'cf7-visual-form-builder' ),
-			__( 'Analytics', 'cf7-visual-form-builder' ),
+			__( 'Form Analytics', 'form-studio-for-contact-form-7' ),
+			__( 'Analytics', 'form-studio-for-contact-form-7' ),
 			'wpcf7_read_contact_forms',
 			'cf7vb-analytics',
 			array( __CLASS__, 'render_page' )
@@ -196,15 +196,15 @@ final class CF7VB_Analytics {
 		$funnel_max = max( 1, (int) $stats['views'] );
 		$funnel     = array(
 			array(
-				'label' => __( 'Views', 'cf7-visual-form-builder' ),
+				'label' => __( 'Views', 'form-studio-for-contact-form-7' ),
 				'value' => (int) $stats['views'],
 			),
 			array(
-				'label' => __( 'Started', 'cf7-visual-form-builder' ),
+				'label' => __( 'Started', 'form-studio-for-contact-form-7' ),
 				'value' => (int) $stats['starts'],
 			),
 			array(
-				'label' => __( 'Submissions', 'cf7-visual-form-builder' ),
+				'label' => __( 'Submissions', 'form-studio-for-contact-form-7' ),
 				'value' => (int) $stats['submissions'],
 			),
 		);
@@ -212,11 +212,11 @@ final class CF7VB_Analytics {
 		<div class="wrap cf7vb-dash cf7vb-analytics-wrap">
 			<header class="cf7vb-dash-header">
 				<div>
-					<h1><?php esc_html_e( 'Form Analytics', 'cf7-visual-form-builder' ); ?></h1>
-					<p><?php esc_html_e( 'Track views, engagement, conversions, and device usage.', 'cf7-visual-form-builder' ); ?></p>
+					<h1><?php esc_html_e( 'Form Analytics', 'form-studio-for-contact-form-7' ); ?></h1>
+					<p><?php esc_html_e( 'Track views, engagement, conversions, and device usage.', 'form-studio-for-contact-form-7' ); ?></p>
 				</div>
 				<div class="cf7vb-dash-actions">
-					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=cf7vb-entries' ) ); ?>"><?php esc_html_e( 'View entries', 'cf7-visual-form-builder' ); ?></a>
+					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=cf7vb-entries' ) ); ?>"><?php esc_html_e( 'View entries', 'form-studio-for-contact-form-7' ); ?></a>
 				</div>
 			</header>
 
@@ -225,12 +225,12 @@ final class CF7VB_Analytics {
 					<form method="get">
 						<input type="hidden" name="page" value="cf7vb-analytics" />
 						<select name="form_id">
-							<option value="0"><?php esc_html_e( 'All forms', 'cf7-visual-form-builder' ); ?></option>
+							<option value="0"><?php esc_html_e( 'All forms', 'form-studio-for-contact-form-7' ); ?></option>
 							<?php foreach ( $forms as $form ) : ?>
 								<option value="<?php echo esc_attr( (string) $form->id() ); ?>" <?php selected( $form_id, $form->id() ); ?>><?php echo esc_html( $form->title() ); ?></option>
 							<?php endforeach; ?>
 						</select>
-						<?php submit_button( __( 'Apply', 'cf7-visual-form-builder' ), 'secondary', '', false ); ?>
+						<?php submit_button( __( 'Apply', 'form-studio-for-contact-form-7' ), 'secondary', '', false ); ?>
 					</form>
 				</div>
 			</div>
@@ -238,12 +238,12 @@ final class CF7VB_Analytics {
 			<div class="cf7vb-kpi-grid">
 				<?php
 				$cards = array(
-					__( 'Views', 'cf7-visual-form-builder' )           => $stats['views'],
-					__( 'Started', 'cf7-visual-form-builder' )        => $stats['starts'],
-					__( 'Submissions', 'cf7-visual-form-builder' )      => $stats['submissions'],
-					__( 'Conversion', 'cf7-visual-form-builder' )     => $stats['conversion'] . '%',
-					__( 'Abandoned', 'cf7-visual-form-builder' )      => $stats['abandoned'],
-					__( 'Field focus', 'cf7-visual-form-builder' )    => $stats['field_focus'],
+					__( 'Views', 'form-studio-for-contact-form-7' )           => $stats['views'],
+					__( 'Started', 'form-studio-for-contact-form-7' )        => $stats['starts'],
+					__( 'Submissions', 'form-studio-for-contact-form-7' )      => $stats['submissions'],
+					__( 'Conversion', 'form-studio-for-contact-form-7' )     => $stats['conversion'] . '%',
+					__( 'Abandoned', 'form-studio-for-contact-form-7' )      => $stats['abandoned'],
+					__( 'Field focus', 'form-studio-for-contact-form-7' )    => $stats['field_focus'],
 				);
 				foreach ( $cards as $label => $val ) :
 					?>
@@ -257,7 +257,7 @@ final class CF7VB_Analytics {
 			<div class="cf7vb-analytics-grid">
 				<div class="cf7vb-panel">
 					<div class="cf7vb-panel-head">
-						<h2><?php esc_html_e( 'Conversion funnel', 'cf7-visual-form-builder' ); ?></h2>
+						<h2><?php esc_html_e( 'Conversion funnel', 'form-studio-for-contact-form-7' ); ?></h2>
 					</div>
 					<div class="cf7vb-funnel">
 						<?php foreach ( $funnel as $step ) : ?>
@@ -273,12 +273,12 @@ final class CF7VB_Analytics {
 
 				<div class="cf7vb-panel">
 					<div class="cf7vb-panel-head">
-						<h2><?php esc_html_e( 'Recent activity', 'cf7-visual-form-builder' ); ?></h2>
+						<h2><?php esc_html_e( 'Recent activity', 'form-studio-for-contact-form-7' ); ?></h2>
 					</div>
 					<?php if ( empty( $recent ) ) : ?>
 						<div class="cf7vb-empty">
 							<span class="dashicons dashicons-chart-bar"></span>
-							<p><?php esc_html_e( 'No events recorded yet.', 'cf7-visual-form-builder' ); ?></p>
+							<p><?php esc_html_e( 'No events recorded yet.', 'form-studio-for-contact-form-7' ); ?></p>
 						</div>
 					<?php else : ?>
 						<ul class="cf7vb-activity-list">
@@ -297,10 +297,10 @@ final class CF7VB_Analytics {
 								$data  = json_decode( $event->event_data, true );
 								if ( 'step_view' === $type && is_array( $data ) && isset( $data['step'] ) ) {
 									/* translators: %d: step number */
-									$label = sprintf( __( 'Step %d viewed', 'cf7-visual-form-builder' ), (int) $data['step'] + 1 );
+									$label = sprintf( __( 'Step %d viewed', 'form-studio-for-contact-form-7' ), (int) $data['step'] + 1 );
 								} elseif ( 'field_focus' === $type && is_array( $data ) && isset( $data['field'] ) ) {
 									/* translators: %s: field name */
-									$label = sprintf( __( 'Field: %s', 'cf7-visual-form-builder' ), $data['field'] );
+									$label = sprintf( __( 'Field: %s', 'form-studio-for-contact-form-7' ), $data['field'] );
 								} else {
 									$label = ucfirst( str_replace( '_', ' ', $type ) );
 								}
@@ -322,10 +322,10 @@ final class CF7VB_Analytics {
 
 				<div class="cf7vb-panel">
 					<div class="cf7vb-panel-head">
-						<h2><?php esc_html_e( 'Devices', 'cf7-visual-form-builder' ); ?></h2>
+						<h2><?php esc_html_e( 'Devices', 'form-studio-for-contact-form-7' ); ?></h2>
 					</div>
 					<?php if ( empty( $stats['devices'] ) ) : ?>
-						<div class="cf7vb-empty"><p><?php esc_html_e( 'No device data yet.', 'cf7-visual-form-builder' ); ?></p></div>
+						<div class="cf7vb-empty"><p><?php esc_html_e( 'No device data yet.', 'form-studio-for-contact-form-7' ); ?></p></div>
 					<?php else : ?>
 						<ul class="cf7vb-bar-list">
 							<?php foreach ( $stats['devices'] as $row ) : ?>
@@ -342,10 +342,10 @@ final class CF7VB_Analytics {
 
 				<div class="cf7vb-panel">
 					<div class="cf7vb-panel-head">
-						<h2><?php esc_html_e( 'Top field interactions', 'cf7-visual-form-builder' ); ?></h2>
+						<h2><?php esc_html_e( 'Top field interactions', 'form-studio-for-contact-form-7' ); ?></h2>
 					</div>
 					<?php if ( empty( $stats['top_fields'] ) ) : ?>
-						<div class="cf7vb-empty"><p><?php esc_html_e( 'No field interaction data yet.', 'cf7-visual-form-builder' ); ?></p></div>
+						<div class="cf7vb-empty"><p><?php esc_html_e( 'No field interaction data yet.', 'form-studio-for-contact-form-7' ); ?></p></div>
 					<?php else : ?>
 						<ul class="cf7vb-bar-list">
 							<?php

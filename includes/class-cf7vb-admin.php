@@ -29,7 +29,7 @@ final class CF7VB_Admin {
 	public static function add_visual_panel( $panels ) {
 		$visual = array(
 			'cf7vb-visual-panel' => array(
-				'title'    => __( 'Visual Builder', 'cf7-visual-form-builder' ),
+				'title'    => __( 'Visual Builder', 'form-studio-for-contact-form-7' ),
 				'callback' => array( __CLASS__, 'render_visual_panel' ),
 			),
 		);
@@ -46,9 +46,9 @@ final class CF7VB_Admin {
 			? CF7VB_Parser::default_schema()
 			: CF7VB_Plugin::get_schema( $form_id );
 		?>
-		<h2 class="cf7vb-panel-title"><?php esc_html_e( 'Visual Form Builder', 'cf7-visual-form-builder' ); ?></h2>
+		<h2 class="cf7vb-panel-title"><?php esc_html_e( 'Visual Form Builder', 'form-studio-for-contact-form-7' ); ?></h2>
 		<p class="description cf7vb-panel-desc">
-			<?php esc_html_e( 'Use the tabs below: Build your form, check Preview, add Rules, then adjust Settings. Click Save on the contact form to publish.', 'cf7-visual-form-builder' ); ?>
+			<?php esc_html_e( 'Use the tabs below: Build your form, check Preview, add Rules, then adjust Settings. Click Save on the contact form to publish.', 'form-studio-for-contact-form-7' ); ?>
 		</p>
 		<?php
 		// Must live inside #wpcf7-admin-form-element (footer hook runs after </form>).
@@ -160,109 +160,109 @@ final class CF7VB_Admin {
 				'formId'     => $form_id,
 				'fieldTypes' => self::field_palette(),
 				'strings'    => array(
-					'palette'               => __( 'Fields', 'cf7-visual-form-builder' ),
-					'canvas'                => __( 'Form canvas', 'cf7-visual-form-builder' ),
-					'inspector'             => __( 'Field settings', 'cf7-visual-form-builder' ),
-					'preview'               => __( 'Live preview', 'cf7-visual-form-builder' ),
-					'undo'                  => __( 'Undo', 'cf7-visual-form-builder' ),
-					'redo'                  => __( 'Redo', 'cf7-visual-form-builder' ),
-					'duplicate'             => __( 'Duplicate', 'cf7-visual-form-builder' ),
-					'delete'                => __( 'Delete', 'cf7-visual-form-builder' ),
-					'addSection'            => __( 'Add section', 'cf7-visual-form-builder' ),
-					'addStep'               => __( 'Add step', 'cf7-visual-form-builder' ),
-					'multistep'             => __( 'Multistep form', 'cf7-visual-form-builder' ),
-					'conditional'           => __( 'Conditional logic', 'cf7-visual-form-builder' ),
-					'noField'               => __( 'Select a field to edit its settings.', 'cf7-visual-form-builder' ),
-					'dropHint'              => __( 'Drag a field here or click to add', 'cf7-visual-form-builder' ),
-					'required'              => __( 'Required', 'cf7-visual-form-builder' ),
-					'label'                 => __( 'Label', 'cf7-visual-form-builder' ),
-					'name'                  => __( 'Field name', 'cf7-visual-form-builder' ),
-					'placeholder'           => __( 'Placeholder', 'cf7-visual-form-builder' ),
-					'help'                  => __( 'Help text', 'cf7-visual-form-builder' ),
-					'options'               => __( 'Options', 'cf7-visual-form-builder' ),
-					'addOption'             => __( 'Add option', 'cf7-visual-form-builder' ),
-					'desktop'               => __( 'Desktop', 'cf7-visual-form-builder' ),
-					'tablet'                => __( 'Tablet', 'cf7-visual-form-builder' ),
-					'mobile'                => __( 'Mobile', 'cf7-visual-form-builder' ),
-					'rulesEmpty'            => __( 'Add rules to show, hide, or require fields based on user input.', 'cf7-visual-form-builder' ),
-					'addRule'               => __( 'Add rule', 'cf7-visual-form-builder' ),
-					'tabBuild'              => __( 'Build', 'cf7-visual-form-builder' ),
-					'tabBuildDesc'          => __( 'Add & arrange fields', 'cf7-visual-form-builder' ),
-					'tabPreview'            => __( 'Preview', 'cf7-visual-form-builder' ),
-					'tabPreviewDesc'        => __( 'See how visitors will see it', 'cf7-visual-form-builder' ),
-					'tabLogic'              => __( 'Rules', 'cf7-visual-form-builder' ),
-					'tabLogicDesc'          => __( 'Show, hide & conditions', 'cf7-visual-form-builder' ),
-					'tabSettings'           => __( 'Settings', 'cf7-visual-form-builder' ),
-					'tabSettingsDesc'       => __( 'Steps, GDPR, emails', 'cf7-visual-form-builder' ),
-					'previewHint'           => __( 'This is how your form will look on the website.', 'cf7-visual-form-builder' ),
-					'clickFieldHint'        => __( 'Click a field on the canvas to edit it here.', 'cf7-visual-form-builder' ),
-					'stepsTitle'            => __( 'Form steps', 'cf7-visual-form-builder' ),
-					'stepsHint'             => __( 'Name each step — titles appear on the live form progress bar.', 'cf7-visual-form-builder' ),
-					'stepsLabel'            => __( 'steps', 'cf7-visual-form-builder' ),
+					'palette'               => __( 'Fields', 'form-studio-for-contact-form-7' ),
+					'canvas'                => __( 'Form canvas', 'form-studio-for-contact-form-7' ),
+					'inspector'             => __( 'Field settings', 'form-studio-for-contact-form-7' ),
+					'preview'               => __( 'Live preview', 'form-studio-for-contact-form-7' ),
+					'undo'                  => __( 'Undo', 'form-studio-for-contact-form-7' ),
+					'redo'                  => __( 'Redo', 'form-studio-for-contact-form-7' ),
+					'duplicate'             => __( 'Duplicate', 'form-studio-for-contact-form-7' ),
+					'delete'                => __( 'Delete', 'form-studio-for-contact-form-7' ),
+					'addSection'            => __( 'Add section', 'form-studio-for-contact-form-7' ),
+					'addStep'               => __( 'Add step', 'form-studio-for-contact-form-7' ),
+					'multistep'             => __( 'Multistep form', 'form-studio-for-contact-form-7' ),
+					'conditional'           => __( 'Conditional logic', 'form-studio-for-contact-form-7' ),
+					'noField'               => __( 'Select a field to edit its settings.', 'form-studio-for-contact-form-7' ),
+					'dropHint'              => __( 'Drag a field here or click to add', 'form-studio-for-contact-form-7' ),
+					'required'              => __( 'Required', 'form-studio-for-contact-form-7' ),
+					'label'                 => __( 'Label', 'form-studio-for-contact-form-7' ),
+					'name'                  => __( 'Field name', 'form-studio-for-contact-form-7' ),
+					'placeholder'           => __( 'Placeholder', 'form-studio-for-contact-form-7' ),
+					'help'                  => __( 'Help text', 'form-studio-for-contact-form-7' ),
+					'options'               => __( 'Options', 'form-studio-for-contact-form-7' ),
+					'addOption'             => __( 'Add option', 'form-studio-for-contact-form-7' ),
+					'desktop'               => __( 'Desktop', 'form-studio-for-contact-form-7' ),
+					'tablet'                => __( 'Tablet', 'form-studio-for-contact-form-7' ),
+					'mobile'                => __( 'Mobile', 'form-studio-for-contact-form-7' ),
+					'rulesEmpty'            => __( 'Add rules to show, hide, or require fields based on user input.', 'form-studio-for-contact-form-7' ),
+					'addRule'               => __( 'Add rule', 'form-studio-for-contact-form-7' ),
+					'tabBuild'              => __( 'Build', 'form-studio-for-contact-form-7' ),
+					'tabBuildDesc'          => __( 'Add & arrange fields', 'form-studio-for-contact-form-7' ),
+					'tabPreview'            => __( 'Preview', 'form-studio-for-contact-form-7' ),
+					'tabPreviewDesc'        => __( 'See how visitors will see it', 'form-studio-for-contact-form-7' ),
+					'tabLogic'              => __( 'Rules', 'form-studio-for-contact-form-7' ),
+					'tabLogicDesc'          => __( 'Show, hide & conditions', 'form-studio-for-contact-form-7' ),
+					'tabSettings'           => __( 'Settings', 'form-studio-for-contact-form-7' ),
+					'tabSettingsDesc'       => __( 'Steps, GDPR, emails', 'form-studio-for-contact-form-7' ),
+					'previewHint'           => __( 'This is how your form will look on the website.', 'form-studio-for-contact-form-7' ),
+					'clickFieldHint'        => __( 'Click a field on the canvas to edit it here.', 'form-studio-for-contact-form-7' ),
+					'stepsTitle'            => __( 'Form steps', 'form-studio-for-contact-form-7' ),
+					'stepsHint'             => __( 'Name each step — titles appear on the live form progress bar.', 'form-studio-for-contact-form-7' ),
+					'stepsLabel'            => __( 'steps', 'form-studio-for-contact-form-7' ),
 					/* translators: %d: step number. */
-					'stepPlaceholder'       => __( 'Step %d', 'cf7-visual-form-builder' ),
+					'stepPlaceholder'       => __( 'Step %d', 'form-studio-for-contact-form-7' ),
 					/* translators: %d: step number. */
-					'defaultStepTitle'      => __( 'Step %d', 'cf7-visual-form-builder' ),
-					'removeStep'            => __( 'Remove step', 'cf7-visual-form-builder' ),
-					'editStep'              => __( 'Select step', 'cf7-visual-form-builder' ),
-					'settingsTitle'         => __( 'Form settings', 'cf7-visual-form-builder' ),
-					'settingsIntro'         => __( 'Appearance, multistep behavior, thank-you page, privacy, security, and email.', 'cf7-visual-form-builder' ),
-					'secAppearance'         => __( 'Appearance & layout', 'cf7-visual-form-builder' ),
-					'secAppearanceDesc'     => __( 'Control how the form looks on your website.', 'cf7-visual-form-builder' ),
-					'setTheme'              => __( 'Form style', 'cf7-visual-form-builder' ),
-					'setThemeModern'        => __( 'Modern card', 'cf7-visual-form-builder' ),
-					'setThemeMinimal'       => __( 'Minimal', 'cf7-visual-form-builder' ),
-					'setThemeBordered'      => __( 'Bold border', 'cf7-visual-form-builder' ),
-					'setPrimaryColor'       => __( 'Primary color', 'cf7-visual-form-builder' ),
-					'setFormWidth'          => __( 'Form width', 'cf7-visual-form-builder' ),
-					'setWidthNarrow'        => __( 'Narrow (480px)', 'cf7-visual-form-builder' ),
-					'setWidthMedium'        => __( 'Medium (640px)', 'cf7-visual-form-builder' ),
-					'setWidthWide'          => __( 'Wide (760px)', 'cf7-visual-form-builder' ),
-					'setWidthFull'          => __( 'Full width', 'cf7-visual-form-builder' ),
-					'setBorderRadius'       => __( 'Corner radius', 'cf7-visual-form-builder' ),
-					'setRadiusNone'         => __( 'Square', 'cf7-visual-form-builder' ),
-					'setRadiusSmall'        => __( 'Subtle', 'cf7-visual-form-builder' ),
-					'setRadiusMedium'       => __( 'Rounded', 'cf7-visual-form-builder' ),
-					'setRadiusLarge'        => __( 'Soft', 'cf7-visual-form-builder' ),
-					'setFieldSpacing'       => __( 'Field spacing', 'cf7-visual-form-builder' ),
-					'setSpacingComfortable' => __( 'Comfortable', 'cf7-visual-form-builder' ),
-					'setSpacingCompact'     => __( 'Compact', 'cf7-visual-form-builder' ),
-					'setProgressStyle'      => __( 'Step indicator', 'cf7-visual-form-builder' ),
-					'setProgressPills'      => __( 'Steps with labels', 'cf7-visual-form-builder' ),
-					'setProgressBar'        => __( 'Progress bar only', 'cf7-visual-form-builder' ),
-					'setProgressMinimal'    => __( 'Minimal text', 'cf7-visual-form-builder' ),
-					'setShowCounter'        => __( 'Show step counter', 'cf7-visual-form-builder' ),
-					'setShowDots'           => __( 'Show step circles', 'cf7-visual-form-builder' ),
-					'setShowDotsHint'       => __( 'Numbered circles with step titles.', 'cf7-visual-form-builder' ),
-					'setShowHeading'        => __( 'Large step title above fields', 'cf7-visual-form-builder' ),
-					'setShowHeadingHint'    => __( 'Off by default to avoid repeating the step name.', 'cf7-visual-form-builder' ),
-					'logicTitle'            => __( 'Conditional logic', 'cf7-visual-form-builder' ),
-					'logicIntro'            => __( 'Create rules to show, hide, or require fields based on answers.', 'cf7-visual-form-builder' ),
-					'logicNoFields'         => __( 'Add fields on the Build tab before creating rules.', 'cf7-visual-form-builder' ),
-					'addCondition'          => __( 'Add condition', 'cf7-visual-form-builder' ),
-					'addAction'             => __( 'Add action', 'cf7-visual-form-builder' ),
-					'addNested'             => __( 'Add nested group', 'cf7-visual-form-builder' ),
-					'ifLabel'               => __( 'IF', 'cf7-visual-form-builder' ),
-					'thenLabel'             => __( 'THEN', 'cf7-visual-form-builder' ),
-					'matchAll'              => __( 'ALL conditions', 'cf7-visual-form-builder' ),
-					'matchAny'              => __( 'ANY condition', 'cf7-visual-form-builder' ),
-					'enabled'               => __( 'Active', 'cf7-visual-form-builder' ),
-					'deleteRule'            => __( 'Delete rule', 'cf7-visual-form-builder' ),
+					'defaultStepTitle'      => __( 'Step %d', 'form-studio-for-contact-form-7' ),
+					'removeStep'            => __( 'Remove step', 'form-studio-for-contact-form-7' ),
+					'editStep'              => __( 'Select step', 'form-studio-for-contact-form-7' ),
+					'settingsTitle'         => __( 'Form settings', 'form-studio-for-contact-form-7' ),
+					'settingsIntro'         => __( 'Appearance, multistep behavior, thank-you page, privacy, security, and email.', 'form-studio-for-contact-form-7' ),
+					'secAppearance'         => __( 'Appearance & layout', 'form-studio-for-contact-form-7' ),
+					'secAppearanceDesc'     => __( 'Control how the form looks on your website.', 'form-studio-for-contact-form-7' ),
+					'setTheme'              => __( 'Form style', 'form-studio-for-contact-form-7' ),
+					'setThemeModern'        => __( 'Modern card', 'form-studio-for-contact-form-7' ),
+					'setThemeMinimal'       => __( 'Minimal', 'form-studio-for-contact-form-7' ),
+					'setThemeBordered'      => __( 'Bold border', 'form-studio-for-contact-form-7' ),
+					'setPrimaryColor'       => __( 'Primary color', 'form-studio-for-contact-form-7' ),
+					'setFormWidth'          => __( 'Form width', 'form-studio-for-contact-form-7' ),
+					'setWidthNarrow'        => __( 'Narrow (480px)', 'form-studio-for-contact-form-7' ),
+					'setWidthMedium'        => __( 'Medium (640px)', 'form-studio-for-contact-form-7' ),
+					'setWidthWide'          => __( 'Wide (760px)', 'form-studio-for-contact-form-7' ),
+					'setWidthFull'          => __( 'Full width', 'form-studio-for-contact-form-7' ),
+					'setBorderRadius'       => __( 'Corner radius', 'form-studio-for-contact-form-7' ),
+					'setRadiusNone'         => __( 'Square', 'form-studio-for-contact-form-7' ),
+					'setRadiusSmall'        => __( 'Subtle', 'form-studio-for-contact-form-7' ),
+					'setRadiusMedium'       => __( 'Rounded', 'form-studio-for-contact-form-7' ),
+					'setRadiusLarge'        => __( 'Soft', 'form-studio-for-contact-form-7' ),
+					'setFieldSpacing'       => __( 'Field spacing', 'form-studio-for-contact-form-7' ),
+					'setSpacingComfortable' => __( 'Comfortable', 'form-studio-for-contact-form-7' ),
+					'setSpacingCompact'     => __( 'Compact', 'form-studio-for-contact-form-7' ),
+					'setProgressStyle'      => __( 'Step indicator', 'form-studio-for-contact-form-7' ),
+					'setProgressPills'      => __( 'Steps with labels', 'form-studio-for-contact-form-7' ),
+					'setProgressBar'        => __( 'Progress bar only', 'form-studio-for-contact-form-7' ),
+					'setProgressMinimal'    => __( 'Minimal text', 'form-studio-for-contact-form-7' ),
+					'setShowCounter'        => __( 'Show step counter', 'form-studio-for-contact-form-7' ),
+					'setShowDots'           => __( 'Show step circles', 'form-studio-for-contact-form-7' ),
+					'setShowDotsHint'       => __( 'Numbered circles with step titles.', 'form-studio-for-contact-form-7' ),
+					'setShowHeading'        => __( 'Large step title above fields', 'form-studio-for-contact-form-7' ),
+					'setShowHeadingHint'    => __( 'Off by default to avoid repeating the step name.', 'form-studio-for-contact-form-7' ),
+					'logicTitle'            => __( 'Conditional logic', 'form-studio-for-contact-form-7' ),
+					'logicIntro'            => __( 'Create rules to show, hide, or require fields based on answers.', 'form-studio-for-contact-form-7' ),
+					'logicNoFields'         => __( 'Add fields on the Build tab before creating rules.', 'form-studio-for-contact-form-7' ),
+					'addCondition'          => __( 'Add condition', 'form-studio-for-contact-form-7' ),
+					'addAction'             => __( 'Add action', 'form-studio-for-contact-form-7' ),
+					'addNested'             => __( 'Add nested group', 'form-studio-for-contact-form-7' ),
+					'ifLabel'               => __( 'IF', 'form-studio-for-contact-form-7' ),
+					'thenLabel'             => __( 'THEN', 'form-studio-for-contact-form-7' ),
+					'matchAll'              => __( 'ALL conditions', 'form-studio-for-contact-form-7' ),
+					'matchAny'              => __( 'ANY condition', 'form-studio-for-contact-form-7' ),
+					'enabled'               => __( 'Active', 'form-studio-for-contact-form-7' ),
+					'deleteRule'            => __( 'Delete rule', 'form-studio-for-contact-form-7' ),
 					/* translators: %d: rule number. */
-					'ruleLabel'             => __( 'Rule %d', 'cf7-visual-form-builder' ),
-					'selectField'           => __( 'Select field', 'cf7-visual-form-builder' ),
-					'selectStep'            => __( 'Select step', 'cf7-visual-form-builder' ),
-					'secMultistep'          => __( 'Multistep & experience', 'cf7-visual-form-builder' ),
-					'secMultistepDesc'      => __( 'How visitors move through and interact with your form.', 'cf7-visual-form-builder' ),
-					'setAutosave'           => __( 'Autosave progress', 'cf7-visual-form-builder' ),
-					'setSaveContinue'       => __( 'Save & continue later', 'cf7-visual-form-builder' ),
-					'setAnimated'           => __( 'Animated step transitions', 'cf7-visual-form-builder' ),
-					'setConversational'     => __( 'Conversational mode', 'cf7-visual-form-builder' ),
-					'secThankyou'           => __( 'Thank you', 'cf7-visual-form-builder' ),
-					'secGdpr'               => __( 'Privacy (GDPR)', 'cf7-visual-form-builder' ),
-					'secA11y'               => __( 'Accessibility', 'cf7-visual-form-builder' ),
-					'secSecurity'           => __( 'Security & spam', 'cf7-visual-form-builder' ),
-					'secEmail'              => __( 'Email appearance', 'cf7-visual-form-builder' ),
+					'ruleLabel'             => __( 'Rule %d', 'form-studio-for-contact-form-7' ),
+					'selectField'           => __( 'Select field', 'form-studio-for-contact-form-7' ),
+					'selectStep'            => __( 'Select step', 'form-studio-for-contact-form-7' ),
+					'secMultistep'          => __( 'Multistep & experience', 'form-studio-for-contact-form-7' ),
+					'secMultistepDesc'      => __( 'How visitors move through and interact with your form.', 'form-studio-for-contact-form-7' ),
+					'setAutosave'           => __( 'Autosave progress', 'form-studio-for-contact-form-7' ),
+					'setSaveContinue'       => __( 'Save & continue later', 'form-studio-for-contact-form-7' ),
+					'setAnimated'           => __( 'Animated step transitions', 'form-studio-for-contact-form-7' ),
+					'setConversational'     => __( 'Conversational mode', 'form-studio-for-contact-form-7' ),
+					'secThankyou'           => __( 'Thank you', 'form-studio-for-contact-form-7' ),
+					'secGdpr'               => __( 'Privacy (GDPR)', 'form-studio-for-contact-form-7' ),
+					'secA11y'               => __( 'Accessibility', 'form-studio-for-contact-form-7' ),
+					'secSecurity'           => __( 'Security & spam', 'form-studio-for-contact-form-7' ),
+					'secEmail'              => __( 'Email appearance', 'form-studio-for-contact-form-7' ),
 				),
 			)
 		);
@@ -275,77 +275,77 @@ final class CF7VB_Admin {
 		return array(
 			array(
 				'type'  => 'text',
-				'label' => __( 'Text', 'cf7-visual-form-builder' ),
+				'label' => __( 'Text', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-editor-textcolor',
 			),
 			array(
 				'type'  => 'textarea',
-				'label' => __( 'Textarea', 'cf7-visual-form-builder' ),
+				'label' => __( 'Textarea', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-editor-alignleft',
 			),
 			array(
 				'type'  => 'email',
-				'label' => __( 'Email', 'cf7-visual-form-builder' ),
+				'label' => __( 'Email', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-email',
 			),
 			array(
 				'type'  => 'phone',
-				'label' => __( 'Phone', 'cf7-visual-form-builder' ),
+				'label' => __( 'Phone', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-phone',
 			),
 			array(
 				'type'  => 'number',
-				'label' => __( 'Number', 'cf7-visual-form-builder' ),
+				'label' => __( 'Number', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-calculator',
 			),
 			array(
 				'type'  => 'select',
-				'label' => __( 'Select', 'cf7-visual-form-builder' ),
+				'label' => __( 'Select', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-arrow-down-alt2',
 			),
 			array(
 				'type'  => 'checkbox',
-				'label' => __( 'Checkbox', 'cf7-visual-form-builder' ),
+				'label' => __( 'Checkbox', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-yes',
 			),
 			array(
 				'type'  => 'radio',
-				'label' => __( 'Radio', 'cf7-visual-form-builder' ),
+				'label' => __( 'Radio', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-marker',
 			),
 			array(
 				'type'  => 'file',
-				'label' => __( 'File upload', 'cf7-visual-form-builder' ),
+				'label' => __( 'File upload', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-upload',
 			),
 			array(
 				'type'  => 'date',
-				'label' => __( 'Date', 'cf7-visual-form-builder' ),
+				'label' => __( 'Date', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-calendar-alt',
 			),
 			array(
 				'type'  => 'hidden',
-				'label' => __( 'Hidden', 'cf7-visual-form-builder' ),
+				'label' => __( 'Hidden', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-hidden',
 			),
 			array(
 				'type'  => 'rating',
-				'label' => __( 'Rating', 'cf7-visual-form-builder' ),
+				'label' => __( 'Rating', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-star-filled',
 			),
 			array(
 				'type'  => 'signature',
-				'label' => __( 'Signature', 'cf7-visual-form-builder' ),
+				'label' => __( 'Signature', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-edit',
 			),
 			array(
 				'type'  => 'repeater',
-				'label' => __( 'Repeater', 'cf7-visual-form-builder' ),
+				'label' => __( 'Repeater', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-plus-alt2',
 			),
 			array(
 				'type'  => 'submit',
-				'label' => __( 'Submit', 'cf7-visual-form-builder' ),
+				'label' => __( 'Submit', 'form-studio-for-contact-form-7' ),
 				'icon'  => 'dashicons-arrow-right-alt',
 			),
 		);
@@ -354,8 +354,8 @@ final class CF7VB_Admin {
 	public static function add_entries_menu() {
 		add_submenu_page(
 			'wpcf7',
-			__( 'Form Entries', 'cf7-visual-form-builder' ),
-			__( 'Entries', 'cf7-visual-form-builder' ),
+			__( 'Form Entries', 'form-studio-for-contact-form-7' ),
+			__( 'Entries', 'form-studio-for-contact-form-7' ),
 			'wpcf7_read_contact_forms',
 			'cf7vb-entries',
 			array( __CLASS__, 'render_entries_page' )
@@ -397,21 +397,21 @@ final class CF7VB_Admin {
 				'nonce'   => wp_create_nonce( 'wp_rest' ),
 				'strings' => array(
 					/* translators: %d: entry ID. */
-					'entryTitle'   => __( 'Entry #%d', 'cf7-visual-form-builder' ),
-					'loading'      => __( 'Loading entry…', 'cf7-visual-form-builder' ),
-					'loadError'    => __( 'Could not load entry.', 'cf7-visual-form-builder' ),
-					'noFields'     => __( 'No field data recorded.', 'cf7-visual-form-builder' ),
-					'referrer'     => __( 'Referrer', 'cf7-visual-form-builder' ),
-					'statusSaved'  => __( 'Status updated.', 'cf7-visual-form-builder' ),
-					'statusError'  => __( 'Could not update status.', 'cf7-visual-form-builder' ),
+					'entryTitle'   => __( 'Entry #%d', 'form-studio-for-contact-form-7' ),
+					'loading'      => __( 'Loading entry…', 'form-studio-for-contact-form-7' ),
+					'loadError'    => __( 'Could not load entry.', 'form-studio-for-contact-form-7' ),
+					'noFields'     => __( 'No field data recorded.', 'form-studio-for-contact-form-7' ),
+					'referrer'     => __( 'Referrer', 'form-studio-for-contact-form-7' ),
+					'statusSaved'  => __( 'Status updated.', 'form-studio-for-contact-form-7' ),
+					'statusError'  => __( 'Could not update status.', 'form-studio-for-contact-form-7' ),
 					/* translators: %d: step number. */
-					'stepView'     => __( 'Step %d viewed', 'cf7-visual-form-builder' ),
+					'stepView'     => __( 'Step %d viewed', 'form-studio-for-contact-form-7' ),
 					/* translators: %s: field name. */
-					'fieldFocus'   => __( 'Field focus: %s', 'cf7-visual-form-builder' ),
-					'eventView'    => __( 'Form viewed', 'cf7-visual-form-builder' ),
-					'eventStart'   => __( 'Form started', 'cf7-visual-form-builder' ),
-					'eventSubmit'  => __( 'Form submitted', 'cf7-visual-form-builder' ),
-					'eventAbandon' => __( 'Form abandoned', 'cf7-visual-form-builder' ),
+					'fieldFocus'   => __( 'Field focus: %s', 'form-studio-for-contact-form-7' ),
+					'eventView'    => __( 'Form viewed', 'form-studio-for-contact-form-7' ),
+					'eventStart'   => __( 'Form started', 'form-studio-for-contact-form-7' ),
+					'eventSubmit'  => __( 'Form submitted', 'form-studio-for-contact-form-7' ),
+					'eventAbandon' => __( 'Form abandoned', 'form-studio-for-contact-form-7' ),
 				),
 			)
 		);
@@ -443,7 +443,7 @@ final class CF7VB_Admin {
 
 	public static function render_entries_page() {
 		if ( ! current_user_can( 'wpcf7_read_contact_forms' ) ) {
-			wp_die( esc_html__( 'You are not allowed to view entries.', 'cf7-visual-form-builder' ) );
+			wp_die( esc_html__( 'You are not allowed to view entries.', 'form-studio-for-contact-form-7' ) );
 		}
 
 		// Filters arrive via the GET filter form below, which carries a nonce. Without a valid
@@ -481,79 +481,79 @@ final class CF7VB_Admin {
 		<div class="wrap cf7vb-dash cf7vb-entries-wrap">
 			<header class="cf7vb-dash-header">
 				<div>
-					<h1><?php esc_html_e( 'Form Entries', 'cf7-visual-form-builder' ); ?></h1>
-					<p><?php esc_html_e( 'Review submissions, update status, and export data.', 'cf7-visual-form-builder' ); ?></p>
+					<h1><?php esc_html_e( 'Form Entries', 'form-studio-for-contact-form-7' ); ?></h1>
+					<p><?php esc_html_e( 'Review submissions, update status, and export data.', 'form-studio-for-contact-form-7' ); ?></p>
 				</div>
 				<div class="cf7vb-dash-actions">
-					<a class="button" href="<?php echo esc_url( admin_url( 'admin-post.php?' . http_build_query( $export_args ) ) ); ?>"><?php esc_html_e( 'Export CSV', 'cf7-visual-form-builder' ); ?></a>
-					<a class="button" href="<?php echo esc_url( admin_url( 'admin-post.php?' . http_build_query( $export_pdf ) ) ); ?>"><?php esc_html_e( 'Export PDF', 'cf7-visual-form-builder' ); ?></a>
-					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=cf7vb-analytics' ) ); ?>"><?php esc_html_e( 'Analytics', 'cf7-visual-form-builder' ); ?></a>
+					<a class="button" href="<?php echo esc_url( admin_url( 'admin-post.php?' . http_build_query( $export_args ) ) ); ?>"><?php esc_html_e( 'Export CSV', 'form-studio-for-contact-form-7' ); ?></a>
+					<a class="button" href="<?php echo esc_url( admin_url( 'admin-post.php?' . http_build_query( $export_pdf ) ) ); ?>"><?php esc_html_e( 'Export PDF', 'form-studio-for-contact-form-7' ); ?></a>
+					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=cf7vb-analytics' ) ); ?>"><?php esc_html_e( 'Analytics', 'form-studio-for-contact-form-7' ); ?></a>
 				</div>
 			</header>
 
 			<div class="cf7vb-kpi-grid">
 				<div class="cf7vb-kpi-card is-primary">
-					<strong><?php esc_html_e( 'Total entries', 'cf7-visual-form-builder' ); ?></strong>
+					<strong><?php esc_html_e( 'Total entries', 'form-studio-for-contact-form-7' ); ?></strong>
 					<p class="cf7vb-kpi-value"><?php echo esc_html( (string) $entries['total'] ); ?></p>
 				</div>
 				<div class="cf7vb-kpi-card">
-					<strong><?php esc_html_e( 'Unread', 'cf7-visual-form-builder' ); ?></strong>
+					<strong><?php esc_html_e( 'Unread', 'form-studio-for-contact-form-7' ); ?></strong>
 					<p class="cf7vb-kpi-value"><?php echo esc_html( (string) $counts['unread'] ); ?></p>
 				</div>
 				<div class="cf7vb-kpi-card">
-					<strong><?php esc_html_e( 'Starred', 'cf7-visual-form-builder' ); ?></strong>
+					<strong><?php esc_html_e( 'Starred', 'form-studio-for-contact-form-7' ); ?></strong>
 					<p class="cf7vb-kpi-value"><?php echo esc_html( (string) $counts['starred'] ); ?></p>
 				</div>
 				<div class="cf7vb-kpi-card">
-					<strong><?php esc_html_e( 'Spam', 'cf7-visual-form-builder' ); ?></strong>
+					<strong><?php esc_html_e( 'Spam', 'form-studio-for-contact-form-7' ); ?></strong>
 					<p class="cf7vb-kpi-value"><?php echo esc_html( (string) $counts['spam'] ); ?></p>
 				</div>
 			</div>
 
 			<div class="cf7vb-panel">
 				<div class="cf7vb-panel-head">
-					<h2><?php esc_html_e( 'Filter entries', 'cf7-visual-form-builder' ); ?></h2>
+					<h2><?php esc_html_e( 'Filter entries', 'form-studio-for-contact-form-7' ); ?></h2>
 				</div>
 				<form method="get" class="cf7vb-filter-bar">
 					<input type="hidden" name="page" value="cf7vb-entries" />
 					<?php wp_nonce_field( 'cf7vb_entries_filter', 'cf7vb_entries_nonce', false ); ?>
-					<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search field values…', 'cf7-visual-form-builder' ); ?>" />
+					<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search field values…', 'form-studio-for-contact-form-7' ); ?>" />
 					<select name="form_id">
-						<option value="0"><?php esc_html_e( 'All forms', 'cf7-visual-form-builder' ); ?></option>
+						<option value="0"><?php esc_html_e( 'All forms', 'form-studio-for-contact-form-7' ); ?></option>
 						<?php foreach ( $forms as $form ) : ?>
 							<option value="<?php echo esc_attr( (string) $form->id() ); ?>" <?php selected( $form_id, $form->id() ); ?>><?php echo esc_html( $form->title() ); ?></option>
 						<?php endforeach; ?>
 					</select>
 					<select name="status">
-						<option value=""><?php esc_html_e( 'All statuses', 'cf7-visual-form-builder' ); ?></option>
+						<option value=""><?php esc_html_e( 'All statuses', 'form-studio-for-contact-form-7' ); ?></option>
 						<?php foreach ( array( 'unread', 'read', 'starred', 'spam', 'trash' ) as $st ) : ?>
 							<option value="<?php echo esc_attr( $st ); ?>" <?php selected( $status, $st ); ?>><?php echo esc_html( ucfirst( $st ) ); ?></option>
 						<?php endforeach; ?>
 					</select>
-					<?php submit_button( __( 'Apply filters', 'cf7-visual-form-builder' ), 'secondary', '', false ); ?>
+					<?php submit_button( __( 'Apply filters', 'form-studio-for-contact-form-7' ), 'secondary', '', false ); ?>
 				</form>
 			</div>
 
 			<div class="cf7vb-panel">
 				<div class="cf7vb-panel-head">
-					<h2><?php esc_html_e( 'Submissions', 'cf7-visual-form-builder' ); ?></h2>
+					<h2><?php esc_html_e( 'Submissions', 'form-studio-for-contact-form-7' ); ?></h2>
 				</div>
 				<div class="cf7vb-table-wrap">
 					<?php if ( empty( $entries['items'] ) ) : ?>
 						<div class="cf7vb-empty">
 							<span class="dashicons dashicons-email-alt"></span>
-							<p><?php esc_html_e( 'No entries match your filters.', 'cf7-visual-form-builder' ); ?></p>
+							<p><?php esc_html_e( 'No entries match your filters.', 'form-studio-for-contact-form-7' ); ?></p>
 						</div>
 					<?php else : ?>
 						<table class="cf7vb-entries-table">
 							<thead>
 								<tr>
-									<th scope="col"><?php esc_html_e( 'Entry', 'cf7-visual-form-builder' ); ?></th>
-									<th scope="col"><?php esc_html_e( 'Form', 'cf7-visual-form-builder' ); ?></th>
-									<th scope="col"><?php esc_html_e( 'Preview', 'cf7-visual-form-builder' ); ?></th>
-									<th scope="col"><?php esc_html_e( 'Status', 'cf7-visual-form-builder' ); ?></th>
-									<th scope="col"><?php esc_html_e( 'Device', 'cf7-visual-form-builder' ); ?></th>
-									<th scope="col"><?php esc_html_e( 'Submitted', 'cf7-visual-form-builder' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Entry', 'form-studio-for-contact-form-7' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Form', 'form-studio-for-contact-form-7' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Preview', 'form-studio-for-contact-form-7' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Status', 'form-studio-for-contact-form-7' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Device', 'form-studio-for-contact-form-7' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Submitted', 'form-studio-for-contact-form-7' ); ?></th>
 									<th scope="col"></th>
 								</tr>
 							</thead>
@@ -589,7 +589,7 @@ final class CF7VB_Admin {
 										<td>
 											<button type="button" class="cf7vb-btn-view" data-entry-id="<?php echo esc_attr( (string) $row->id ); ?>">
 												<span class="dashicons dashicons-visibility"></span>
-												<?php esc_html_e( 'View', 'cf7-visual-form-builder' ); ?>
+												<?php esc_html_e( 'View', 'form-studio-for-contact-form-7' ); ?>
 											</button>
 										</td>
 									</tr>
@@ -603,7 +603,7 @@ final class CF7VB_Admin {
 					echo esc_html(
 						sprintf(
 							/* translators: %d: total entries */
-							__( 'Showing page %1$d — %2$d total entries', 'cf7-visual-form-builder' ),
+							__( 'Showing page %1$d — %2$d total entries', 'form-studio-for-contact-form-7' ),
 							$page,
 							$entries['total']
 						)
@@ -617,24 +617,24 @@ final class CF7VB_Admin {
 			<div class="cf7vb-modal" role="document">
 				<header class="cf7vb-modal-header">
 					<div>
-						<h2 id="cf7vb-modal-heading" class="cf7vb-modal-title"><?php esc_html_e( 'Entry details', 'cf7-visual-form-builder' ); ?></h2>
+						<h2 id="cf7vb-modal-heading" class="cf7vb-modal-title"><?php esc_html_e( 'Entry details', 'form-studio-for-contact-form-7' ); ?></h2>
 						<div class="cf7vb-modal-meta"></div>
 					</div>
-					<button type="button" class="cf7vb-modal-close" aria-label="<?php esc_attr_e( 'Close', 'cf7-visual-form-builder' ); ?>">
+					<button type="button" class="cf7vb-modal-close" aria-label="<?php esc_attr_e( 'Close', 'form-studio-for-contact-form-7' ); ?>">
 						<span class="dashicons dashicons-no-alt"></span>
 					</button>
 				</header>
 				<div class="cf7vb-modal-body"></div>
 				<footer class="cf7vb-modal-footer">
 					<label>
-						<span class="screen-reader-text"><?php esc_html_e( 'Status', 'cf7-visual-form-builder' ); ?></span>
+						<span class="screen-reader-text"><?php esc_html_e( 'Status', 'form-studio-for-contact-form-7' ); ?></span>
 						<select class="cf7vb-status-select">
 							<?php foreach ( array( 'unread', 'read', 'starred', 'spam', 'trash' ) as $st ) : ?>
 								<option value="<?php echo esc_attr( $st ); ?>"><?php echo esc_html( ucfirst( $st ) ); ?></option>
 							<?php endforeach; ?>
 						</select>
 					</label>
-					<button type="button" class="button button-primary cf7vb-save-status"><?php esc_html_e( 'Update status', 'cf7-visual-form-builder' ); ?></button>
+					<button type="button" class="button button-primary cf7vb-save-status"><?php esc_html_e( 'Update status', 'form-studio-for-contact-form-7' ); ?></button>
 				</footer>
 			</div>
 		</div>

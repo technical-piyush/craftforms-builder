@@ -37,7 +37,7 @@ final class CF7VB_Thankyou {
 		$redirect = ! empty( $rules['redirect'] ) ? $rules['redirect'] : ( $ty['redirectUrl'] ?? '' );
 
 		if ( $redirect ) {
-			$submission->set_response( $contact_form->filter_message( $ty['message'] ?? __( 'Thank you. Redirecting…', 'cf7-visual-form-builder' ) ) );
+			$submission->set_response( $contact_form->filter_message( $ty['message'] ?? __( 'Thank you. Redirecting…', 'form-studio-for-contact-form-7' ) ) );
 			add_filter(
 				'wpcf7_feedback_response',
 				static function ( $response ) use ( $redirect, $ty ) {

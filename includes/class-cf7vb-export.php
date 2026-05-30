@@ -18,7 +18,7 @@ final class CF7VB_Export {
 
 	public static function export_csv() {
 		if ( ! current_user_can( 'wpcf7_read_contact_forms' ) ) {
-			wp_die( esc_html__( 'Forbidden.', 'cf7-visual-form-builder' ) );
+			wp_die( esc_html__( 'Forbidden.', 'form-studio-for-contact-form-7' ) );
 		}
 		check_admin_referer( 'cf7vb_export' );
 
@@ -64,7 +64,7 @@ final class CF7VB_Export {
 
 	public static function export_pdf() {
 		if ( ! current_user_can( 'wpcf7_read_contact_forms' ) ) {
-			wp_die( esc_html__( 'Forbidden.', 'cf7-visual-form-builder' ) );
+			wp_die( esc_html__( 'Forbidden.', 'form-studio-for-contact-form-7' ) );
 		}
 		check_admin_referer( 'cf7vb_export' );
 
@@ -82,8 +82,8 @@ final class CF7VB_Export {
 
 		echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Entries</title>';
 		echo '<style>body{font-family:sans-serif;padding:24px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;font-size:12px}th{background:#f0f0f1}@media print{button{display:none}}</style></head><body>';
-		echo '<h1>' . esc_html__( 'Form Entries Export', 'cf7-visual-form-builder' ) . '</h1>';
-		echo '<p><button onclick="window.print()">' . esc_html__( 'Print / Save as PDF', 'cf7-visual-form-builder' ) . '</button></p>';
+		echo '<h1>' . esc_html__( 'Form Entries Export', 'form-studio-for-contact-form-7' ) . '</h1>';
+		echo '<p><button onclick="window.print()">' . esc_html__( 'Print / Save as PDF', 'form-studio-for-contact-form-7' ) . '</button></p>';
 		echo '<table><thead><tr><th>ID</th><th>Form</th><th>Status</th><th>Date</th><th>Data</th></tr></thead><tbody>';
 
 		foreach ( $result['items'] as $row ) {

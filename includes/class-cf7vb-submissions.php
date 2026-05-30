@@ -353,7 +353,7 @@ final class CF7VB_Submissions {
 		$atts = shortcode_atts( array( 'form_id' => 0 ), $atts, 'cf7vb_entries' );
 
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to view your submissions.', 'cf7-visual-form-builder' ) . '</p>';
+			return '<p>' . esc_html__( 'Please log in to view your submissions.', 'form-studio-for-contact-form-7' ) . '</p>';
 		}
 
 		$user  = wp_get_current_user();
@@ -375,10 +375,10 @@ final class CF7VB_Submissions {
 		}
 
 		if ( ! $rows ) {
-			return '<p>' . esc_html__( 'No submissions found.', 'cf7-visual-form-builder' ) . '</p>';
+			return '<p>' . esc_html__( 'No submissions found.', 'form-studio-for-contact-form-7' ) . '</p>';
 		}
 
-		$html = '<table class="cf7vb-frontend-entries"><thead><tr><th>' . esc_html__( 'Date', 'cf7-visual-form-builder' ) . '</th><th>' . esc_html__( 'Status', 'cf7-visual-form-builder' ) . '</th></tr></thead><tbody>';
+		$html = '<table class="cf7vb-frontend-entries"><thead><tr><th>' . esc_html__( 'Date', 'form-studio-for-contact-form-7' ) . '</th><th>' . esc_html__( 'Status', 'form-studio-for-contact-form-7' ) . '</th></tr></thead><tbody>';
 		foreach ( $rows as $row ) {
 			$html .= '<tr><td>' . esc_html( $row->created_at ) . '</td><td>' . esc_html( $row->status ) . '</td></tr>';
 		}

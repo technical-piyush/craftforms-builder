@@ -127,7 +127,7 @@ final class CF7VB_REST_API {
 		if ( current_user_can( 'wpcf7_edit_contact_form', $id ) ) {
 			return true;
 		}
-		return new WP_Error( 'cf7vb_forbidden', __( 'Forbidden.', 'cf7-visual-form-builder' ), array( 'status' => 403 ) );
+		return new WP_Error( 'cf7vb_forbidden', __( 'Forbidden.', 'form-studio-for-contact-form-7' ), array( 'status' => 403 ) );
 	}
 
 	public static function get_schema( WP_REST_Request $request ) {
@@ -146,7 +146,7 @@ final class CF7VB_REST_API {
 		$schema = $request->get_param( 'schema' );
 
 		if ( ! is_array( $schema ) ) {
-			return new WP_Error( 'cf7vb_invalid_schema', __( 'Invalid schema.', 'cf7-visual-form-builder' ), array( 'status' => 400 ) );
+			return new WP_Error( 'cf7vb_invalid_schema', __( 'Invalid schema.', 'form-studio-for-contact-form-7' ), array( 'status' => 400 ) );
 		}
 
 		$schema   = CF7VB_Parser::normalize_schema( $schema );
@@ -195,7 +195,7 @@ final class CF7VB_REST_API {
 	public static function get_entry( WP_REST_Request $request ) {
 		$row = CF7VB_Submissions::get( (int) $request['id'] );
 		if ( ! $row ) {
-			return new WP_Error( 'cf7vb_not_found', __( 'Entry not found.', 'cf7-visual-form-builder' ), array( 'status' => 404 ) );
+			return new WP_Error( 'cf7vb_not_found', __( 'Entry not found.', 'form-studio-for-contact-form-7' ), array( 'status' => 404 ) );
 		}
 		return rest_ensure_response( CF7VB_Submissions::format_entry( $row ) );
 	}
@@ -209,7 +209,7 @@ final class CF7VB_REST_API {
 		$id     = (int) $request['id'];
 		$status = sanitize_key( (string) $request->get_param( 'status' ) );
 		if ( ! CF7VB_Submissions::update_status( $id, $status ) ) {
-			return new WP_Error( 'cf7vb_update_failed', __( 'Update failed.', 'cf7-visual-form-builder' ), array( 'status' => 400 ) );
+			return new WP_Error( 'cf7vb_update_failed', __( 'Update failed.', 'form-studio-for-contact-form-7' ), array( 'status' => 400 ) );
 		}
 		return rest_ensure_response( array( 'success' => true ) );
 	}
@@ -221,7 +221,7 @@ final class CF7VB_REST_API {
 		$session = sanitize_text_field( (string) $request->get_param( 'session_key' ) );
 
 		if ( ! $form_id || ! $type ) {
-			return new WP_Error( 'cf7vb_invalid', __( 'Invalid event.', 'cf7-visual-form-builder' ), array( 'status' => 400 ) );
+			return new WP_Error( 'cf7vb_invalid', __( 'Invalid event.', 'form-studio-for-contact-form-7' ), array( 'status' => 400 ) );
 		}
 
 		CF7VB_Analytics::track( $form_id, $type, is_array( $data ) ? $data : array(), $session );
@@ -235,7 +235,7 @@ final class CF7VB_REST_API {
 		$email     = sanitize_email( (string) $request->get_param( 'email' ) );
 
 		if ( ! $form_id || ! is_array( $data ) ) {
-			return new WP_Error( 'cf7vb_invalid', __( 'Invalid draft.', 'cf7-visual-form-builder' ), array( 'status' => 400 ) );
+			return new WP_Error( 'cf7vb_invalid', __( 'Invalid draft.', 'form-studio-for-contact-form-7' ), array( 'status' => 400 ) );
 		}
 
 		$key  = CF7VB_Autosave::save_draft( $form_id, $draft_key, $data, $email );
@@ -258,7 +258,7 @@ final class CF7VB_REST_API {
 		$key   = sanitize_key( (string) $request->get_param( 'draft_key' ) );
 		$draft = CF7VB_Autosave::get_draft( $key );
 		if ( ! $draft ) {
-			return new WP_Error( 'cf7vb_not_found', __( 'Draft not found.', 'cf7-visual-form-builder' ), array( 'status' => 404 ) );
+			return new WP_Error( 'cf7vb_not_found', __( 'Draft not found.', 'form-studio-for-contact-form-7' ), array( 'status' => 404 ) );
 		}
 		return rest_ensure_response( $draft );
 	}

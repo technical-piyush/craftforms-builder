@@ -40,7 +40,7 @@ final class CF7VB_Compiler {
 
 			if ( $multistep && $step_index === $last_step && ! empty( $settings['gdpr']['enabled'] ) ) {
 				$gn           = $settings['gdpr']['fieldName'] ?? 'gdpr-consent';
-				$gl           = $settings['gdpr']['label'] ?? __( 'I agree to the privacy policy.', 'cf7-visual-form-builder' );
+				$gl           = $settings['gdpr']['label'] ?? __( 'I agree to the privacy policy.', 'form-studio-for-contact-form-7' );
 				$step_lines[] = '[acceptance ' . esc_attr( $gn ) . ']' . "\n" . esc_html( $gl );
 			}
 
@@ -64,14 +64,14 @@ final class CF7VB_Compiler {
 			$hp      = $settings['security']['honeypotField'] ?? 'cf7vb_hp';
 			$lines[] = sprintf(
 				'<span class="cf7vb-hp" aria-hidden="true" style="position:absolute;left:-9999px;"><label>%1$s [text %2$s]</label></span>',
-				esc_html__( 'Leave empty', 'cf7-visual-form-builder' ),
+				esc_html__( 'Leave empty', 'form-studio-for-contact-form-7' ),
 				esc_attr( $hp )
 			);
 		}
 
 		if ( ! $multistep && ! empty( $settings['gdpr']['enabled'] ) ) {
 			$gn      = $settings['gdpr']['fieldName'] ?? 'gdpr-consent';
-			$gl      = $settings['gdpr']['label'] ?? __( 'I agree to the privacy policy.', 'cf7-visual-form-builder' );
+			$gl      = $settings['gdpr']['label'] ?? __( 'I agree to the privacy policy.', 'form-studio-for-contact-form-7' );
 			$lines[] = '[acceptance ' . esc_attr( $gn ) . ']' . "\n" . esc_html( $gl );
 		}
 
@@ -202,7 +202,7 @@ final class CF7VB_Compiler {
 				return '<!-- cf7vb:repeater ' . esc_attr( $name ) . ' -->';
 
 			case 'submit':
-				$label = $field['label'] ? $field['label'] : __( 'Send', 'cf7-visual-form-builder' );
+				$label = $field['label'] ? $field['label'] : __( 'Send', 'form-studio-for-contact-form-7' );
 				return '[submit "' . self::escape_cf7_value( $label ) . '"]';
 
 			default:

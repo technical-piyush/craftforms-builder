@@ -1,12 +1,13 @@
 <?php
 /**
- * Plugin Name:       CF7 Visual Form Builder
+ * Plugin Name:       Form Studio for Contact Form 7
  * Description:       Professional drag-and-drop visual form builder for Contact Form 7 — multistep, conditional logic, entries, analytics, GDPR, and more.
- * Version:           1.3.0
+ * Version:           1.0.0
  * Author:            Piyush Asthana
  * Requires at least: 6.1
  * Requires PHP:      7.4
- * Text Domain:       cf7-visual-form-builder
+ * Requires Plugins:  contact-form-7
+ * Text Domain:       form-studio-for-contact-form-7
  * Domain Path:       /languages
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CF7VB_VERSION', '1.3.0' );
+define( 'CF7VB_VERSION', '1.0.0' );
 define( 'CF7VB_PLUGIN_FILE', __FILE__ );
 define( 'CF7VB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CF7VB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -53,7 +54,7 @@ add_action(
 				static function () {
 					printf(
 						'<div class="notice notice-error"><p>%s</p></div>',
-						esc_html__( 'CF7 Visual Form Builder requires Contact Form 7 to be installed and active.', 'cf7-visual-form-builder' )
+						esc_html__( 'Form Studio for Contact Form 7 requires Contact Form 7 to be installed and active.', 'form-studio-for-contact-form-7' )
 					);
 				}
 			);

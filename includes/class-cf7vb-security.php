@@ -41,7 +41,7 @@ final class CF7VB_Security {
 		if ( ! empty( $security['honeypot'] ) ) {
 			$hp = $security['honeypotField'] ?? 'cf7vb_hp';
 			if ( ! empty( $posted[ $hp ] ) ) {
-				$result->invalidate( null, __( 'Spam detected.', 'cf7-visual-form-builder' ) );
+				$result->invalidate( null, __( 'Spam detected.', 'form-studio-for-contact-form-7' ) );
 				return $result;
 			}
 		}
@@ -52,7 +52,7 @@ final class CF7VB_Security {
 			$key    = 'cf7vb_rl_' . $form->id() . '_' . CF7VB_Submissions::hash_ip();
 			$count  = (int) get_transient( $key );
 			if ( $count >= $limit ) {
-				$result->invalidate( null, __( 'Too many submissions. Please try again later.', 'cf7-visual-form-builder' ) );
+				$result->invalidate( null, __( 'Too many submissions. Please try again later.', 'form-studio-for-contact-form-7' ) );
 				return $result;
 			}
 			set_transient( $key, $count + 1, $window );
