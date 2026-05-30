@@ -1,0 +1,967 @@
+( function () {
+	'use strict';
+
+	const { createElement: el, Fragment, useState, useEffect, useCallback, useRef, useMemo } = wp.element;
+	const apiFetch = wp.apiFetch;
+	const cfg = window.CF7VB_BUILDER || {};
+	const S = cfg.strings || {};
+
+	const WORKSPACE_TABS = [
+		{ id: 'build', label: S.tabBuild || 'Build', desc: S.tabBuildDesc || 'Add & arrange fields', icon: 'dashicons-layout' },
+		{ id: 'preview', label: S.tabPreview || 'Preview', desc: S.tabPreviewDesc || 'Visitor view', icon: 'dashicons-visibility' },
+		{ id: 'logic', label: S.tabLogic || 'Rules', desc: S.tabLogicDesc || 'Conditions', icon: 'dashicons-randomize' },
+		{ id: 'settings', label: S.tabSettings || 'Settings', desc: S.tabSettingsDesc || 'GDPR & more', icon: 'dashicons-admin-generic' },
+	];
+
+	function renderVisualPreview( props ) {
+		if ( ! window.CF7VB_PREVIEW ) {
+			return el( 'p', { className: 'cf7vb-preview-fallback' }, 'Preview loading…' );
+		}
+		return el( window.CF7VB_PREVIEW, props );
+	}
+
+	function StepsBar( props ) {
+		const {
+			schema,
+			activeStep,
+			setActiveStep,
+			onTitleChange,
+			onTitleCommit,
+			onRemoveStep,
+			onAddStep,
+			compact,
+			S,
+		} = props;
+		const multistep = schema.settings?.multistep && schema.steps.length > 1;
+		if ( ! multistep ) {
+			return null;
+		}
+
+		return el(
+			'div',
+			{ className: 'cf7vb-steps-panel' + ( compact ? ' cf7vb-steps-panel--compact' : '' ) },
+			compact
+				? null
+				: el(
+					'div',
+					{ className: 'cf7vb-steps-panel-head' },
+					el( 'div', null,
+						el( 'strong', null, S.stepsTitle || 'Form steps' ),
+						el( 'p', null, S.stepsHint || 'Name each step — titles appear on the live form progress bar.' )
+					),
+					el(
+						'span',
+						{ className: 'cf7vb-steps-count' },
+						schema.steps.length + ' ' + ( S.stepsLabel || 'steps' )
+					)
+				),
+			el(
+				'div',
+				{ className: 'cf7vb-steps-list', role: 'tablist', 'aria-label': S.stepsTitle || 'Form steps' },
+				schema.steps.map( ( step, i ) =>
+					el(
+						'div',
+						{
+							key: step.id,
+							className: 'cf7vb-step-item' + ( activeStep === i ? ' is-active' : '' ),
+							role: 'tab',
+							'aria-selected': activeStep === i ? 'true' : 'false',
+						},
+						el(
+							'button',
+							{
+								type: 'button',
+								className: 'cf7vb-step-select',
+								onClick: () => setActiveStep( i ),
+								title: S.editStep || 'Select step',
+							},
+							el( 'span', { className: 'cf7vb-step-num' }, String( i + 1 ) )
+						),
+						el( 'input', {
+							type: 'text',
+							className: 'cf7vb-step-title-input',
+							value: step.title || '',
+							placeholder: ( S.stepPlaceholder || 'Step %d' ).replace( '%d', String( i + 1 ) ),
+							onFocus: () => setActiveStep( i ),
+							onChange: ( e ) => onTitleChange( i, e.target.value ),
+							onBlur: ( e ) => onTitleCommit( i, e.target.value ),
+							onClick: ( e ) => e.stopPropagation(),
+						} ),
+						schema.steps.length > 2
+							? el( 'button', {
+								type: 'button',
+								className: 'cf7vb-step-remove',
+								title: S.removeStep || 'Remove step',
+								onClick: ( e ) => {
+									e.stopPropagation();
+									onRemoveStep( i );
+								},
+							}, el( 'span', { className: 'dashicons dashicons-trash' } ) )
+							: null
+					)
+				),
+				el(
+					'button',
+					{
+						type: 'button',
+						className: 'cf7vb-btn cf7vb-btn--dashed cf7vb-add-step-btn',
+						onClick: onAddStep,
+					},
+					el( 'span', { className: 'dashicons dashicons-plus-alt2' } ),
+					S.addStep || 'Add step'
+				)
+			)
+		);
+	}
+
+	function DeviceToggle( { device, setDevice, compact } ) {
+		return el(
+			'div',
+			{ className: 'cf7vb-device-toggle' + ( compact ? ' cf7vb-device-toggle--compact' : '' ), role: 'group', 'aria-label': 'Preview device size' },
+			[ 'desktop', 'tablet', 'mobile' ].map( ( d ) =>
+				el(
+					'button',
+					{
+						key: d,
+						type: 'button',
+						className: 'cf7vb-btn' + ( device === d ? ' cf7vb-btn--active' : '' ),
+						'aria-pressed': device === d ? 'true' : 'false',
+						onClick: ( e ) => {
+							e.preventDefault();
+							e.stopPropagation();
+							setDevice( d );
+						},
+					},
+					S[ d ] || d.charAt( 0 ).toUpperCase() + d.slice( 1 )
+				)
+			)
+		);
+	}
+
+	const FIELD_DEFAULTS = {
+		text: { name: 'text-field', label: 'Text Field' },
+		textarea: { name: 'message', label: 'Message' },
+		email: { name: 'email', label: 'Email' },
+		phone: { name: 'phone', label: 'Phone' },
+		number: { name: 'number', label: 'Number' },
+		select: { name: 'select', label: 'Select', options: [ { label: 'Option 1', value: 'Option 1' }, { label: 'Option 2', value: 'Option 2' } ] },
+		checkbox: { name: 'choices', label: 'Choices', options: [ { label: 'Option A', value: 'Option A' } ] },
+		radio: { name: 'choice', label: 'Choice', options: [ { label: 'Yes', value: 'Yes' }, { label: 'No', value: 'No' } ] },
+		file: { name: 'file', label: 'Upload' },
+		date: { name: 'date', label: 'Date' },
+		hidden: { name: 'hidden', label: 'Hidden' },
+		rating: { name: 'rating', label: 'Rating' },
+		signature: { name: 'signature', label: 'Signature' },
+		repeater: { name: 'repeater', label: 'Repeater' },
+		submit: { name: 'submit', label: 'Send', required: false },
+	};
+
+	function uid( prefix ) {
+		return ( prefix || 'id' ) + '-' + Math.random().toString( 36 ).slice( 2, 10 );
+	}
+
+	function clone( obj ) {
+		return JSON.parse( JSON.stringify( obj ) );
+	}
+
+	function loadInitialSchema() {
+		const input = document.getElementById( 'cf7vb-schema-input' );
+		if ( input && input.value ) {
+			try {
+				return JSON.parse( input.value );
+			} catch ( e ) { /* noop */ }
+		}
+		const boot = document.getElementById( 'cf7vb-default-schema' );
+		if ( boot && boot.textContent ) {
+			try {
+				return JSON.parse( boot.textContent );
+			} catch ( e ) { /* noop */ }
+		}
+		return { version: '1.0', settings: { multistep: false }, steps: [ { id: 'step-1', title: 'Step 1', sections: [ { id: 'section-1', title: '', fields: [] } ] } ], rules: [] };
+	}
+
+	function compileField( field ) {
+		const req = field.required ? '*' : '';
+		const name = field.name || 'field';
+		const opts = [];
+		if ( field.placeholder ) {
+			opts.push( 'placeholder "' + String( field.placeholder ).replace( /"/g, '' ) + '"' );
+		}
+		const optionValues = ( field.options || [] ).map( ( o ) => '"' + String( o.value || o.label || o ).replace( /"/g, '' ) + '"' );
+
+		switch ( field.type ) {
+			case 'email': return `[email${req} ${name} ${opts.join( ' ' )}]`;
+			case 'phone': return `[tel${req} ${name} ${opts.join( ' ' )}]`;
+			case 'textarea': return `[textarea${req} ${name} ${opts.join( ' ' )}]`;
+			case 'number': return `[number${req} ${name} ${opts.join( ' ' )}]`;
+			case 'select': return `[select${req} ${name} ${opts.concat( optionValues ).join( ' ' )}]`;
+			case 'checkbox': return `[checkbox${req} ${name} use_label_element ${optionValues.join( ' ' )}]`;
+			case 'radio': return `[radio${req} ${name} use_label_element ${optionValues.join( ' ' )}]`;
+			case 'file': return `[file${req} ${name}]`;
+			case 'date': return `[date${req} ${name}]`;
+			case 'hidden': return `[hidden ${name}]`;
+			case 'submit': return `[submit "${String( field.label || 'Send' ).replace( /"/g, '' )}"]`;
+			default: return `[text${req} ${name} ${opts.join( ' ' )}]`;
+		}
+	}
+
+	function compileStepBody( step ) {
+		const stepLines = [];
+		( step.sections || [] ).forEach( ( section ) => {
+			if ( section.title ) {
+				stepLines.push( '<h3 class="cf7vb-section-title">' + section.title + '</h3>' );
+			}
+			( section.fields || [] ).forEach( ( field ) => {
+				if ( field.label && field.type !== 'hidden' && field.type !== 'submit' ) {
+					stepLines.push( '<label> ' + field.label + ( field.required ? ' <span class="cf7vb-req">*</span>' : '' ) );
+					stepLines.push( compileField( field ) );
+					stepLines.push( '</label>' );
+				} else {
+					stepLines.push( compileField( field ) );
+				}
+				if ( field.help ) {
+					stepLines.push( '<span class="cf7vb-help">' + field.help + '</span>' );
+				}
+			} );
+		} );
+		return stepLines.filter( Boolean ).join( '\n\n' );
+	}
+
+	function compileSchema( schema ) {
+		const settings = schema.settings || {};
+		const multistep = settings.multistep && ( schema.steps || [] ).length > 1;
+		const lines = [];
+		( schema.steps || [] ).forEach( ( step, stepIndex ) => {
+			const stepBody = compileStepBody( step );
+
+			if ( multistep ) {
+				const stepTitle = String( step.title || '' ).trim();
+				const titleAttr = stepTitle
+					? ' data-cf7vb-step-title="' + stepTitle.replace( /"/g, '&quot;' ) + '"'
+					: '';
+				lines.push(
+					'<div class="cf7vb-step-group" data-cf7vb-step="' + step.id + '" data-cf7vb-step-index="' + stepIndex + '"' + titleAttr + '>' +
+					stepBody +
+					'</div>'
+				);
+			} else if ( stepBody ) {
+				lines.push( stepBody );
+			}
+		} );
+
+		if ( settings.security && settings.security.honeypot ) {
+			const hp = settings.security.honeypotField || 'cf7vb_hp';
+			lines.push(
+				'<span class="cf7vb-hp" aria-hidden="true" style="position:absolute;left:-9999px;"><label>Leave empty [text ' + hp + ']</label></span>'
+			);
+		}
+
+		if ( ! multistep && settings.gdpr && settings.gdpr.enabled ) {
+			const gn = settings.gdpr.fieldName || 'gdpr-consent';
+			const gl = settings.gdpr.label || 'I agree to the privacy policy.';
+			lines.push( '[acceptance ' + gn + ']\n' + gl );
+		}
+
+		return lines.filter( Boolean ).join( '\n\n' );
+	}
+
+	function createField( type ) {
+		const base = FIELD_DEFAULTS[ type ] || FIELD_DEFAULTS.text;
+		return {
+			id: uid( 'field' ),
+			type,
+			name: base.name + '-' + Math.floor( Math.random() * 9999 ),
+			label: base.label,
+			required: type !== 'submit' && type !== 'hidden',
+			placeholder: '',
+			help: '',
+			options: base.options ? clone( base.options ) : [],
+			validation: {},
+			attrs: {},
+		};
+	}
+
+	function findFieldPath( schema, fieldId ) {
+		for ( let si = 0; si < schema.steps.length; si++ ) {
+			const step = schema.steps[ si ];
+			for ( let sei = 0; sei < step.sections.length; sei++ ) {
+				const section = step.sections[ sei ];
+				const fi = section.fields.findIndex( ( f ) => f.id === fieldId );
+				if ( fi >= 0 ) {
+					return { stepIndex: si, sectionIndex: sei, fieldIndex: fi };
+				}
+			}
+		}
+		return null;
+	}
+
+	function MockControl( { field } ) {
+		const common = { disabled: true, readOnly: true };
+		if ( field.type === 'textarea' ) {
+			return el( 'textarea', { ...common, rows: 3, placeholder: field.placeholder || '' } );
+		}
+		if ( field.type === 'select' ) {
+			return el(
+				'select',
+				{ ...common },
+				( field.options || [] ).map( ( o, i ) =>
+					el( 'option', { key: i }, o.label || o.value || o )
+				)
+			);
+		}
+		if ( field.type === 'submit' ) {
+			return el( 'input', { type: 'submit', value: field.label || 'Send', ...common } );
+		}
+		const typeMap = { email: 'email', phone: 'tel', number: 'number', date: 'date', file: 'file', hidden: 'hidden' };
+		return el( 'input', {
+			type: typeMap[ field.type ] || 'text',
+			placeholder: field.placeholder || field.label,
+			...common,
+		} );
+	}
+
+	function BuilderApp() {
+		const [ schema, setSchema ] = useState( loadInitialSchema );
+		const [ activeStep, setActiveStep ] = useState( 0 );
+		const [ selectedId, setSelectedId ] = useState( null );
+		const [ device, setDevice ] = useState( schema.settings?.previewDevice || 'desktop' );
+		const [ workspace, setWorkspace ] = useState( 'build' );
+		const [ inlineEditId, setInlineEditId ] = useState( null );
+		const [ dragType, setDragType ] = useState( null );
+		const [ dragFieldId, setDragFieldId ] = useState( null );
+		const [ dropTarget, setDropTarget ] = useState( null );
+		const history = useRef( [] );
+		const future = useRef( [] );
+
+		const compiled = useMemo( () => compileSchema( schema ), [ schema ] );
+
+		const pushHistory = useCallback( ( next ) => {
+			history.current.push( clone( schema ) );
+			if ( history.current.length > 40 ) {
+				history.current.shift();
+			}
+			future.current = [];
+			setSchema( next );
+		}, [ schema ] );
+
+		const patchSchema = useCallback( ( next ) => {
+			setSchema( next );
+		}, [] );
+
+		function normalizeStepTitle( title ) {
+			return String( title || '' ).trim();
+		}
+
+		function applyStepTitlesFromDom( baseSchema ) {
+			const next = clone( baseSchema );
+			document.querySelectorAll( '.cf7vb-step-title-input' ).forEach( ( input, index ) => {
+				if ( ! next.steps[ index ] ) {
+					return;
+				}
+				next.steps[ index ].title = normalizeStepTitle( input.value );
+			} );
+			return next;
+		}
+
+		const undo = () => {
+			if ( ! history.current.length ) return;
+			future.current.push( clone( schema ) );
+			const prev = history.current.pop();
+			setSchema( prev );
+		};
+
+		const redo = () => {
+			if ( ! future.current.length ) return;
+			history.current.push( clone( schema ) );
+			setSchema( future.current.pop() );
+		};
+
+		const syncDom = useCallback( ( nextSchema, markup ) => {
+			const json = JSON.stringify( nextSchema );
+			const schemaInput = document.getElementById( 'cf7vb-schema-input' );
+			const cf7Form = document.getElementById( 'wpcf7-form' );
+			if ( schemaInput ) {
+				schemaInput.value = json;
+			}
+			if ( cf7Form ) {
+				cf7Form.value = markup;
+			}
+		}, [] );
+
+		useEffect( () => {
+			syncDom( schema, compiled );
+		}, [ schema, compiled, syncDom ] );
+
+		useEffect( () => {
+			const form = document.getElementById( 'wpcf7-admin-form-element' );
+			if ( ! form ) {
+				return;
+			}
+			const onSubmit = () => {
+				const merged = applyStepTitlesFromDom( schema );
+				syncDom( merged, compileSchema( merged ) );
+			};
+			form.addEventListener( 'submit', onSubmit, true );
+			return () => form.removeEventListener( 'submit', onSubmit, true );
+		}, [ schema, compiled, syncDom ] );
+
+		const currentStep = schema.steps[ activeStep ] || schema.steps[ 0 ];
+		const selectedField = useMemo( () => {
+			if ( ! selectedId ) return null;
+			const path = findFieldPath( schema, selectedId );
+			if ( ! path ) return null;
+			return schema.steps[ path.stepIndex ].sections[ path.sectionIndex ].fields[ path.fieldIndex ];
+		}, [ schema, selectedId ] );
+
+		const updateField = ( fieldId, patch ) => {
+			const next = clone( schema );
+			const path = findFieldPath( next, fieldId );
+			if ( ! path ) return;
+			const field = next.steps[ path.stepIndex ].sections[ path.sectionIndex ].fields[ path.fieldIndex ];
+			Object.assign( field, patch );
+			pushHistory( next );
+		};
+
+		const addFieldToSection = ( stepIndex, sectionIndex, type, atIndex ) => {
+			const next = clone( schema );
+			const field = createField( type );
+			const fields = next.steps[ stepIndex ].sections[ sectionIndex ].fields;
+			const index = typeof atIndex === 'number' ? atIndex : fields.length;
+			fields.splice( index, 0, field );
+			pushHistory( next );
+			setSelectedId( field.id );
+			setActiveStep( stepIndex );
+		};
+
+		const removeField = ( fieldId ) => {
+			const next = clone( schema );
+			const path = findFieldPath( next, fieldId );
+			if ( ! path ) return;
+			next.steps[ path.stepIndex ].sections[ path.sectionIndex ].fields.splice( path.fieldIndex, 1 );
+			pushHistory( next );
+			if ( selectedId === fieldId ) setSelectedId( null );
+		};
+
+		const duplicateField = ( fieldId ) => {
+			const path = findFieldPath( schema, fieldId );
+			if ( ! path ) return;
+			const next = clone( schema );
+			const orig = next.steps[ path.stepIndex ].sections[ path.sectionIndex ].fields[ path.fieldIndex ];
+			const copy = clone( orig );
+			copy.id = uid( 'field' );
+			copy.name = orig.name + '-copy';
+			next.steps[ path.stepIndex ].sections[ path.sectionIndex ].fields.splice( path.fieldIndex + 1, 0, copy );
+			pushHistory( next );
+			setSelectedId( copy.id );
+		};
+
+		const moveField = ( fieldId, toStep, toSection, toIndex ) => {
+			const next = clone( schema );
+			const from = findFieldPath( next, fieldId );
+			if ( ! from ) return;
+			const [ moved ] = next.steps[ from.stepIndex ].sections[ from.sectionIndex ].fields.splice( from.fieldIndex, 1 );
+			next.steps[ toStep ].sections[ toSection ].fields.splice( toIndex, 0, moved );
+			pushHistory( next );
+		};
+
+		const toggleMultistep = () => {
+			const next = clone( schema );
+			if ( ! next.settings ) next.settings = {};
+			if ( next.settings.multistep && next.steps.length > 1 ) {
+				const allFields = [];
+				next.steps.forEach( ( st ) => st.sections.forEach( ( sec ) => allFields.push( ...sec.fields ) ) );
+				next.steps = [ { id: 'step-1', title: 'Step 1', sections: [ { id: 'section-1', title: '', fields: allFields } ] } ];
+				next.settings.multistep = false;
+				setActiveStep( 0 );
+			} else {
+				next.settings.multistep = true;
+				if ( next.steps.length < 2 ) {
+					next.steps.push( { id: uid( 'step' ), title: 'Step 2', sections: [ { id: uid( 'section' ), title: '', fields: [] } ] } );
+				}
+			}
+			pushHistory( next );
+		};
+
+		const addStep = () => {
+			const next = clone( schema );
+			next.settings.multistep = true;
+			const n = next.steps.length + 1;
+			next.steps.push( {
+				id: uid( 'step' ),
+				title: ( S.defaultStepTitle || 'Step %d' ).replace( '%d', String( n ) ),
+				sections: [ { id: uid( 'section' ), title: '', fields: [] } ],
+			} );
+			pushHistory( next );
+			setActiveStep( next.steps.length - 1 );
+		};
+
+		const updateStepTitleLive = ( stepIndex, title ) => {
+			const newTitle = normalizeStepTitle( title );
+			if ( schema.steps[ stepIndex ].title === newTitle ) {
+				return;
+			}
+			const next = clone( schema );
+			next.steps[ stepIndex ].title = newTitle;
+			patchSchema( next );
+		};
+
+		const commitStepTitle = ( stepIndex, title ) => {
+			const newTitle = normalizeStepTitle( title );
+			if ( schema.steps[ stepIndex ].title === newTitle ) {
+				return;
+			}
+			const next = clone( schema );
+			next.steps[ stepIndex ].title = newTitle;
+			pushHistory( next );
+		};
+
+		const removeStep = ( stepIndex ) => {
+			if ( schema.steps.length <= 2 ) {
+				return;
+			}
+			const next = clone( schema );
+			next.steps.splice( stepIndex, 1 );
+			pushHistory( next );
+			const nextActive = Math.min( activeStep, next.steps.length - 1 );
+			setActiveStep( Math.max( 0, nextActive ) );
+		};
+
+		const stepsBarProps = {
+			schema,
+			activeStep,
+			setActiveStep,
+			onTitleChange: updateStepTitleLive,
+			onTitleCommit: commitStepTitle,
+			onRemoveStep: removeStep,
+			onAddStep: addStep,
+			S,
+		};
+
+		const addSection = () => {
+			const next = clone( schema );
+			currentStep.sections = currentStep.sections || [];
+			next.steps[ activeStep ].sections.push( { id: uid( 'section' ), title: '', fields: [] } );
+			pushHistory( next );
+		};
+
+		const addRule = () => {
+			const next = clone( schema );
+			if ( ! next.rules ) next.rules = [];
+			next.rules.push( {
+				id: uid( 'rule' ),
+				enabled: true,
+				operator: 'and',
+				conditions: [ { field: '', compare: 'equals', value: '' } ],
+				actions: [ { type: 'show', target: '' } ],
+			} );
+			pushHistory( next );
+		};
+
+		const onPaletteDragStart = ( type ) => ( e ) => {
+			setDragType( type );
+			e.dataTransfer.setData( 'text/cf7vb-type', type );
+			e.dataTransfer.effectAllowed = 'copy';
+		};
+
+		const onFieldDragStart = ( fieldId ) => ( e ) => {
+			setDragFieldId( fieldId );
+			e.dataTransfer.setData( 'text/cf7vb-field', fieldId );
+			e.dataTransfer.effectAllowed = 'move';
+		};
+
+		const onDropSection = ( stepIndex, sectionIndex ) => ( e ) => {
+			e.preventDefault();
+			setDropTarget( null );
+			const type = e.dataTransfer.getData( 'text/cf7vb-type' ) || dragType;
+			const fieldId = e.dataTransfer.getData( 'text/cf7vb-field' ) || dragFieldId;
+			if ( type ) {
+				addFieldToSection( stepIndex, sectionIndex, type );
+			} else if ( fieldId ) {
+				const path = findFieldPath( schema, fieldId );
+				if ( path ) {
+					const len = schema.steps[ stepIndex ].sections[ sectionIndex ].fields.length;
+					if ( path.stepIndex !== stepIndex || path.sectionIndex !== sectionIndex ) {
+						moveField( fieldId, stepIndex, sectionIndex, len );
+					}
+				}
+			}
+			setDragType( null );
+			setDragFieldId( null );
+		};
+
+		const logicProps = { schema, setSchema, pushHistory, clone, S };
+		const settingsProps = logicProps;
+		const previewProps = {
+			schema,
+			device,
+			activeStepIndex: activeStep,
+			activeStepOnly: !! schema.settings?.multistep && schema.steps.length > 1,
+			compiled,
+			showCode: workspace === 'preview',
+		};
+
+		return el(
+			'div',
+			{ className: 'cf7vb-app' },
+			el(
+				'nav',
+				{ className: 'cf7vb-main-tabs', role: 'tablist', 'aria-label': 'Form builder sections' },
+				WORKSPACE_TABS.map( ( tab ) =>
+					el(
+						'button',
+						{
+							key: tab.id,
+							type: 'button',
+							role: 'tab',
+							'aria-selected': workspace === tab.id ? 'true' : 'false',
+							className: 'cf7vb-main-tab' + ( workspace === tab.id ? ' is-active' : '' ),
+							onClick: () => setWorkspace( tab.id ),
+						},
+						el( 'span', { className: 'cf7vb-main-tab-icon dashicons ' + tab.icon } ),
+						el(
+							'span',
+							{ className: 'cf7vb-main-tab-text' },
+							el( 'strong', null, tab.label ),
+							el( 'small', null, tab.desc )
+						)
+					)
+				)
+			),
+			workspace === 'build'
+				? el(
+					'div',
+					{ className: 'cf7vb-subtoolbar' },
+					el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: undo, disabled: ! history.current.length, title: S.undo }, '↶ ' + ( S.undo || 'Undo' ) ),
+					el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: redo, disabled: ! future.current.length, title: S.redo }, '↷ ' + ( S.redo || 'Redo' ) ),
+					el( 'span', { className: 'cf7vb-subtoolbar-sep' } ),
+					el( 'button', {
+						type: 'button',
+						className: 'cf7vb-btn' + ( schema.settings?.multistep && schema.steps.length > 1 ? ' cf7vb-btn--active' : '' ),
+						onClick: toggleMultistep,
+					}, S.multistep || 'Multistep' ),
+					el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: addStep }, S.addStep || 'Add step' ),
+					el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: addSection }, S.addSection || 'Add section' ),
+					el( 'span', { className: 'cf7vb-subtoolbar-sep' } ),
+					el( 'button', { type: 'button', className: 'cf7vb-btn cf7vb-btn--primary', onClick: () => setWorkspace( 'preview' ) }, '👁 ' + ( S.preview || 'Preview' ) )
+				)
+				: null,
+			workspace === 'preview'
+				? el(
+					'div',
+					{ className: 'cf7vb-preview-workspace' },
+					el(
+						'div',
+						{ className: 'cf7vb-preview-workspace-head' },
+						el( 'p', null, S.previewHint || 'This is how your form will look on the website.' ),
+						el( DeviceToggle, { device, setDevice } )
+					),
+					el( StepsBar, Object.assign( {}, stepsBarProps, { compact: true } ) ),
+					renderVisualPreview( Object.assign( {}, previewProps, { fullWidth: true, showCode: true } ) )
+				)
+				: null,
+			workspace === 'logic' && window.CF7VB_LOGIC
+				? el( 'div', { className: 'cf7vb-workspace-panel' }, el( window.CF7VB_LOGIC, logicProps ) )
+				: null,
+			workspace === 'settings' && window.CF7VB_SETTINGS
+				? el( 'div', { className: 'cf7vb-workspace-panel' }, el( window.CF7VB_SETTINGS, settingsProps ) )
+				: null,
+			workspace === 'build'
+				? el(
+				'div',
+				{ className: 'cf7vb-layout' },
+				el(
+					'aside',
+					{ className: 'cf7vb-palette' },
+					el( 'div', { className: 'cf7vb-col-head' }, S.palette || 'Fields' ),
+					el(
+						'div',
+						{ className: 'cf7vb-palette-list' },
+						( cfg.fieldTypes || [] ).map( ( item ) =>
+							el(
+								'div',
+								{
+									key: item.type,
+									className: 'cf7vb-palette-item',
+									draggable: true,
+									onDragStart: onPaletteDragStart( item.type ),
+									onClick: () => addFieldToSection( activeStep, 0, item.type ),
+								},
+								el( 'span', { className: 'dashicons ' + item.icon } ),
+								item.label
+							)
+						)
+					)
+				),
+				el(
+					'main',
+					{ className: 'cf7vb-canvas-wrap' },
+					el(
+						'div',
+						{ className: 'cf7vb-canvas-toolbar' },
+						el( 'strong', null, S.canvas || 'Canvas' ),
+						el( DeviceToggle, { device, setDevice } )
+					),
+					el( StepsBar, stepsBarProps ),
+					el(
+						'div',
+						{ className: 'cf7vb-canvas-stage' },
+						el(
+							'div',
+							{ className: 'cf7vb-canvas-device cf7vb-canvas-device--' + device },
+							el(
+								'div',
+								{ className: 'cf7vb-canvas-card' },
+								( currentStep.sections || [] ).map( ( section, sectionIndex ) =>
+									el(
+										'div',
+										{ key: section.id, className: 'cf7vb-section' },
+										section.title ? el( 'h3', { className: 'cf7vb-section-title' }, section.title ) : null,
+										el(
+											'div',
+											{
+												className: 'cf7vb-dropzone' + ( dropTarget === section.id ? ' is-drag-over' : '' ),
+												onDragOver: ( e ) => {
+													e.preventDefault();
+													setDropTarget( section.id );
+												},
+												onDragLeave: () => setDropTarget( null ),
+												onDrop: onDropSection( activeStep, sectionIndex ),
+											},
+											! section.fields.length
+												? el( 'div', { className: 'cf7vb-dropzone-empty' }, S.dropHint || 'Drop fields here' )
+												: null,
+											section.fields.map( ( field ) =>
+												el(
+													'div',
+													{
+														key: field.id,
+														className:
+															'cf7vb-field-card' +
+															( selectedId === field.id ? ' is-selected' : '' ) +
+															( dragFieldId === field.id ? ' is-dragging' : '' ),
+														draggable: true,
+														onDragStart: onFieldDragStart( field.id ),
+														onClick: () => setSelectedId( field.id ),
+													},
+													el( 'span', { className: 'cf7vb-field-grip dashicons dashicons-move' } ),
+													el(
+														'div',
+														{ className: 'cf7vb-field-body' },
+														inlineEditId === field.id
+															? el( 'input', {
+																type: 'text',
+																className: 'cf7vb-inline-edit',
+																autoFocus: true,
+																value: field.label || '',
+																onBlur: ( e ) => {
+																	updateField( field.id, { label: e.target.value } );
+																	setInlineEditId( null );
+																},
+																onKeyDown: ( e ) => {
+																	if ( e.key === 'Enter' ) {
+																		updateField( field.id, { label: e.target.value } );
+																		setInlineEditId( null );
+																	}
+																},
+															} )
+															: el(
+																'div',
+																{
+																	className: 'cf7vb-field-label',
+																	onDoubleClick: () => setInlineEditId( field.id ),
+																	title: 'Double-click to edit label',
+																},
+																field.label || field.name,
+																field.required ? el( 'span', { className: 'cf7vb-req' }, ' *' ) : null
+															),
+														el(
+															'div',
+															{ className: 'cf7vb-field-mock' },
+															el( MockControl, { field } )
+														)
+													)
+												)
+											)
+										)
+									)
+								)
+							)
+						)
+					),
+				),
+				el(
+					'aside',
+					{ className: 'cf7vb-inspector' },
+					el( 'div', { className: 'cf7vb-col-head' }, S.inspector || 'Inspector' ),
+					! selectedField
+						? el( 'p', { className: 'cf7vb-inspector-empty' }, S.clickFieldHint || S.noField || 'Select a field' )
+						: el(
+							'div',
+							{ className: 'cf7vb-inspector-form' },
+							el(
+								'div',
+								{ className: 'cf7vb-field-group' },
+								el( 'label', null, S.label || 'Label' ),
+								el( 'input', {
+									type: 'text',
+									value: selectedField.label || '',
+									onChange: ( e ) => updateField( selectedField.id, { label: e.target.value } ),
+								} )
+							),
+							el(
+								'div',
+								{ className: 'cf7vb-field-group' },
+								el( 'label', null, S.name || 'Name' ),
+								el( 'input', {
+									type: 'text',
+									value: selectedField.name || '',
+									onChange: ( e ) => updateField( selectedField.id, { name: e.target.value.replace( /[^a-z0-9\-_]/gi, '' ) } ),
+								} )
+							),
+							el(
+								'div',
+								{ className: 'cf7vb-field-group' },
+								el( 'label', null, S.placeholder || 'Placeholder' ),
+								el( 'input', {
+									type: 'text',
+									value: selectedField.placeholder || '',
+									onChange: ( e ) => updateField( selectedField.id, { placeholder: e.target.value } ),
+								} )
+							),
+							el(
+								'div',
+								{ className: 'cf7vb-field-group' },
+								el( 'label', null, S.help || 'Help' ),
+								el( 'textarea', {
+									rows: 2,
+									value: selectedField.help || '',
+									onChange: ( e ) => updateField( selectedField.id, { help: e.target.value } ),
+								} )
+							),
+							el(
+								'div',
+								{ className: 'cf7vb-check-row' },
+								el( 'input', {
+									type: 'checkbox',
+									id: 'cf7vb-req',
+									checked: !! selectedField.required,
+									onChange: ( e ) => updateField( selectedField.id, { required: e.target.checked } ),
+								} ),
+								el( 'label', { htmlFor: 'cf7vb-req' }, S.required || 'Required' )
+							),
+							el(
+								'div',
+								{ className: 'cf7vb-field-group' },
+								el( 'label', null, 'Min length' ),
+								el( 'input', {
+									type: 'number',
+									value: selectedField.validation?.minLength || '',
+									onChange: ( e ) => {
+										const validation = clone( selectedField.validation || {} );
+										validation.minLength = parseInt( e.target.value, 10 ) || undefined;
+										updateField( selectedField.id, { validation } );
+									},
+								} )
+							),
+							el(
+								'div',
+								{ className: 'cf7vb-field-group' },
+								el( 'label', null, 'Max length' ),
+								el( 'input', {
+									type: 'number',
+									value: selectedField.validation?.maxLength || '',
+									onChange: ( e ) => {
+										const validation = clone( selectedField.validation || {} );
+										validation.maxLength = parseInt( e.target.value, 10 ) || undefined;
+										updateField( selectedField.id, { validation } );
+									},
+								} )
+							),
+							el(
+								'div',
+								{ className: 'cf7vb-field-group' },
+								el( 'label', null, 'Regex pattern' ),
+								el( 'input', {
+									type: 'text',
+									value: selectedField.validation?.pattern || '',
+									onChange: ( e ) => {
+										const validation = clone( selectedField.validation || {} );
+										validation.pattern = e.target.value;
+										updateField( selectedField.id, { validation } );
+									},
+								} )
+							),
+							[ 'select', 'checkbox', 'radio' ].includes( selectedField.type )
+								? el(
+									'div',
+									{ className: 'cf7vb-field-group' },
+									el( 'label', null, S.options || 'Options' ),
+									el(
+										'div',
+										{ className: 'cf7vb-options-list' },
+										( selectedField.options || [] ).map( ( opt, oi ) =>
+											el(
+												'div',
+												{ key: oi, className: 'cf7vb-option-row' },
+												el( 'input', {
+													type: 'text',
+													value: opt.label || opt.value || '',
+													onChange: ( e ) => {
+														const options = clone( selectedField.options || [] );
+														options[ oi ] = { label: e.target.value, value: e.target.value };
+														updateField( selectedField.id, { options } );
+													},
+												} ),
+												el( 'button', {
+													type: 'button',
+													className: 'cf7vb-btn cf7vb-btn--ghost',
+													onClick: () => {
+														const options = clone( selectedField.options || [] );
+														options.splice( oi, 1 );
+														updateField( selectedField.id, { options } );
+													},
+												}, '×' )
+											)
+										),
+										el( 'button', {
+											type: 'button',
+											className: 'cf7vb-btn',
+											onClick: () => {
+												const options = clone( selectedField.options || [] );
+												options.push( { label: 'New option', value: 'New option' } );
+												updateField( selectedField.id, { options } );
+											},
+										}, S.addOption || 'Add option' )
+									)
+								)
+								: null,
+							el(
+								'div',
+								{ className: 'cf7vb-toolbar-group', style: { marginTop: 8 } },
+								el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: () => duplicateField( selectedField.id ) }, S.duplicate || 'Duplicate' ),
+								el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: () => removeField( selectedField.id ) }, S.delete || 'Delete' )
+							)
+						)
+				)
+			)
+				: null
+		);
+	}
+
+	function mount() {
+		const root = document.getElementById( 'cf7vb-builder-root' );
+		if ( ! root || ! wp.element ) return;
+
+		if ( wp.element.createRoot ) {
+			wp.element.createRoot( root ).render( el( BuilderApp ) );
+		} else {
+			wp.element.render( el( BuilderApp ), root );
+		}
+	}
+
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', mount );
+	} else {
+		mount();
+	}
+} )();
