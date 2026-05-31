@@ -42,9 +42,16 @@ final class CF7VB_Admin {
 	 */
 	public static function render_visual_panel( $post ) {
 		$form_id = $post->id();
-		$schema  = $post->initial()
-			? CF7VB_Parser::default_schema()
-			: CF7VB_Plugin::get_schema( $form_id );
+		if ( $post->initial() ) {
+			$schema = CF7VB_Parser::from_cf7_markup( $post->prop( 'form' ) );
+			if ( empty( $schema['steps'][0]['sections'][0]['fields'] ) ) {
+				$schema = CF7VB_Parser::default_schema();
+			} else {
+				$schema = CF7VB_Parser::normalize_schema( $schema );
+			}
+		} else {
+			$schema = CF7VB_Plugin::get_schema( $form_id );
+		}
 		?>
 		<h2 class="cf7vb-panel-title"><?php esc_html_e( 'Visual Form Builder', 'form-studio-for-contact-form-7' ); ?></h2>
 		<p class="description cf7vb-panel-desc">
@@ -70,7 +77,12 @@ final class CF7VB_Admin {
 		if ( ! $post->initial() ) {
 			return;
 		}
-		$schema = CF7VB_Parser::default_schema();
+		$schema = CF7VB_Parser::from_cf7_markup( $post->prop( 'form' ) );
+		if ( empty( $schema['steps'][0]['sections'][0]['fields'] ) ) {
+			$schema = CF7VB_Parser::default_schema();
+		} else {
+			$schema = CF7VB_Parser::normalize_schema( $schema );
+		}
 		printf(
 			'<script type="application/json" id="cf7vb-default-schema">%s</script>',
 			wp_json_encode( $schema )

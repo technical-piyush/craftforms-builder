@@ -295,6 +295,14 @@
 		return null;
 	}
 
+	function resolveInsertIndex( path, toStep, toSection, atIndex ) {
+		let insertIndex = atIndex;
+		if ( path.stepIndex === toStep && path.sectionIndex === toSection && path.fieldIndex < insertIndex ) {
+			insertIndex--;
+		}
+		return insertIndex;
+	}
+
 	function MockControl( { field } ) {
 		const common = { disabled: true, readOnly: true };
 		if ( field.type === 'textarea' ) {
@@ -569,24 +577,41 @@
 			e.dataTransfer.effectAllowed = 'move';
 		};
 
-		const onDropSection = ( stepIndex, sectionIndex ) => ( e ) => {
-			e.preventDefault();
+		const clearDragState = () => {
+			setDragType( null );
+			setDragFieldId( null );
 			setDropTarget( null );
+		};
+
+		const onDropAtIndex = ( stepIndex, sectionIndex, atIndex ) => ( e ) => {
+			e.preventDefault();
+			e.stopPropagation();
 			const type = e.dataTransfer.getData( 'text/cf7vb-type' ) || dragType;
 			const fieldId = e.dataTransfer.getData( 'text/cf7vb-field' ) || dragFieldId;
+
 			if ( type ) {
-				addFieldToSection( stepIndex, sectionIndex, type );
+				addFieldToSection( stepIndex, sectionIndex, type, atIndex );
 			} else if ( fieldId ) {
 				const path = findFieldPath( schema, fieldId );
 				if ( path ) {
-					const len = schema.steps[ stepIndex ].sections[ sectionIndex ].fields.length;
-					if ( path.stepIndex !== stepIndex || path.sectionIndex !== sectionIndex ) {
-						moveField( fieldId, stepIndex, sectionIndex, len );
+					const insertIndex = resolveInsertIndex( path, stepIndex, sectionIndex, atIndex );
+					const unchanged =
+						path.stepIndex === stepIndex &&
+						path.sectionIndex === sectionIndex &&
+						path.fieldIndex === insertIndex;
+					if ( ! unchanged ) {
+						moveField( fieldId, stepIndex, sectionIndex, insertIndex );
 					}
 				}
 			}
-			setDragType( null );
-			setDragFieldId( null );
+			clearDragState();
+		};
+
+		const onDragOverSlot = ( slotKey ) => ( e ) => {
+			e.preventDefault();
+			e.stopPropagation();
+			e.dataTransfer.dropEffect = dragFieldId ? 'move' : 'copy';
+			setDropTarget( slotKey );
 		};
 
 		const logicProps = { schema, setSchema, pushHistory, clone, S };
@@ -684,6 +709,7 @@
 									className: 'cf7vb-palette-item',
 									draggable: true,
 									onDragStart: onPaletteDragStart( item.type ),
+									onDragEnd: clearDragState,
 									onClick: () => addFieldToSection( activeStep, 0, item.type ),
 								},
 								el( 'span', { className: 'dashicons ' + item.icon } ),
@@ -718,29 +744,43 @@
 										section.title ? el( 'h3', { className: 'cf7vb-section-title' }, section.title ) : null,
 										el(
 											'div',
-											{
-												className: 'cf7vb-dropzone' + ( dropTarget === section.id ? ' is-drag-over' : '' ),
-												onDragOver: ( e ) => {
-													e.preventDefault();
-													setDropTarget( section.id );
-												},
-												onDragLeave: () => setDropTarget( null ),
-												onDrop: onDropSection( activeStep, sectionIndex ),
-											},
+											{ className: 'cf7vb-fields-list' },
 											! section.fields.length
-												? el( 'div', { className: 'cf7vb-dropzone-empty' }, S.dropHint || 'Drop fields here' )
-												: null,
-											section.fields.map( ( field ) =>
-												el(
+												? el(
 													'div',
 													{
-														key: field.id,
+														className:
+															'cf7vb-drop-slot cf7vb-drop-slot--empty' +
+															( dropTarget === section.id + ':0' ? ' is-drag-over' : '' ),
+														onDragOver: onDragOverSlot( section.id + ':0' ),
+														onDragLeave: () => setDropTarget( null ),
+														onDrop: onDropAtIndex( activeStep, sectionIndex, 0 ),
+													},
+													el( 'span', { className: 'cf7vb-drop-slot-label' }, S.dropHint || 'Drop fields here' )
+												)
+												: null,
+											section.fields.map( ( field, fieldIndex ) =>
+												el(
+													Fragment,
+													{ key: field.id },
+													el( 'div', {
+														className:
+															'cf7vb-drop-slot' +
+															( dropTarget === section.id + ':' + fieldIndex ? ' is-drag-over' : '' ),
+														onDragOver: onDragOverSlot( section.id + ':' + fieldIndex ),
+														onDragLeave: () => setDropTarget( null ),
+														onDrop: onDropAtIndex( activeStep, sectionIndex, fieldIndex ),
+													} ),
+													el(
+													'div',
+													{
 														className:
 															'cf7vb-field-card' +
 															( selectedId === field.id ? ' is-selected' : '' ) +
 															( dragFieldId === field.id ? ' is-dragging' : '' ),
 														draggable: true,
 														onDragStart: onFieldDragStart( field.id ),
+														onDragEnd: clearDragState,
 														onClick: () => setSelectedId( field.id ),
 													},
 													el( 'span', { className: 'cf7vb-field-grip dashicons dashicons-move' } ),
@@ -781,7 +821,18 @@
 														)
 													)
 												)
-											)
+												)
+											),
+											section.fields.length
+												? el( 'div', {
+													className:
+														'cf7vb-drop-slot cf7vb-drop-slot--end' +
+														( dropTarget === section.id + ':end' ? ' is-drag-over' : '' ),
+													onDragOver: onDragOverSlot( section.id + ':end' ),
+													onDragLeave: () => setDropTarget( null ),
+													onDrop: onDropAtIndex( activeStep, sectionIndex, section.fields.length ),
+												} )
+												: null
 										)
 									)
 								)

@@ -294,6 +294,47 @@
 	padding: 18px 8px;
 }
 
+.cf7vb-fields-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.cf7vb-drop-slot {
+	min-height: 6px;
+	margin: 0;
+	border-radius: 6px;
+	transition: min-height 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.cf7vb-drop-slot.is-drag-over {
+	min-height: 32px;
+	margin: 4px 0;
+	background: #f0f3ff;
+	border: 2px dashed var(--cf7vb-primary);
+}
+
+.cf7vb-drop-slot--empty {
+	min-height: 72px;
+	border: 2px dashed #c3c4c7;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.cf7vb-drop-slot--empty.is-drag-over {
+	border-color: var(--cf7vb-primary);
+}
+
+.cf7vb-drop-slot-label {
+	color: var(--cf7vb-muted);
+	font-size: 13px;
+}
+
+.cf7vb-drop-slot--end {
+	min-height: 10px;
+}
+
 .cf7vb-field-card {
 	display: flex;
 	align-items: flex-start;
