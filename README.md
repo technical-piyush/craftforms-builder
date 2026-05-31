@@ -1,8 +1,8 @@
 # Form Studio for Contact Form 7
 
-**Contributors:** piyushasthana
+**Contributors:** piyushmultidots
 **Tags:** contact form 7, form builder, drag and drop, multistep forms, conditional logic
-**Requires at least:** 6.1
+**Requires at least:** 6.2
 **Tested up to:** 7.0
 **Requires PHP:** 7.4
 **Stable tag:** 1.0.0
@@ -13,7 +13,7 @@ Professional drag-and-drop form builder addon for **Contact Form 7** (`wpcf7_con
 
 ## Requirements
 
-- WordPress 6.1+, PHP 7.4+, Contact Form 7 active
+- WordPress 6.2+, PHP 7.4+, Contact Form 7 active
 
 ## Installation
 

@@ -56,8 +56,31 @@ final class CF7VB_Security {
 				return $result;
 			}
 			set_transient( $key, $count + 1, $window );
+			self::remember_rate_limit_key( $key );
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Track rate-limit transient keys so uninstall can remove them without a direct DB query.
+	 *
+	 * @param string $cf7vb_key Transient name.
+	 */
+	private static function remember_rate_limit_key( $cf7vb_key ) {
+		$cf7vb_key = sanitize_key( $cf7vb_key );
+		if ( '' === $cf7vb_key ) {
+			return;
+		}
+
+		$cf7vb_keys = get_option( 'cf7vb_rate_limit_keys', array() );
+		if ( ! is_array( $cf7vb_keys ) ) {
+			$cf7vb_keys = array();
+		}
+
+		if ( ! in_array( $cf7vb_key, $cf7vb_keys, true ) ) {
+			$cf7vb_keys[] = $cf7vb_key;
+			update_option( 'cf7vb_rate_limit_keys', $cf7vb_keys, false );
+		}
 	}
 }

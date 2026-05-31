@@ -124,7 +124,15 @@ if ( ! function_exists( 'cf7vb_csv_from_rows' ) ) {
 		foreach ( $rows as $fields ) {
 			$escaped = array();
 			foreach ( (array) $fields as $field ) {
-				$escaped[] = '"' . str_replace( '"', '""', (string) $field ) . '"';
+				$value = (string) $field;
+
+				// Neutralise spreadsheet formula injection: a leading =, +, -, @, tab or
+				// carriage return can be interpreted as a formula by Excel/Sheets.
+				if ( '' !== $value && in_array( $value[0], array( '=', '+', '-', '@', "\t", "\r" ), true ) ) {
+					$value = "'" . $value;
+				}
+
+				$escaped[] = '"' . str_replace( '"', '""', $value ) . '"';
 			}
 			$lines[] = implode( ',', $escaped );
 		}

@@ -4,7 +4,7 @@
  * Description:       Professional drag-and-drop visual form builder for Contact Form 7 — multistep, conditional logic, entries, analytics, GDPR, and more.
  * Version:           1.0.0
  * Author:            Piyush Asthana
- * Requires at least: 6.1
+ * Requires at least: 6.2
  * Requires PHP:      7.4
  * Requires Plugins:  contact-form-7
  * Text Domain:       form-studio-for-contact-form-7

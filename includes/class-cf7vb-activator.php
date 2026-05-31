@@ -89,4 +89,35 @@ final class CF7VB_Activator {
 		dbDelta( $sql2 );
 		dbDelta( $sql3 );
 	}
+
+	/**
+	 * Remove plugin options, meta, and transients on uninstall.
+	 *
+	 * Custom table rows are truncated in uninstall.php; empty tables may remain until removed manually.
+	 */
+	public static function uninstall() {
+		delete_option( 'cf7vb_db_version' );
+		delete_post_meta_by_key( '_cf7vb_schema' );
+		self::delete_rate_limit_transients();
+	}
+
+	/**
+	 * Delete rate-limit transients using the key registry (no direct DB query).
+	 */
+	private static function delete_rate_limit_transients() {
+		$cf7vb_keys = get_option( 'cf7vb_rate_limit_keys', array() );
+
+		if ( ! is_array( $cf7vb_keys ) ) {
+			delete_option( 'cf7vb_rate_limit_keys' );
+			return;
+		}
+
+		foreach ( $cf7vb_keys as $cf7vb_key ) {
+			if ( is_string( $cf7vb_key ) && '' !== $cf7vb_key ) {
+				delete_transient( $cf7vb_key );
+			}
+		}
+
+		delete_option( 'cf7vb_rate_limit_keys' );
+	}
 }

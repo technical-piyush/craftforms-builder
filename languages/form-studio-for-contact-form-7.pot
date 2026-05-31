@@ -9,3 +9,867 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: form-studio-for-contact-form-7\n"
+
+#. translators: %s: field label.
+#: includes/class-cf7vb-validation.php:117
+msgid "%s is invalid."
+msgstr ""
+
+#. translators: %s: field label.
+#: includes/class-cf7vb-validation.php:111
+msgid "%s is required."
+msgstr ""
+
+#. translators: %s: field label.
+#: includes/class-cf7vb-validation.php:114
+msgid "%s must be a valid email."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:247
+msgid "ALL conditions"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:248
+msgid "ANY condition"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:245
+msgid "Abandoned"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:263
+msgid "Accessibility"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:249
+msgid "Active"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:190
+msgid "Add & arrange fields"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:243
+msgid "Add action"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:242
+msgid "Add condition"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:241
+msgid "Add fields on the Build tab before creating rules."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:244
+msgid "Add nested group"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:183
+msgid "Add option"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:188
+msgid "Add rule"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:187
+msgid "Add rules to show, hide, or require fields based on user input."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:171
+msgid "Add section"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:172
+msgid "Add step"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:522
+#: includes/class-cf7vb-analytics.php:228
+msgid "All forms"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:528
+msgid "All statuses"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:490
+#: includes/class-cf7vb-analytics.php:38
+msgid "Analytics"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:259
+msgid "Animated step transitions"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:210
+msgid "Appearance & layout"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:209
+msgid "Appearance, multistep behavior, thank-you page, privacy, security, and email."
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:233
+msgid "Apply"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:533
+msgid "Apply filters"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:257
+msgid "Autosave progress"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:215
+msgid "Bold border"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:189
+msgid "Build"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:308
+msgid "Checkbox"
+msgstr ""
+
+#: includes/class-cf7vb-frontend.php:69
+msgid "Clear signature"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:198
+msgid "Click a field on the canvas to edit it here."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:623
+msgid "Close"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:228
+msgid "Comfortable"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:229
+msgid "Compact"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:174
+#: includes/class-cf7vb-admin.php:239
+msgid "Conditional logic"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:211
+msgid "Control how the form looks on your website."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:260
+msgid "Conversational mode"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:244
+msgid "Conversion"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:260
+msgid "Conversion funnel"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:222
+msgid "Corner radius"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:402
+msgid "Could not load entry."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:406
+msgid "Could not update status."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:240
+msgid "Create rules to show, hide, or require fields based on answers."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:323
+#: includes/class-cf7vb-submissions.php:381
+msgid "Date"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:170
+msgid "Delete"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:250
+msgid "Delete rule"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:184
+msgid "Desktop"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:555
+msgid "Device"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:325
+msgid "Devices"
+msgstr ""
+
+#: includes/class-cf7vb-rest-api.php:261
+msgid "Draft not found."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:176
+msgid "Drag a field here or click to add"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:169
+msgid "Duplicate"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:288
+msgid "Email"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:265
+msgid "Email appearance"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:358
+msgid "Entries"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:551
+msgid "Entry"
+msgstr ""
+
+#. translators: %d: entry ID.
+#: includes/class-cf7vb-admin.php:400
+msgid "Entry #%d"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:620
+msgid "Entry details"
+msgstr ""
+
+#: includes/class-cf7vb-rest-api.php:198
+msgid "Entry not found."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:488
+msgid "Export CSV"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:489
+msgid "Export PDF"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:246
+msgid "Field focus"
+msgstr ""
+
+#. translators: %s: field name.
+#: includes/class-cf7vb-admin.php:410
+msgid "Field focus: %s"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:179
+msgid "Field name"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:165
+msgid "Field settings"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:227
+msgid "Field spacing"
+msgstr ""
+
+#. translators: %s: field name
+#: includes/class-cf7vb-analytics.php:303
+msgid "Field: %s"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:163
+msgid "Fields"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:318
+msgid "File upload"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:515
+msgid "Filter entries"
+msgstr ""
+
+#: includes/class-cf7vb-export.php:21
+#: includes/class-cf7vb-export.php:67
+#: includes/class-cf7vb-rest-api.php:130
+msgid "Forbidden."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:552
+msgid "Form"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:37
+#: includes/class-cf7vb-analytics.php:215
+msgid "Form Analytics"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:357
+#: includes/class-cf7vb-admin.php:484
+msgid "Form Entries"
+msgstr ""
+
+#: includes/class-cf7vb-export.php:85
+msgid "Form Entries Export"
+msgstr ""
+
+#: form-studio-for-contact-form-7.php:57
+msgid "Form Studio for Contact Form 7 requires Contact Form 7 to be installed and active."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:414
+msgid "Form abandoned"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:164
+msgid "Form canvas"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:208
+msgid "Form settings"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:412
+msgid "Form started"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:199
+msgid "Form steps"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:212
+msgid "Form style"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:413
+msgid "Form submitted"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:411
+msgid "Form viewed"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:217
+msgid "Form width"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:221
+msgid "Full width"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:181
+msgid "Help text"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:328
+msgid "Hidden"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:256
+msgid "How visitors move through and interact with your form."
+msgstr ""
+
+#: includes/class-cf7vb-compiler.php:43
+#: includes/class-cf7vb-compiler.php:74
+#: includes/class-cf7vb-parser.php:171
+msgid "I agree to the privacy policy."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:245
+msgid "IF"
+msgstr ""
+
+#: includes/class-cf7vb-rest-api.php:238
+msgid "Invalid draft."
+msgstr ""
+
+#: includes/class-cf7vb-rest-api.php:224
+msgid "Invalid event."
+msgstr ""
+
+#: includes/class-cf7vb-rest-api.php:149
+msgid "Invalid schema."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:178
+msgid "Label"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:237
+msgid "Large step title above fields"
+msgstr ""
+
+#: includes/class-cf7vb-compiler.php:67
+msgid "Leave empty"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:166
+msgid "Live preview"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:401
+msgid "Loading entry…"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:219
+msgid "Medium (640px)"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:214
+msgid "Minimal"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:233
+msgid "Minimal text"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:186
+msgid "Mobile"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:213
+msgid "Modern card"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:255
+msgid "Multistep & experience"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:173
+msgid "Multistep form"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:200
+msgid "Name each step — titles appear on the live form progress bar."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:218
+msgid "Narrow (480px)"
+msgstr ""
+
+#: includes/class-cf7vb-frontend.php:62
+msgid "Next"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:328
+msgid "No device data yet."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:545
+msgid "No entries match your filters."
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:281
+msgid "No events recorded yet."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:403
+msgid "No field data recorded."
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:348
+msgid "No field interaction data yet."
+msgstr ""
+
+#: includes/class-cf7vb-submissions.php:378
+msgid "No submissions found."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:298
+msgid "Number"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:236
+msgid "Numbered circles with step titles."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:238
+msgid "Off by default to avoid repeating the step name."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:182
+msgid "Options"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:293
+msgid "Phone"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:180
+msgid "Placeholder"
+msgstr ""
+
+#: includes/class-cf7vb-frontend.php:70
+msgid "Please fill in the required fields before continuing."
+msgstr ""
+
+#: includes/class-cf7vb-submissions.php:356
+msgid "Please log in to view your submissions."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:191
+#: includes/class-cf7vb-admin.php:553
+msgid "Preview"
+msgstr ""
+
+#: includes/class-cf7vb-frontend.php:63
+msgid "Previous"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:216
+msgid "Primary color"
+msgstr ""
+
+#: includes/class-cf7vb-export.php:86
+msgid "Print / Save as PDF"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:262
+msgid "Privacy (GDPR)"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:232
+msgid "Progress bar only"
+msgstr ""
+
+#: includes/class-cf7vb-frontend.php:68
+msgid "Progress saved."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:313
+msgid "Radio"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:333
+msgid "Rating"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:276
+msgid "Recent activity"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:168
+msgid "Redo"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:404
+msgid "Referrer"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:206
+msgid "Remove step"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:343
+msgid "Repeater"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:177
+msgid "Required"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:485
+msgid "Review submissions, update status, and export data."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:225
+msgid "Rounded"
+msgstr ""
+
+#. translators: %d: rule number.
+#: includes/class-cf7vb-admin.php:252
+msgid "Rule %d"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:193
+msgid "Rules"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:258
+#: includes/class-cf7vb-frontend.php:67
+msgid "Save & continue later"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:520
+msgid "Search field values…"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:264
+msgid "Security & spam"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:192
+msgid "See how visitors will see it"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:303
+msgid "Select"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:175
+msgid "Select a field to edit its settings."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:253
+msgid "Select field"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:207
+#: includes/class-cf7vb-admin.php:254
+msgid "Select step"
+msgstr ""
+
+#: includes/class-cf7vb-compiler.php:205
+#: includes/class-cf7vb-parser.php:36
+msgid "Send"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:195
+msgid "Settings"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:235
+msgid "Show step circles"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:234
+msgid "Show step counter"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:194
+msgid "Show, hide & conditions"
+msgstr ""
+
+#. translators: %d: total entries
+#: includes/class-cf7vb-admin.php:606
+msgid "Showing page %1$d — %2$d total entries"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:338
+msgid "Signature"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:226
+msgid "Soft"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:508
+msgid "Spam"
+msgstr ""
+
+#: includes/class-cf7vb-security.php:44
+msgid "Spam detected."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:223
+msgid "Square"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:504
+msgid "Starred"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:203
+#: includes/class-cf7vb-analytics.php:242
+msgid "Started"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:554
+#: includes/class-cf7vb-admin.php:630
+#: includes/class-cf7vb-submissions.php:381
+msgid "Status"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:405
+msgid "Status updated."
+msgstr ""
+
+#: includes/class-cf7vb-frontend.php:65
+msgid "Step"
+msgstr ""
+
+#. translators: %d: step number.
+#: includes/class-cf7vb-admin.php:203
+#: includes/class-cf7vb-admin.php:205
+#: includes/class-cf7vb-parser.php:107
+msgid "Step %d"
+msgstr ""
+
+#. translators: %d: step number.
+#: includes/class-cf7vb-admin.php:408
+#: includes/class-cf7vb-analytics.php:300
+msgid "Step %d viewed"
+msgstr ""
+
+#: includes/class-cf7vb-parser.php:27
+#: includes/class-cf7vb-parser.php:88
+msgid "Step 1"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:230
+msgid "Step indicator"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:231
+msgid "Steps with labels"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:196
+msgid "Steps, GDPR, emails"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:539
+#: includes/class-cf7vb-analytics.php:207
+#: includes/class-cf7vb-analytics.php:243
+msgid "Submissions"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:348
+#: includes/class-cf7vb-frontend.php:64
+msgid "Submit"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:556
+msgid "Submitted"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:224
+msgid "Subtle"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:246
+msgid "THEN"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:185
+msgid "Tablet"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:278
+msgid "Text"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:283
+msgid "Textarea"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:261
+msgid "Thank you"
+msgstr ""
+
+#: includes/class-cf7vb-parser.php:188
+msgid "Thank you for your message. It has been sent."
+msgstr ""
+
+#: includes/class-cf7vb-thankyou.php:40
+msgid "Thank you. Redirecting…"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:197
+msgid "This is how your form will look on the website."
+msgstr ""
+
+#: includes/class-cf7vb-security.php:55
+msgid "Too many submissions. Please try again later."
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:345
+msgid "Top field interactions"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:496
+msgid "Total entries"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:216
+msgid "Track views, engagement, conversions, and device usage."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:167
+msgid "Undo"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:500
+msgid "Unread"
+msgstr ""
+
+#: includes/class-cf7vb-rest-api.php:212
+msgid "Update failed."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:637
+msgid "Update status"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:51
+msgid "Use the tabs below: Build your form, check Preview, add Rules, then adjust Settings. Click Save on the contact form to publish."
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:592
+msgid "View"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:219
+msgid "View entries"
+msgstr ""
+
+#: includes/class-cf7vb-analytics.php:199
+#: includes/class-cf7vb-analytics.php:241
+msgid "Views"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:32
+msgid "Visual Builder"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:49
+msgid "Visual Form Builder"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:220
+msgid "Wide (760px)"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:446
+msgid "You are not allowed to view entries."
+msgstr ""
+
+#: includes/class-cf7vb-parser.php:172
+#: includes/class-cf7vb-validation.php:89
+msgid "You must accept the privacy policy."
+msgstr ""
+
+#: includes/class-cf7vb-parser.php:34
+msgid "Your Email"
+msgstr ""
+
+#: includes/class-cf7vb-parser.php:35
+msgid "Your Message"
+msgstr ""
+
+#: includes/class-cf7vb-parser.php:33
+msgid "Your Name"
+msgstr ""
+
+#: includes/class-cf7vb-frontend.php:66
+msgid "of"
+msgstr ""
+
+#: includes/class-cf7vb-admin.php:201
+msgid "steps"
+msgstr ""
