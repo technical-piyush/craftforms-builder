@@ -3,6 +3,249 @@
 
 	const globalCfg = window.CFB_FRONT || {};
 	const strings = globalCfg.strings || {};
+	const phoneCountries = globalCfg.phoneCountries || [];
+	const defaultPhoneIso = globalCfg.defaultPhoneIso || 'US';
+
+	function phoneIsoList() {
+		if ( ! phoneCountries.length ) {
+			return [ 'us' ];
+		}
+		return phoneCountries
+			.map( function ( c ) {
+				return ( c.iso || '' ).toLowerCase();
+			} )
+			.filter( Boolean );
+	}
+
+	function getItiInstance( input ) {
+		if ( ! input ) {
+			return null;
+		}
+		if ( input.cfbIti ) {
+			return input.cfbIti;
+		}
+		if ( typeof jQuery !== 'undefined' ) {
+			const stored = jQuery( input ).data( 'cfbIti' );
+			if ( stored ) {
+				return stored;
+			}
+		}
+		return null;
+	}
+
+	function stripLeadingDial( national, dial ) {
+		const n = String( national || '' ).replace( /\D/g, '' );
+		const d = String( dial || '' ).replace( /\D/g, '' );
+		if ( d && n.indexOf( d ) === 0 && n.length > d.length ) {
+			return n.slice( d.length );
+		}
+		return n;
+	}
+
+	function getFullPhoneNumber( input, iti ) {
+		if ( ! input ) {
+			return '';
+		}
+
+		const instance = iti || getItiInstance( input );
+
+		if ( instance && window.intlTelInputUtils && typeof instance.getNumber === 'function' ) {
+			const e164 = instance.getNumber( window.intlTelInputUtils.numberFormat.E164 );
+			if ( e164 ) {
+				return e164;
+			}
+		}
+
+		if ( instance && typeof instance.getNumber === 'function' ) {
+			const num = instance.getNumber();
+			if ( num && num.indexOf( '+' ) === 0 ) {
+				return num;
+			}
+		}
+
+		const wrap = input.closest( '.wpcf7-form-control-wrap' ) || input.parentElement;
+		const dialInput = wrap ? wrap.querySelector( 'input.cfb-phone-dial-hidden' ) : null;
+		let dial = dialInput ? String( dialInput.value ).replace( /\D/g, '' ) : '';
+
+		if ( ! dial && instance && typeof instance.getSelectedCountryData === 'function' ) {
+			const data = instance.getSelectedCountryData();
+			dial = data && data.dialCode ? String( data.dialCode ) : '';
+		}
+
+		const raw = String( input.value || '' ).trim();
+		if ( raw.indexOf( '+' ) === 0 ) {
+			const digits = raw.replace( /\D/g, '' );
+			return digits ? '+' + digits : raw;
+		}
+
+		let national = raw.replace( /\D/g, '' );
+		national = stripLeadingDial( national, dial );
+
+		if ( dial && national ) {
+			return '+' + dial + national;
+		}
+
+		return raw;
+	}
+
+	function syncIntlPhonesForSubmit( form ) {
+		const root = form || document;
+		root.querySelectorAll( 'input.cfb-phone, input[type="tel"].cfb-phone' ).forEach( function ( input ) {
+			const full = getFullPhoneNumber( input, getItiInstance( input ) );
+			if ( full ) {
+				input.value = full;
+			}
+		} );
+	}
+
+	function bindPhoneSubmitHandlers( form ) {
+		if ( ! form || form.dataset.cfbPhoneSubmitBound === '1' ) {
+			return;
+		}
+		form.dataset.cfbPhoneSubmitBound = '1';
+
+		const run = function () {
+			syncIntlPhonesForSubmit( form );
+		};
+
+		form.addEventListener( 'submit', run, true );
+		form.addEventListener(
+			'click',
+			function ( ev ) {
+				if ( ev.target.closest( 'input[type="submit"], button[type="submit"], .wpcf7-submit' ) ) {
+					run();
+				}
+			},
+			true
+		);
+	}
+
+	function initSelect2Fields( form ) {
+		if ( typeof jQuery === 'undefined' || ! jQuery.fn.select2 ) {
+			return;
+		}
+		const $ = jQuery;
+		const $parent = $( form ).closest( '.cfb-enhanced' );
+
+		$( form )
+			.find( 'select.cfb-country' )
+			.each( function () {
+				const $el = $( this );
+				if ( $el.data( 'cfbSelect2' ) ) {
+					return;
+				}
+				$el.data( 'cfbSelect2', true );
+				$el.select2( {
+					width: '100%',
+					placeholder: strings.selectCountry || 'Select a country',
+					allowClear: ! this.required,
+					dropdownParent: $parent.length ? $parent : $( 'body' ),
+				} );
+				const row = $el.closest( 'p' );
+				if ( row.length ) {
+					row.addClass( 'cfb-field-row cfb-field-country' );
+				}
+			} );
+
+		$( form )
+			.find( 'select.cfb-multiselect' )
+			.each( function () {
+				const $el = $( this );
+				if ( $el.data( 'cfbSelect2' ) ) {
+					return;
+				}
+				$el.data( 'cfbSelect2', true );
+				$el.select2( {
+					width: '100%',
+					placeholder: strings.multiselectHint || 'Choose one or more options',
+					closeOnSelect: false,
+					allowClear: true,
+					dropdownParent: $parent.length ? $parent : $( 'body' ),
+				} );
+				const row = $el.closest( 'p' );
+				if ( row.length ) {
+					row.addClass( 'cfb-field-row cfb-field-multiselect' );
+				}
+			} );
+	}
+
+	function initIntlPhoneFields( form ) {
+		if ( typeof window.intlTelInput !== 'function' ) {
+			return;
+		}
+
+		const preferred = ( defaultPhoneIso || 'us' ).toLowerCase();
+		const onlyCountries = phoneIsoList();
+
+		form.querySelectorAll( 'input[type="tel"].cfb-phone, input.cfb-phone' ).forEach( function ( input ) {
+			if ( input.dataset.cfbItiDone === '1' ) {
+				return;
+			}
+			input.dataset.cfbItiDone = '1';
+
+			const row = input.closest( 'p' );
+			if ( row ) {
+				row.classList.add( 'cfb-field-row', 'cfb-field-phone' );
+			}
+
+			const wrap = input.closest( '.wpcf7-form-control-wrap' );
+			if ( wrap ) {
+				wrap.classList.add( 'cfb-phone-wrap' );
+			}
+
+			const options = {
+				initialCountry: preferred,
+				separateDialCode: true,
+				nationalMode: true,
+				autoPlaceholder: 'aggressive',
+				formatAsYouType: true,
+			};
+
+			if ( globalCfg.itiUtilsUrl ) {
+				options.utilsScript = globalCfg.itiUtilsUrl;
+			}
+
+			if ( onlyCountries.length ) {
+				options.onlyCountries = onlyCountries;
+				options.countryOrder = [ preferred ];
+			}
+
+			const iti = window.intlTelInput( input, options );
+			input.cfbIti = iti;
+
+			if ( typeof jQuery !== 'undefined' ) {
+				jQuery( input ).data( 'cfbIti', iti );
+			}
+
+			const dialHidden = document.createElement( 'input' );
+			dialHidden.type = 'hidden';
+			dialHidden.className = 'cfb-phone-dial-hidden';
+			dialHidden.name = input.name + '_cfb_dial';
+			dialHidden.tabIndex = -1;
+			dialHidden.setAttribute( 'aria-hidden', 'true' );
+
+			const syncDialHidden = function () {
+				const data = iti.getSelectedCountryData();
+				dialHidden.value = data && data.dialCode ? String( data.dialCode ) : '';
+			};
+
+			if ( wrap ) {
+				wrap.appendChild( dialHidden );
+			} else {
+				input.insertAdjacentElement( 'afterend', dialHidden );
+			}
+
+			input.addEventListener( 'countrychange', syncDialHidden );
+			input.addEventListener( 'input', syncDialHidden );
+			syncDialHidden();
+
+			if ( input.value && input.value.indexOf( '+' ) === 0 ) {
+				iti.setNumber( input.value );
+			}
+		} );
+
+		bindPhoneSubmitHandlers( form );
+	}
 
 	function getAppearance( schema ) {
 		return ( schema && schema.settings && schema.settings.appearance ) || {};
@@ -19,6 +262,15 @@
 				label.appendChild( required );
 			}
 			row.classList.add( 'cfb-field-row' );
+			if ( row.querySelector( 'select.cfb-multiselect, .wpcf7-checkbox.cfb-multiselect' ) ) {
+				row.classList.add( 'cfb-field-multiselect' );
+			}
+			if ( row.querySelector( 'select.cfb-country' ) ) {
+				row.classList.add( 'cfb-field-country' );
+			}
+			if ( row.querySelector( 'input.cfb-phone, input.cfb-phone-number' ) ) {
+				row.classList.add( 'cfb-field-phone' );
+			}
 		} );
 	}
 
@@ -111,9 +363,22 @@
 	}
 
 	function getFieldValueFromRow( row ) {
+		const phoneInp = row.querySelector( 'input.cfb-phone' );
+		if ( phoneInp ) {
+			const full = getFullPhoneNumber( phoneInp, getItiInstance( phoneInp ) );
+			if ( full ) {
+				return full;
+			}
+		}
+
 		const inp = row.querySelector( 'input, textarea, select' );
 		if ( ! inp ) {
 			return '';
+		}
+		if ( inp.tagName === 'SELECT' && inp.multiple ) {
+			return Array.from( inp.selectedOptions ).map( function ( o ) {
+				return o.value;
+			} );
 		}
 		if ( inp.type === 'checkbox' || inp.type === 'radio' ) {
 			const name = inp.name;
@@ -492,11 +757,125 @@
 		localStorage.setItem( 'cfb_autosave_' + cfg.formId, JSON.stringify( data ) );
 	}
 
-	function initForm( wrapper ) {
-		if ( wrapper.dataset.cfbFormReady === '1' ) {
-			return;
-		}
+	/**
+	 * Legacy checkbox fallback for old forms (pre–select + Select2).
+	 */
+	function initMultiselectFields( form ) {
+		form.querySelectorAll( 'select[multiple]:not(.cfb-multiselect)' ).forEach( function ( select ) {
+			if ( select.dataset.cfbMultiselectDone === '1' ) {
+				return;
+			}
+			select.dataset.cfbMultiselectDone = '1';
 
+			const wrap = select.closest( '.wpcf7-form-control-wrap' ) || select.parentElement;
+			if ( ! wrap ) {
+				return;
+			}
+
+			const baseName = select.name.replace( /\[\]$/, '' );
+			const list = document.createElement( 'div' );
+			list.className = 'cfb-multiselect-fallback';
+			list.setAttribute( 'role', 'group' );
+
+			Array.from( select.options ).forEach( function ( opt, index ) {
+				if ( ! opt.value && ! opt.text ) {
+					return;
+				}
+				const label = document.createElement( 'label' );
+				label.className = 'cfb-multiselect-option';
+				const cb = document.createElement( 'input' );
+				cb.type = 'checkbox';
+				cb.name = baseName + '[]';
+				cb.value = opt.value || opt.text;
+				cb.checked = opt.selected;
+				label.appendChild( cb );
+				label.appendChild( document.createTextNode( ' ' + ( opt.text || opt.value ) ) );
+				list.appendChild( label );
+
+				cb.addEventListener( 'change', function () {
+					opt.selected = cb.checked;
+				} );
+			} );
+
+			select.classList.add( 'cfb-multiselect-native-hidden' );
+			select.setAttribute( 'aria-hidden', 'true' );
+			select.tabIndex = -1;
+			wrap.appendChild( list );
+
+			const row = select.closest( 'p' ) || wrap.closest( 'p' );
+			if ( row ) {
+				row.classList.add( 'cfb-field-row', 'cfb-field-multiselect' );
+			}
+		} );
+	}
+
+	function initRepeaters( form ) {
+		form.querySelectorAll( '.cfb-repeater' ).forEach( function ( repeater ) {
+			const rowsWrap = repeater.querySelector( '.cfb-repeater-rows' );
+			const addBtn = repeater.querySelector( '.cfb-repeater-add' );
+			if ( ! rowsWrap || ! addBtn ) {
+				return;
+			}
+
+			const minRows = parseInt( repeater.getAttribute( 'data-min' ) || '1', 10 );
+			const maxRows = parseInt( repeater.getAttribute( 'data-max' ) || '5', 10 );
+
+			function visibleRows() {
+				return Array.from( rowsWrap.querySelectorAll( '.cfb-repeater-row:not(.cfb-repeater-row--hidden)' ) );
+			}
+
+			function syncActions() {
+				const visible = visibleRows();
+				visible.forEach( function ( row, index ) {
+					const removeBtn = row.querySelector( '.cfb-repeater-remove' );
+					if ( removeBtn ) {
+						removeBtn.style.display = visible.length > minRows ? '' : 'none';
+					}
+				} );
+				addBtn.disabled = visible.length >= maxRows;
+			}
+
+			addBtn.addEventListener( 'click', function () {
+				const hidden = rowsWrap.querySelector( '.cfb-repeater-row--hidden' );
+				if ( ! hidden ) {
+					return;
+				}
+				hidden.classList.remove( 'cfb-repeater-row--hidden' );
+				syncActions();
+			} );
+
+			rowsWrap.addEventListener( 'click', function ( ev ) {
+				const btn = ev.target.closest( '.cfb-repeater-remove' );
+				if ( ! btn ) {
+					return;
+				}
+				const row = btn.closest( '.cfb-repeater-row' );
+				if ( ! row || visibleRows().length <= minRows ) {
+					return;
+				}
+				row.querySelectorAll( 'input, textarea, select' ).forEach( function ( el ) {
+					if ( el.type === 'checkbox' || el.type === 'radio' ) {
+						el.checked = false;
+					} else {
+						el.value = '';
+					}
+				} );
+				row.classList.add( 'cfb-repeater-row--hidden' );
+				rowsWrap.appendChild( row );
+				syncActions();
+			} );
+
+			syncActions();
+		} );
+	}
+
+	function initEnhancedFields( form ) {
+		initSelect2Fields( form );
+		initIntlPhoneFields( form );
+		initMultiselectFields( form );
+	}
+
+	function initForm( wrapper ) {
 		const cfg = getFormConfig( wrapper );
 		if ( ! cfg ) {
 			return;
@@ -508,9 +887,16 @@
 			return;
 		}
 
+		if ( wrapper.dataset.cfbFormReady === '1' ) {
+			initEnhancedFields( form );
+			return;
+		}
+
 		wrapper.dataset.cfbFormReady = '1';
 
 		fixRequiredMarkers( form );
+		initEnhancedFields( form );
+		initRepeaters( form );
 		track( cfg, 'view', {} );
 		initMultistep( form, wrapper, cfg );
 
@@ -538,6 +924,16 @@
 	}
 
 	document.addEventListener( 'wpcf7init', boot );
+	document.addEventListener(
+		'wpcf7submit',
+		function ( ev ) {
+			const form = ev.target;
+			if ( form && form.classList && form.classList.contains( 'wpcf7-form' ) ) {
+				syncIntlPhonesForSubmit( form );
+			}
+		},
+		true
+	);
 	document.addEventListener( 'wpcf7submit', function () {
 		setTimeout( boot, 100 );
 	} );

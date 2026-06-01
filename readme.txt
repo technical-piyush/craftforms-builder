@@ -25,7 +25,7 @@ This plugin is an add-on for Contact Form 7 and requires Contact Form 7 to be in
 
 **Field types**
 
-Text, Textarea, Email, Phone, Number, Select, Checkbox, Radio, File, Date, Hidden, Signature, Rating, Repeater and Submit.
+Text, Textarea, Email, Phone, URL, Number, Dropdown, Multi-select, Country, Checkbox, Radio, File, Date, Hidden, Signature, Rating, Repeater (with sub-fields), and Submit.
 
 **Multistep forms**
 
@@ -103,6 +103,13 @@ Yes. You can build IF/THEN rules with AND/OR conditions and nested groups to sho
 3. Multistep form with progress indicator.
 4. Submissions (Entries) management screen.
 5. Form analytics dashboard.
+
+== Third-party resources ==
+
+This plugin bundles the following libraries for enhanced country, multiselect, and phone fields:
+
+* [Select2](https://select2.org/) 4.1.0-rc.0 — MIT License
+* [intl-tel-input](https://github.com/jackocnr/intl-tel-input) 19.5.6 — MIT License
 
 == Changelog ==
 

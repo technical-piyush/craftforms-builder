@@ -34,6 +34,8 @@ final class CFB_Plugin {
 		CFB_REST_API::init();
 		CFB_Submissions::init();
 		CFB_Frontend::init();
+		CFB_Form_Sync::init();
+		CFB_Posted_Data::init();
 		CFB_Validation::init();
 		CFB_Security::init();
 		CFB_Email::init();

@@ -138,13 +138,25 @@
 		);
 	}
 
+	const COUNTRIES = cfg.countries || S.countries || [];
+	const PHONE_COUNTRIES = cfg.phoneCountries || S.phoneCountries || [];
+	const DEFAULT_PHONE_ISO = cfg.defaultPhoneIso || 'US';
+	const REPEATER_CHILD_TYPES = cfg.repeaterChildTypes || [
+		{ type: 'text', label: 'Text' },
+		{ type: 'email', label: 'Email' },
+		{ type: 'number', label: 'Number' },
+	];
+
 	const FIELD_DEFAULTS = {
 		text: { name: 'text-field', label: 'Text Field' },
 		textarea: { name: 'message', label: 'Message' },
 		email: { name: 'email', label: 'Email' },
 		phone: { name: 'phone', label: 'Phone' },
+		url: { name: 'website', label: 'Website URL' },
 		number: { name: 'number', label: 'Number' },
-		select: { name: 'select', label: 'Select', options: [ { label: 'Option 1', value: 'Option 1' }, { label: 'Option 2', value: 'Option 2' } ] },
+		select: { name: 'select', label: 'Dropdown', options: [ { label: 'Option 1', value: 'Option 1' }, { label: 'Option 2', value: 'Option 2' } ] },
+		multiselect: { name: 'multiselect', label: 'Multi-select', options: [ { label: 'Option 1', value: 'Option 1' }, { label: 'Option 2', value: 'Option 2' }, { label: 'Option 3', value: 'Option 3' } ] },
+		country: { name: 'country', label: 'Country' },
 		checkbox: { name: 'choices', label: 'Choices', options: [ { label: 'Option A', value: 'Option A' } ] },
 		radio: { name: 'choice', label: 'Choice', options: [ { label: 'Yes', value: 'Yes' }, { label: 'No', value: 'No' } ] },
 		file: { name: 'file', label: 'Upload' },
@@ -152,7 +164,13 @@
 		hidden: { name: 'hidden', label: 'Hidden' },
 		rating: { name: 'rating', label: 'Rating' },
 		signature: { name: 'signature', label: 'Signature' },
-		repeater: { name: 'repeater', label: 'Repeater' },
+		repeater: {
+			name: 'repeater',
+			label: 'Repeater',
+			children: [
+				{ type: 'text', name: 'item', label: 'Item' },
+			],
+		},
 		submit: { name: 'submit', label: 'Send', required: false },
 	};
 
@@ -184,24 +202,38 @@
 		const req = field.required ? '*' : '';
 		const name = field.name || 'field';
 		const opts = [];
-		if ( field.placeholder ) {
-			opts.push( 'placeholder "' + String( field.placeholder ).replace( /"/g, '' ) + '"' );
+		const quoted = [];
+		const textTypes = [ 'text', 'email', 'phone', 'url', 'number', 'textarea' ];
+		if ( field.placeholder && textTypes.includes( field.type ) ) {
+			opts.push( 'placeholder' );
+			quoted.push( String( field.placeholder ).replace( /"/g, '' ) );
 		}
 		const optionValues = ( field.options || [] ).map( ( o ) => '"' + String( o.value || o.label || o ).replace( /"/g, '' ) + '"' );
+		const selectBlank = field.placeholder ? 'first_as_label' : 'include_blank';
+		const selectQuoted = field.placeholder ? `"${ String( field.placeholder ).replace( /"/g, '' ) }"` : '';
+		const quotedTail = quoted.map( ( v ) => `"${ v }"` ).join( ' ' );
+		const withQuoted = ( base ) => ( quotedTail ? `${ base } ${ quotedTail }` : base ).trim();
 
 		switch ( field.type ) {
-			case 'email': return `[email${req} ${name} ${opts.join( ' ' )}]`;
-			case 'phone': return `[tel${req} ${name} ${opts.join( ' ' )}]`;
-			case 'textarea': return `[textarea${req} ${name} ${opts.join( ' ' )}]`;
-			case 'number': return `[number${req} ${name} ${opts.join( ' ' )}]`;
-			case 'select': return `[select${req} ${name} ${opts.concat( optionValues ).join( ' ' )}]`;
+			case 'email': return `[email${req} ${name}${ opts.length ? ' ' + opts.join( ' ' ) : '' }${ quotedTail ? ' ' + quotedTail : '' }]`;
+			case 'phone': {
+				const ph = quotedTail || '"555 000 0000"';
+				return `[tel${req} ${name} class:cfb-phone placeholder ${ ph }]`;
+			}
+			case 'url': return `[url${req} ${name}${ opts.length ? ' ' + opts.join( ' ' ) : '' }${ quotedTail ? ' ' + quotedTail : '' }]`;
+			case 'textarea': return `[textarea${req} ${name}${ opts.length ? ' ' + opts.join( ' ' ) : '' }${ quotedTail ? ' ' + quotedTail : '' }]`;
+			case 'number': return `[number${req} ${name}${ opts.length ? ' ' + opts.join( ' ' ) : '' }${ quotedTail ? ' ' + quotedTail : '' }]`;
+			case 'select': return `[select${req} ${name} ${selectBlank}${ selectQuoted ? ' ' + selectQuoted : '' } ${optionValues.join( ' ' )}]`.replace( /\s+/g, ' ' );
+			case 'multiselect': return `[select${req} ${name} multiple class:cfb-multiselect ${optionValues.join( ' ' )}]`;
+			case 'country': return `[select${req} ${name} class:cfb-country data:cfb_countries ${selectBlank}${ selectQuoted ? ' ' + selectQuoted : '' }]`;
 			case 'checkbox': return `[checkbox${req} ${name} use_label_element ${optionValues.join( ' ' )}]`;
 			case 'radio': return `[radio${req} ${name} use_label_element ${optionValues.join( ' ' )}]`;
 			case 'file': return `[file${req} ${name}]`;
 			case 'date': return `[date${req} ${name}]`;
 			case 'hidden': return `[hidden ${name}]`;
+			case 'repeater': return `[repeater ${name}]`;
 			case 'submit': return `[submit "${String( field.label || 'Send' ).replace( /"/g, '' )}"]`;
-			default: return `[text${req} ${name} ${opts.join( ' ' )}]`;
+			default: return withQuoted( `[text${req} ${name}${ opts.length ? ' ' + opts.join( ' ' ) : '' }]` );
 		}
 	}
 
@@ -267,18 +299,37 @@
 
 	function createField( type ) {
 		const base = FIELD_DEFAULTS[ type ] || FIELD_DEFAULTS.text;
-		return {
+		const field = {
 			id: uid( 'field' ),
 			type,
 			name: base.name + '-' + Math.floor( Math.random() * 9999 ),
 			label: base.label,
 			required: type !== 'submit' && type !== 'hidden',
-			placeholder: '',
+			placeholder:
+				type === 'country'
+					? ( S.selectCountry || 'Select a country' )
+					: type === 'phone'
+						? ( S.phoneLocalPlaceholder || '555 000 0000' )
+						: '',
 			help: '',
 			options: base.options ? clone( base.options ) : [],
 			validation: {},
 			attrs: {},
+			children: [],
 		};
+
+		if ( type === 'repeater' ) {
+			field.attrs = { minRows: 1, maxRows: 5 };
+			field.children = ( base.children || [ { type: 'text', name: 'item', label: 'Item' } ] ).map( ( child ) => {
+				const sub = createField( child.type || 'text' );
+				sub.name = child.name || sub.name;
+				sub.label = child.label || sub.label;
+				sub.required = false;
+				return sub;
+			} );
+		}
+
+		return field;
 	}
 
 	function findFieldPath( schema, fieldId ) {
@@ -308,19 +359,70 @@
 		if ( field.type === 'textarea' ) {
 			return el( 'textarea', { ...common, rows: 3, placeholder: field.placeholder || '' } );
 		}
+		if ( field.type === 'multiselect' ) {
+			return el(
+				'select',
+				{
+					...common,
+					multiple: true,
+					className: 'cfb-preview-control cfb-preview-multiselect',
+				},
+				( field.options || [] ).map( ( o, i ) =>
+					el( 'option', { key: i, value: o.value || o.label || o }, o.label || o.value || o )
+				)
+			);
+		}
 		if ( field.type === 'select' ) {
 			return el(
 				'select',
 				{ ...common },
+				el( 'option', { value: '' }, field.placeholder || 'Select…' ),
 				( field.options || [] ).map( ( o, i ) =>
 					el( 'option', { key: i }, o.label || o.value || o )
 				)
 			);
 		}
+		if ( field.type === 'country' ) {
+			const list = COUNTRIES.length ? COUNTRIES : [ 'United States', 'Canada', 'United Kingdom' ];
+			return el(
+				'div',
+				{ className: 'cfb-preview-country' },
+				el(
+					'button',
+					{ type: 'button', className: 'cfb-preview-country-trigger', disabled: true },
+					field.placeholder || S.selectCountry || 'Select a country'
+				),
+				el(
+					'select',
+					{ ...common, className: 'cfb-preview-control cfb-preview-country-native', 'aria-hidden': true, tabIndex: -1 },
+					el( 'option', { value: '' }, field.placeholder || S.selectCountry || 'Select a country' ),
+					list.slice( 0, 8 ).map( ( c, i ) => el( 'option', { key: i, value: c }, c ) )
+				)
+			);
+		}
+		if ( field.type === 'phone' ) {
+			const phoneList = PHONE_COUNTRIES.length ? PHONE_COUNTRIES : [ { iso: 'US', dial: '1', name: 'United States' } ];
+			const def = phoneList.find( ( c ) => c.iso === DEFAULT_PHONE_ISO ) || phoneList[0];
+			return el(
+				'div',
+				{ className: 'cfb-preview-phone' },
+				el(
+					'button',
+					{ type: 'button', className: 'cfb-preview-phone-code', disabled: true },
+					'+' + ( def.dial || '1' )
+				),
+				el( 'input', {
+					type: 'tel',
+					...common,
+					className: 'cfb-preview-control cfb-preview-phone-number',
+					placeholder: field.placeholder || S.phoneLocalPlaceholder || '555 000 0000',
+				} )
+			);
+		}
 		if ( field.type === 'submit' ) {
 			return el( 'input', { type: 'submit', value: field.label || 'Send', ...common } );
 		}
-		const typeMap = { email: 'email', phone: 'tel', number: 'number', date: 'date', file: 'file', hidden: 'hidden' };
+		const typeMap = { email: 'email', url: 'url', number: 'number', date: 'date', file: 'file', hidden: 'hidden' };
 		return el( 'input', {
 			type: typeMap[ field.type ] || 'text',
 			placeholder: field.placeholder || field.label,
@@ -942,7 +1044,154 @@
 									},
 								} )
 							),
-							[ 'select', 'checkbox', 'radio' ].includes( selectedField.type )
+							selectedField.type === 'country'
+								? el(
+									'p',
+									{ className: 'cfb-inspector-hint' },
+									S.countryHint || 'Uses the built-in country list.'
+								)
+								: null,
+							selectedField.type === 'phone'
+								? el(
+									'p',
+									{ className: 'cfb-inspector-hint' },
+									S.phoneHint || 'Country code picker; visitors enter local number only.'
+								)
+								: null,
+							selectedField.type === 'multiselect'
+								? el(
+									'p',
+									{ className: 'cfb-inspector-hint' },
+									S.multiselectHint || 'Visitors can choose multiple options.'
+								)
+								: null,
+							selectedField.type === 'number'
+								? el(
+									Fragment,
+									null,
+									el(
+										'div',
+										{ className: 'cfb-field-group' },
+										el( 'label', null, S.minValue || 'Minimum value' ),
+										el( 'input', {
+											type: 'number',
+											value: selectedField.validation?.min ?? '',
+											onChange: ( e ) => {
+												const validation = clone( selectedField.validation || {} );
+												validation.min = e.target.value === '' ? undefined : parseFloat( e.target.value );
+												updateField( selectedField.id, { validation } );
+											},
+										} )
+									),
+									el(
+										'div',
+										{ className: 'cfb-field-group' },
+										el( 'label', null, S.maxValue || 'Maximum value' ),
+										el( 'input', {
+											type: 'number',
+											value: selectedField.validation?.max ?? '',
+											onChange: ( e ) => {
+												const validation = clone( selectedField.validation || {} );
+												validation.max = e.target.value === '' ? undefined : parseFloat( e.target.value );
+												updateField( selectedField.id, { validation } );
+											},
+										} )
+									),
+									el(
+										'div',
+										{ className: 'cfb-field-group' },
+										el( 'label', null, S.stepValue || 'Step' ),
+										el( 'input', {
+											type: 'number',
+											value: selectedField.validation?.step ?? '',
+											onChange: ( e ) => {
+												const validation = clone( selectedField.validation || {} );
+												validation.step = e.target.value === '' ? undefined : parseFloat( e.target.value );
+												updateField( selectedField.id, { validation } );
+											},
+										} )
+									)
+								)
+								: null,
+							selectedField.type === 'repeater'
+								? el(
+									Fragment,
+									null,
+									el(
+										'div',
+										{ className: 'cfb-field-group' },
+										el( 'label', null, S.minRows || 'Minimum rows' ),
+										el( 'input', {
+											type: 'number',
+											min: 1,
+											max: 20,
+											value: selectedField.attrs?.minRows || 1,
+											onChange: ( e ) => {
+												const attrs = clone( selectedField.attrs || {} );
+												attrs.minRows = Math.max( 1, parseInt( e.target.value, 10 ) || 1 );
+												updateField( selectedField.id, { attrs } );
+											},
+										} )
+									),
+									el(
+										'div',
+										{ className: 'cfb-field-group' },
+										el( 'label', null, S.maxRows || 'Maximum rows' ),
+										el( 'input', {
+											type: 'number',
+											min: 1,
+											max: 20,
+											value: selectedField.attrs?.maxRows || 5,
+											onChange: ( e ) => {
+												const attrs = clone( selectedField.attrs || {} );
+												attrs.maxRows = Math.max( 1, parseInt( e.target.value, 10 ) || 5 );
+												updateField( selectedField.id, { attrs } );
+											},
+										} )
+									),
+									el( 'p', { className: 'cfb-inspector-hint' }, S.repeaterFieldsHint || 'Fields inside each row.' ),
+									el( 'label', null, S.repeaterFields || 'Repeater sub-fields' ),
+									( selectedField.children || [] ).map( ( child, ci ) =>
+										el(
+											'div',
+											{ key: child.id || ci, className: 'cfb-repeater-child-row' },
+											el( 'strong', null, child.label || child.name ),
+											el( 'span', { className: 'cfb-repeater-child-type' }, child.type ),
+											el( 'button', {
+												type: 'button',
+												className: 'cfb-btn cfb-btn--ghost',
+												onClick: () => {
+													const children = clone( selectedField.children || [] );
+													children.splice( ci, 1 );
+													updateField( selectedField.id, { children } );
+												},
+											}, '×' )
+										)
+									),
+									el(
+										'select',
+										{
+											className: 'cfb-repeater-add-child',
+											defaultValue: '',
+											onChange: ( e ) => {
+												const t = e.target.value;
+												if ( ! t ) {
+													return;
+												}
+												const children = clone( selectedField.children || [] );
+												children.push( createField( t ) );
+												updateField( selectedField.id, { children } );
+												e.target.value = '';
+											},
+										},
+										el( 'option', { value: '' }, S.addRepeaterField || 'Add sub-field' ),
+										REPEATER_CHILD_TYPES.map( ( t ) =>
+											el( 'option', { key: t.type, value: t.type }, t.label )
+										)
+									)
+								)
+								: null,
+							[ 'select', 'checkbox', 'radio', 'multiselect' ].includes( selectedField.type )
 								? el(
 									'div',
 									{ className: 'cfb-field-group' },

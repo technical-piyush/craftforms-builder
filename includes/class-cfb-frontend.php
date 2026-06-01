@@ -43,11 +43,49 @@ final class CFB_Frontend {
 	}
 
 	public static function enqueue_assets() {
-		wp_enqueue_style( 'cfb-frontend', CFB_PLUGIN_URL . 'assets/css/frontend.css', array(), CFB_VERSION );
+		$vendor = CFB_PLUGIN_URL . 'assets/vendor/';
+
+		wp_enqueue_style(
+			'cfb-select2',
+			$vendor . 'select2/css/select2.min.css',
+			array(),
+			'4.1.0-rc.0'
+		);
+		wp_enqueue_style(
+			'cfb-intl-tel-input',
+			$vendor . 'intl-tel-input/css/intlTelInput.min.css',
+			array(),
+			'19.5.6'
+		);
+		wp_enqueue_style( 'cfb-frontend', CFB_PLUGIN_URL . 'assets/css/frontend.css', array( 'cfb-select2', 'cfb-intl-tel-input' ), CFB_VERSION );
+
+		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script(
+			'cfb-select2',
+			$vendor . 'select2/js/select2.min.js',
+			array( 'jquery' ),
+			'4.1.0-rc.0',
+			true
+		);
+		wp_enqueue_script(
+			'cfb-intl-tel-input',
+			$vendor . 'intl-tel-input/js/intlTelInput.min.js',
+			array(),
+			'19.5.6',
+			true
+		);
+		wp_enqueue_script(
+			'cfb-intl-tel-input-utils',
+			$vendor . 'intl-tel-input/js/utils.js',
+			array( 'cfb-intl-tel-input' ),
+			'19.5.6',
+			true
+		);
+
 		wp_enqueue_script(
 			'cfb-frontend',
 			CFB_PLUGIN_URL . 'assets/js/frontend.js',
-			array( 'contact-form-7' ),
+			array( 'contact-form-7', 'jquery', 'cfb-select2', 'cfb-intl-tel-input', 'cfb-intl-tel-input-utils' ),
 			CFB_VERSION,
 			true
 		);
@@ -58,16 +96,28 @@ final class CFB_Frontend {
 			array(
 				'restUrl' => esc_url_raw( rest_url( CFB_REST_API::NS ) ),
 				'nonce'   => wp_create_nonce( 'wp_rest' ),
-				'strings' => array(
-					'next'         => __( 'Next', 'craftforms-builder' ),
-					'prev'         => __( 'Previous', 'craftforms-builder' ),
-					'submit'       => __( 'Submit', 'craftforms-builder' ),
-					'step'         => __( 'Step', 'craftforms-builder' ),
-					'of'           => __( 'of', 'craftforms-builder' ),
-					'saveContinue' => __( 'Save & continue later', 'craftforms-builder' ),
-					'draftSaved'   => __( 'Progress saved.', 'craftforms-builder' ),
-					'signClear'    => __( 'Clear signature', 'craftforms-builder' ),
-					'stepError'    => __( 'Please fill in the required fields before continuing.', 'craftforms-builder' ),
+				'phoneCountries'    => CFB_Countries::get_phone_countries(),
+				'defaultPhoneIso'   => CFB_Countries::get_default_phone_iso(),
+				'itiUtilsUrl'       => esc_url_raw( $vendor . 'intl-tel-input/js/utils.js' ),
+				'strings'           => array(
+					'next'            => __( 'Next', 'craftforms-builder' ),
+					'prev'            => __( 'Previous', 'craftforms-builder' ),
+					'submit'          => __( 'Submit', 'craftforms-builder' ),
+					'step'            => __( 'Step', 'craftforms-builder' ),
+					'of'              => __( 'of', 'craftforms-builder' ),
+					'saveContinue'    => __( 'Save & continue later', 'craftforms-builder' ),
+					'draftSaved'      => __( 'Progress saved.', 'craftforms-builder' ),
+					'signClear'       => __( 'Clear signature', 'craftforms-builder' ),
+					'stepError'       => __( 'Please fill in the required fields before continuing.', 'craftforms-builder' ),
+					'selectCountry'   => __( 'Select a country', 'craftforms-builder' ),
+					'countrySearch'   => __( 'Search countries…', 'craftforms-builder' ),
+					'countryEmpty'    => __( 'No countries match your search.', 'craftforms-builder' ),
+					'multiselectHint' => __( 'Choose one or more options', 'craftforms-builder' ),
+					/* translators: %d: number of options selected in a multiselect field. */
+					'selectedCount'        => __( '%d selected', 'craftforms-builder' ),
+					'phoneLocalPlaceholder' => __( '555 000 0000', 'craftforms-builder' ),
+					'phoneCodeSearch'      => __( 'Search country or code…', 'craftforms-builder' ),
+					'phoneCodeEmpty'       => __( 'No matching country code.', 'craftforms-builder' ),
 				),
 			)
 		);

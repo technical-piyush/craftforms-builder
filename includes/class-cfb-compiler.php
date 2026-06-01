@@ -85,29 +85,38 @@ final class CFB_Compiler {
 	public static function compile_field( $field ) {
 		$field = CFB_Parser::normalize_field( $field );
 		$type  = $field['type'];
-		$req   = ! empty( $field['required'] ) ? '*' : '';
-		$name  = $field['name'];
-		$label = $field['label'];
 
-		$lines = array();
+		if ( 'repeater' === $type ) {
+			return self::compile_repeater( $field );
+		}
+
+		$req      = ! empty( $field['required'] ) ? '*' : '';
+		$label    = $field['label'];
+		$tag      = self::compile_tag( $field, $req );
+		$required = ! empty( $field['required'] );
 
 		if ( $label && 'hidden' !== $type && 'submit' !== $type ) {
-			$lines[] = sprintf( '<label> %s', esc_html( $label ) );
-			if ( ! empty( $field['required'] ) ) {
-				$lines[] = ' <span class="cfb-req">*</span>';
+			$label_html = esc_html( $label );
+			if ( $required ) {
+				$label_html .= sprintf(
+					' <abbr class="wpcf7-required" title="%s">*</abbr>',
+					esc_attr__( 'required', 'craftforms-builder' )
+				);
 			}
-			$lines[] = '';
-			$lines[] = self::compile_tag( $field, $req );
-			$lines[] = '</label>';
+			$block = sprintf(
+				'<p><label>%1$s<br />%2$s</label></p>',
+				$label_html,
+				$tag
+			);
 		} else {
-			$lines[] = self::compile_tag( $field, $req );
+			$block = '<p>' . $tag . '</p>';
 		}
 
 		if ( ! empty( $field['help'] ) ) {
-			$lines[] = sprintf( '<span class="cfb-help">%s</span>', esc_html( $field['help'] ) );
+			$block .= sprintf( '<p class="cfb-help">%s</p>', esc_html( $field['help'] ) );
 		}
 
-		return implode( "\n", array_filter( $lines ) );
+		return $block;
 	}
 
 	/**
@@ -116,13 +125,10 @@ final class CFB_Compiler {
 	 * @return string
 	 */
 	private static function compile_tag( $field, $req ) {
-		$type = $field['type'];
-		$name = $field['name'];
-		$opts = array();
-
-		if ( ! empty( $field['placeholder'] ) ) {
-			$opts[] = 'placeholder "' . self::escape_cf7_value( $field['placeholder'] ) . '"';
-		}
+		$type   = $field['type'];
+		$name   = $field['name'];
+		$opts   = array();
+		$quoted = array();
 
 		if ( ! empty( $field['attrs']['class'] ) ) {
 			$opts[] = 'class:' . sanitize_html_class( $field['attrs']['class'] );
@@ -132,44 +138,68 @@ final class CFB_Compiler {
 			$opts[] = 'id:' . sanitize_html_class( $field['attrs']['id'] );
 		}
 
+		if ( ! empty( $field['placeholder'] ) && self::type_supports_placeholder_attr( $type ) ) {
+			$opts[]   = 'placeholder';
+			$quoted[] = $field['placeholder'];
+		}
+
 		switch ( $type ) {
 			case 'text':
-				return self::tag( 'text' . $req, $name, $opts );
+				return self::tag( 'text' . $req, $name, $opts, $quoted );
 
 			case 'email':
-				return self::tag( 'email' . $req, $name, $opts );
+				return self::tag( 'email' . $req, $name, $opts, $quoted );
 
 			case 'phone':
-				return self::tag( 'tel' . $req, $name, $opts );
+				$opts[] = 'class:cfb-phone';
+				if ( empty( $field['placeholder'] ) ) {
+					$opts[]   = 'placeholder';
+					$quoted[] = __( '555 000 0000', 'craftforms-builder' );
+				}
+				return self::tag( 'tel' . $req, $name, $opts, $quoted );
 
 			case 'url':
-				return self::tag( 'url' . $req, $name, $opts );
+				return self::tag( 'url' . $req, $name, $opts, $quoted );
 
 			case 'number':
-				if ( ! empty( $field['validation']['min'] ) ) {
+				if ( isset( $field['validation']['min'] ) && '' !== $field['validation']['min'] ) {
 					$opts[] = 'min:' . floatval( $field['validation']['min'] );
 				}
-				if ( ! empty( $field['validation']['max'] ) ) {
+				if ( isset( $field['validation']['max'] ) && '' !== $field['validation']['max'] ) {
 					$opts[] = 'max:' . floatval( $field['validation']['max'] );
 				}
-				return self::tag( 'number' . $req, $name, $opts );
+				if ( isset( $field['validation']['step'] ) && '' !== $field['validation']['step'] ) {
+					$opts[] = 'step:' . floatval( $field['validation']['step'] );
+				}
+				return self::tag( 'number' . $req, $name, $opts, $quoted );
 
 			case 'textarea':
-				return self::tag( 'textarea' . $req, $name, $opts );
+				return self::tag( 'textarea' . $req, $name, $opts, $quoted );
 
 			case 'select':
-				$values = self::option_values( $field );
-				return self::tag( 'select' . $req, $name, array_merge( $opts, $values ) );
+				list( $blank_opt, $values ) = self::select_blank_and_values( $field, self::option_values( $field ) );
+				$opts[] = $blank_opt;
+				return self::tag( 'select' . $req, $name, $opts, array_merge( $quoted, $values ) );
+
+			case 'multiselect':
+				$opts[] = 'multiple';
+				$opts[] = 'class:cfb-multiselect';
+				return self::tag( 'select' . $req, $name, $opts, array_merge( $quoted, self::option_values( $field ) ) );
+
+			case 'country':
+				$opts[] = 'class:cfb-country';
+				$opts[] = 'data:cfb_countries';
+				list( $blank_opt, $values ) = self::select_blank_and_values( $field, array() );
+				$opts[] = $blank_opt;
+				return self::tag( 'select' . $req, $name, $opts, array_merge( $quoted, $values ) );
 
 			case 'checkbox':
-				$values = self::option_values( $field );
 				$opts[] = 'use_label_element';
-				return self::tag( 'checkbox' . $req, $name, array_merge( $opts, $values ) );
+				return self::tag( 'checkbox' . $req, $name, $opts, array_merge( $quoted, self::option_values( $field ) ) );
 
 			case 'radio':
-				$values = self::option_values( $field );
 				$opts[] = 'use_label_element';
-				return self::tag( 'radio' . $req, $name, array_merge( $opts, $values ) );
+				return self::tag( 'radio' . $req, $name, $opts, array_merge( $quoted, self::option_values( $field ) ) );
 
 			case 'file':
 				if ( ! empty( $field['validation']['filetypes'] ) ) {
@@ -178,36 +208,139 @@ final class CFB_Compiler {
 				if ( ! empty( $field['validation']['limit'] ) ) {
 					$opts[] = 'limit:' . sanitize_text_field( $field['validation']['limit'] );
 				}
-				return self::tag( 'file' . $req, $name, $opts );
+				return self::tag( 'file' . $req, $name, $opts, $quoted );
 
 			case 'date':
-				return self::tag( 'date' . $req, $name, $opts );
+				return self::tag( 'date' . $req, $name, $opts, $quoted );
 
 			case 'hidden':
 				if ( ! empty( $field['attrs']['default'] ) ) {
 					$opts[] = 'default:' . sanitize_text_field( $field['attrs']['default'] );
 				}
-				return self::tag( 'hidden', $name, $opts, $field['attrs']['value'] ?? '' );
+				$hidden_val = isset( $field['attrs']['value'] ) ? (string) $field['attrs']['value'] : '';
+				return self::tag( 'hidden', $name, $opts, '' !== $hidden_val ? array( $hidden_val ) : $quoted );
 
 			case 'rating':
 				$opts[] = 'cfb-rating';
-				return self::tag( 'number' . $req, $name, $opts );
+				return self::tag( 'number' . $req, $name, $opts, $quoted );
 
 			case 'signature':
 				$opts[] = 'cfb-signature';
-				return self::tag( 'text' . $req, $name, $opts );
-
-			case 'repeater':
-				$opts[] = 'cfb-repeater';
-				return '<!-- cfb:repeater ' . esc_attr( $name ) . ' -->';
+				return self::tag( 'text' . $req, $name, $opts, $quoted );
 
 			case 'submit':
 				$label = $field['label'] ? $field['label'] : __( 'Send', 'craftforms-builder' );
 				return '[submit "' . self::escape_cf7_value( $label ) . '"]';
 
 			default:
-				return self::tag( 'text' . $req, $name, $opts );
+				return self::tag( 'text' . $req, $name, $opts, $quoted );
 		}
+	}
+
+	/**
+	 * Compile repeater: pre-render CF7 rows (hidden above min) so tags stay registered.
+	 *
+	 * @param array $field Repeater field.
+	 * @return string
+	 */
+	private static function compile_repeater( $field ) {
+		$name     = $field['name'];
+		$label    = $field['label'];
+		$children = $field['children'] ?? array();
+		$min_rows = max( 1, (int) ( $field['attrs']['minRows'] ?? 1 ) );
+		$max_rows = max( $min_rows, min( 20, (int) ( $field['attrs']['maxRows'] ?? 5 ) ) );
+
+		$lines   = array();
+		$lines[] = sprintf(
+			'<div class="cfb-repeater" data-cfb-repeater="%1$s" data-min="%2$d" data-max="%3$d">',
+			esc_attr( $name ),
+			$min_rows,
+			$max_rows
+		);
+
+		if ( $label ) {
+			$lines[] = sprintf( '<p class="cfb-repeater-label"><strong>%s</strong></p>', esc_html( $label ) );
+		}
+
+		$lines[] = '<div class="cfb-repeater-rows">';
+
+		for ( $i = 0; $i < $max_rows; $i++ ) {
+			$row_class = $i >= $min_rows ? 'cfb-repeater-row cfb-repeater-row--hidden' : 'cfb-repeater-row';
+			$lines[]   = sprintf( '<div class="%s" data-row-index="%d">', esc_attr( $row_class ), $i );
+			foreach ( $children as $child ) {
+				$child_field          = $child;
+				$child_field['name']  = $name . '-row' . $i . '-' . $child['name'];
+				$child_field['label'] = $child['label'] ?? $child['name'];
+				$lines[]              = self::compile_field( $child_field );
+			}
+			if ( $i >= $min_rows ) {
+				$lines[] = sprintf(
+					'<p class="cfb-repeater-row-actions"><button type="button" class="cfb-repeater-remove button">%s</button></p>',
+					esc_html__( 'Remove row', 'craftforms-builder' )
+				);
+			}
+			$lines[] = '</div>';
+		}
+
+		$lines[] = '</div>';
+		$lines[] = sprintf(
+			'<p class="cfb-repeater-actions"><button type="button" class="cfb-repeater-add button">%s</button></p>',
+			esc_html__( 'Add row', 'craftforms-builder' )
+		);
+		$lines[] = '</div>';
+
+		if ( ! empty( $field['help'] ) ) {
+			$lines[] = sprintf( '<span class="cfb-help">%s</span>', esc_html( $field['help'] ) );
+		}
+
+		return implode( "\n", $lines );
+	}
+
+	/**
+	 * CF7 placeholder is only valid on text-like tags; select uses first_as_label / include_blank.
+	 *
+	 * @param string $type Field type.
+	 * @return bool
+	 */
+	private static function type_supports_placeholder_attr( $type ) {
+		return in_array( $type, array( 'text', 'email', 'phone', 'url', 'number', 'textarea' ), true );
+	}
+
+	/**
+	 * Blank option strategy for [select] tags.
+	 *
+	 * @param array $field  Field.
+	 * @param array $values Quoted option values.
+	 * @return array{0:string,1:array} Tuple of blank option name and full values list.
+	 */
+	private static function select_blank_and_values( $field, $values ) {
+		if ( ! empty( $field['placeholder'] ) ) {
+			return array(
+				'first_as_label',
+				array_merge(
+					array( $field['placeholder'] ),
+					$values
+				),
+			);
+		}
+
+		return array( 'include_blank', $values );
+	}
+
+	/**
+	 * @param array $field Country field.
+	 * @return array
+	 */
+	private static function country_option_values( $field ) {
+		if ( ! empty( $field['options'] ) && is_array( $field['options'] ) ) {
+			return self::option_values( $field );
+		}
+
+		$out = array();
+		foreach ( CFB_Countries::get_options() as $country ) {
+			$out[] = $country;
+		}
+		return $out;
 	}
 
 	/**
@@ -217,8 +350,8 @@ final class CFB_Compiler {
 	private static function option_values( $field ) {
 		$out = array();
 		if ( empty( $field['options'] ) || ! is_array( $field['options'] ) ) {
-			$out[] = '"Option 1"';
-			$out[] = '"Option 2"';
+			$out[] = 'Option 1';
+			$out[] = 'Option 2';
 			return $out;
 		}
 		foreach ( $field['options'] as $opt ) {
@@ -229,7 +362,7 @@ final class CFB_Compiler {
 			}
 			$val = trim( (string) $val );
 			if ( '' !== $val ) {
-				$out[] = '"' . self::escape_cf7_value( $val ) . '"';
+				$out[] = $val;
 			}
 		}
 		return $out;
@@ -239,16 +372,20 @@ final class CFB_Compiler {
 	 * @param string $basetype CF7 tag type.
 	 * @param string $name     Field name.
 	 * @param array  $options  Options.
-	 * @param string $default_value Default value.
+	 * @param array $quoted_values Quoted values (must come after all options in CF7 tags).
 	 * @return string
 	 */
-	private static function tag( $basetype, $name, $options = array(), $default_value = '' ) {
+	private static function tag( $basetype, $name, $options = array(), $quoted_values = array() ) {
 		$parts = array_filter( array_merge( array( $basetype, $name ), $options ) );
-		$inner = implode( ' ', $parts );
-		if ( '' !== $default_value ) {
-			$inner .= ' "' . self::escape_cf7_value( $default_value ) . '"';
+
+		foreach ( (array) $quoted_values as $value ) {
+			$value = trim( (string) $value );
+			if ( '' !== $value ) {
+				$parts[] = '"' . self::escape_cf7_value( $value ) . '"';
+			}
 		}
-		return '[' . $inner . ']';
+
+		return '[' . implode( ' ', $parts ) . ']';
 	}
 
 	/**

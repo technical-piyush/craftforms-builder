@@ -83,6 +83,20 @@ final class CFB_Validation {
 			if ( 'email' === $field['type'] && ! is_email( $value ) ) {
 				$result->invalidate( null, self::message( $field, 'email' ) );
 			}
+
+			if ( 'url' === $field['type'] && ! wp_http_validate_url( $value ) ) {
+				$result->invalidate( null, self::message( $field, 'invalid' ) );
+			}
+
+			if ( 'number' === $field['type'] && is_numeric( $value ) ) {
+				$numeric = (float) $value;
+				if ( isset( $rules['min'] ) && '' !== $rules['min'] && $numeric < (float) $rules['min'] ) {
+					$result->invalidate( null, self::message( $field, 'min' ) );
+				}
+				if ( isset( $rules['max'] ) && '' !== $rules['max'] && $numeric > (float) $rules['max'] ) {
+					$result->invalidate( null, self::message( $field, 'max' ) );
+				}
+			}
 		}
 
 		$gdpr = $schema['settings']['gdpr'] ?? array();
@@ -117,6 +131,12 @@ final class CFB_Validation {
 			case 'email':
 				/* translators: %s: field label. */
 				return sprintf( __( '%s must be a valid email.', 'craftforms-builder' ), $label );
+			case 'min':
+				/* translators: %s: field label. */
+				return sprintf( __( '%s is too low.', 'craftforms-builder' ), $label );
+			case 'max':
+				/* translators: %s: field label. */
+				return sprintf( __( '%s is too high.', 'craftforms-builder' ), $label );
 			default:
 				/* translators: %s: field label. */
 				return sprintf( __( '%s is invalid.', 'craftforms-builder' ), $label );

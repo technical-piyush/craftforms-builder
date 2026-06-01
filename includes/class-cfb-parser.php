@@ -17,8 +17,11 @@ final class CFB_Parser {
 		'textarea',
 		'email',
 		'phone',
+		'url',
 		'number',
 		'select',
+		'multiselect',
+		'country',
 		'checkbox',
 		'radio',
 		'file',
@@ -28,6 +31,16 @@ final class CFB_Parser {
 		'signature',
 		'repeater',
 		'submit',
+	);
+
+	/** @var string[] Field types that may be nested inside a repeater. */
+	private const REPEATER_CHILD_TYPES = array(
+		'text',
+		'email',
+		'phone',
+		'number',
+		'select',
+		'textarea',
 	);
 
 	/** @var string[] */
@@ -223,6 +236,15 @@ final class CFB_Parser {
 		}
 		if ( isset( $validation['maxLength'] ) ) {
 			$clean['maxLength'] = absint( $validation['maxLength'] );
+		}
+		if ( isset( $validation['min'] ) ) {
+			$clean['min'] = is_numeric( $validation['min'] ) ? (float) $validation['min'] : '';
+		}
+		if ( isset( $validation['max'] ) ) {
+			$clean['max'] = is_numeric( $validation['max'] ) ? (float) $validation['max'] : '';
+		}
+		if ( isset( $validation['step'] ) ) {
+			$clean['step'] = is_numeric( $validation['step'] ) ? (float) $validation['step'] : '';
 		}
 		if ( isset( $validation['pattern'] ) ) {
 			$pattern = (string) $validation['pattern'];
@@ -711,14 +733,40 @@ final class CFB_Parser {
 			$field['name'] = 'field-' . wp_rand( 1000, 9999 );
 		}
 
-		if ( ! empty( $field['children'] ) && is_array( $field['children'] ) ) {
+		if ( 'repeater' === $field['type'] ) {
+			$field['attrs']['minRows'] = max( 1, absint( $field['attrs']['minRows'] ?? 1 ) );
+			$field['attrs']['maxRows'] = max( $field['attrs']['minRows'], absint( $field['attrs']['maxRows'] ?? 5 ) );
+			$field['attrs']['maxRows'] = min( 20, $field['attrs']['maxRows'] );
+
 			$children = array();
-			foreach ( $field['children'] as $child ) {
-				$children[] = self::normalize_field( $child );
+			if ( ! empty( $field['children'] ) && is_array( $field['children'] ) ) {
+				foreach ( $field['children'] as $child ) {
+					$child = self::normalize_field( $child );
+					if ( in_array( $child['type'], self::REPEATER_CHILD_TYPES, true ) ) {
+						$children[] = $child;
+					}
+				}
+			}
+			if ( empty( $children ) ) {
+				$children[] = self::default_field( 'text', 'item', __( 'Item', 'craftforms-builder' ) );
 			}
 			$field['children'] = $children;
+		} elseif ( ! empty( $field['children'] ) && is_array( $field['children'] ) ) {
+			$field['children'] = array();
 		} else {
 			$field['children'] = array();
+		}
+
+		if ( 'country' === $field['type'] && empty( $field['options'] ) ) {
+			$field['options'] = array_map(
+				static function ( $name ) {
+					return array(
+						'label' => $name,
+						'value' => $name,
+					);
+				},
+				CFB_Countries::get_options()
+			);
 		}
 
 		return $field;

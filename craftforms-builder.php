@@ -27,6 +27,7 @@ define( 'CFB_DB_VERSION', '1.1.0' );
 define( 'CFB_SCHEMA_META', '_cfb_schema' );
 
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-activator.php';
+require_once CFB_PLUGIN_DIR . 'includes/class-cfb-countries.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-parser.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-compiler.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-conditional.php';
@@ -41,6 +42,8 @@ require_once CFB_PLUGIN_DIR . 'includes/class-cfb-submissions.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-rest-api.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-admin.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-frontend.php';
+require_once CFB_PLUGIN_DIR . 'includes/class-cfb-form-sync.php';
+require_once CFB_PLUGIN_DIR . 'includes/class-cfb-posted-data.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-plugin.php';
 
 register_activation_hook( __FILE__, array( 'CFB_Activator', 'activate' ) );

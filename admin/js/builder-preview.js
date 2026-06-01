@@ -66,10 +66,23 @@
 				control = el( 'input', { ...common, type: 'email', placeholder: field.placeholder || 'name@example.com', className: 'cfb-preview-control' } );
 				break;
 			case 'phone':
-				control = el( 'input', { ...common, type: 'tel', placeholder: field.placeholder || '+1 (555) 000-0000', className: 'cfb-preview-control' } );
+				control = el(
+					'div',
+					{ className: 'cfb-preview-phone' },
+					el( 'button', { type: 'button', className: 'cfb-preview-phone-code', disabled: true }, '+1' ),
+					el( 'input', {
+						...common,
+						type: 'tel',
+						placeholder: field.placeholder || '555 000 0000',
+						className: 'cfb-preview-control cfb-preview-phone-number',
+					} )
+				);
 				break;
 			case 'number':
 				control = el( 'input', { ...common, type: 'number', placeholder: field.placeholder || '0', className: 'cfb-preview-control' } );
+				break;
+			case 'url':
+				control = el( 'input', { ...common, type: 'url', placeholder: field.placeholder || 'https://', className: 'cfb-preview-control' } );
 				break;
 			case 'date':
 				control = el( 'input', { ...common, type: 'date', className: 'cfb-preview-control' } );
@@ -88,6 +101,39 @@
 					el( 'option', { value: '' }, field.placeholder || 'Select…' ),
 					( field.options || [] ).map( ( o, i ) =>
 						el( 'option', { key: i, value: o.value || o.label || o }, o.label || o.value || o )
+					)
+				);
+				break;
+			case 'multiselect':
+				control = el(
+					'select',
+					{
+						...common,
+						multiple: true,
+						className: 'cfb-preview-control cfb-preview-multiselect',
+						name: field.name,
+					},
+					( field.options || [ { label: 'Option 1', value: 'Option 1' }, { label: 'Option 2', value: 'Option 2' } ] ).map( ( o, i ) =>
+						el( 'option', { key: i, value: o.value || o.label || o }, o.label || o.value || o )
+					)
+				);
+				break;
+			case 'country':
+				control = el(
+					'div',
+					{ className: 'cfb-preview-country' },
+					el(
+						'button',
+						{ type: 'button', className: 'cfb-preview-country-trigger', disabled: true },
+						field.placeholder || 'Select a country'
+					),
+					el(
+						'select',
+						{ ...common, className: 'cfb-preview-control cfb-preview-country-native', 'aria-hidden': true, tabIndex: -1 },
+						el( 'option', { value: '' }, field.placeholder || 'Select a country' ),
+						el( 'option', { value: 'United States' }, 'United States' ),
+						el( 'option', { value: 'Canada' }, 'Canada' ),
+						el( 'option', { value: 'United Kingdom' }, 'United Kingdom' )
 					)
 				);
 				break;
@@ -147,7 +193,13 @@
 				control = el(
 					'div',
 					{ className: 'cfb-preview-repeater' },
-					el( 'p', null, 'Repeater — respondents can add multiple rows' ),
+					( field.children || [ { type: 'text', label: 'Item' } ] ).map( ( child, ci ) =>
+						el(
+							'div',
+							{ key: ci, className: 'cfb-preview-repeater-row' },
+							el( 'small', null, ( child.label || child.name ) + ' (' + child.type + ')' )
+						)
+					),
 					el( 'button', { type: 'button', className: 'cfb-preview-btn', disabled: true }, '+ Add row' )
 				);
 				break;
