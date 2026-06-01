@@ -2,19 +2,19 @@
 /**
  * Autosave and save & continue later (drafts).
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_Autosave {
+final class CFB_Autosave {
 
-	const CACHE_GROUP = 'cf7vb_drafts';
+	const CACHE_GROUP = 'cfb_drafts';
 
 	public static function init() {
-		// REST routes registered in CF7VB_REST_API.
+		// REST routes registered in CFB_REST_API.
 	}
 
 	/**
@@ -42,14 +42,14 @@ final class CF7VB_Autosave {
 		global $wpdb;
 		$db = $wpdb;
 
-		$table   = $db->prefix . 'cf7vb_drafts';
+		$table   = $db->prefix . 'cfb_drafts';
 		$key     = $draft_key ? sanitize_key( $draft_key ) : wp_generate_password( 32, false );
 		$expires = gmdate( 'Y-m-d H:i:s', time() + WEEK_IN_SECONDS );
 
 		$existing_cache = 'draft_id_' . $key . '_' . self::cache_token();
 		$existing       = wp_cache_get( $existing_cache, self::CACHE_GROUP );
 		if ( false === $existing ) {
-			$existing = $db->get_var( $db->prepare( "SELECT id FROM {$db->prefix}cf7vb_drafts WHERE draft_key = %s", $key ) );
+			$existing = $db->get_var( $db->prepare( "SELECT id FROM {$db->prefix}cfb_drafts WHERE draft_key = %s", $key ) );
 			wp_cache_set( $existing_cache, $existing, self::CACHE_GROUP );
 		}
 
@@ -86,7 +86,7 @@ final class CF7VB_Autosave {
 		$row       = wp_cache_get( $cache_key, self::CACHE_GROUP );
 
 		if ( false === $row ) {
-			$row = $db->get_row( $db->prepare( "SELECT * FROM {$db->prefix}cf7vb_drafts WHERE draft_key = %s AND (expires_at IS NULL OR expires_at > %s)", $key, current_time( 'mysql' ) ) );
+			$row = $db->get_row( $db->prepare( "SELECT * FROM {$db->prefix}cfb_drafts WHERE draft_key = %s AND (expires_at IS NULL OR expires_at > %s)", $key, current_time( 'mysql' ) ) );
 			wp_cache_set( $cache_key, $row, self::CACHE_GROUP );
 		}
 

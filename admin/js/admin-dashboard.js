@@ -1,7 +1,7 @@
 ( function () {
 	'use strict';
 
-	const cfg = window.CF7VB_DASH || {};
+	const cfg = window.CFB_DASH || {};
 	const restBase = ( cfg.restUrl || '' ).replace( /\/$/, '' );
 	const nonce = cfg.nonce || '';
 
@@ -22,10 +22,10 @@
 	}
 
 	function showToast( message ) {
-		let toast = document.querySelector( '.cf7vb-toast' );
+		let toast = document.querySelector( '.cfb-toast' );
 		if ( ! toast ) {
 			toast = document.createElement( 'div' );
-			toast.className = 'cf7vb-toast';
+			toast.className = 'cfb-toast';
 			document.body.appendChild( toast );
 		}
 		toast.textContent = message;
@@ -36,7 +36,7 @@
 	}
 
 	function badgeClass( status ) {
-		return 'cf7vb-badge cf7vb-badge--' + ( status || 'read' );
+		return 'cfb-badge cfb-badge--' + ( status || 'read' );
 	}
 
 	function formatEventLabel( type, dataRaw ) {
@@ -62,28 +62,28 @@
 	}
 
 	/* ——— Entry detail modal ——— */
-	const modal = document.getElementById( 'cf7vb-entry-modal' );
+	const modal = document.getElementById( 'cfb-entry-modal' );
 	if ( modal ) {
 		const overlay = modal;
-		const closeBtn = modal.querySelector( '.cf7vb-modal-close' );
-		const bodyEl = modal.querySelector( '.cf7vb-modal-body' );
-		const titleEl = modal.querySelector( '.cf7vb-modal-title' );
-		const metaEl = modal.querySelector( '.cf7vb-modal-meta' );
-		const statusSelect = modal.querySelector( '.cf7vb-status-select' );
-		const saveStatusBtn = modal.querySelector( '.cf7vb-save-status' );
+		const closeBtn = modal.querySelector( '.cfb-modal-close' );
+		const bodyEl = modal.querySelector( '.cfb-modal-body' );
+		const titleEl = modal.querySelector( '.cfb-modal-title' );
+		const metaEl = modal.querySelector( '.cfb-modal-meta' );
+		const statusSelect = modal.querySelector( '.cfb-status-select' );
+		const saveStatusBtn = modal.querySelector( '.cfb-save-status' );
 		let currentEntryId = 0;
 
 		function closeModal() {
 			overlay.classList.remove( 'is-open' );
 			overlay.setAttribute( 'aria-hidden', 'true' );
-			document.body.classList.remove( 'cf7vb-modal-open' );
+			document.body.classList.remove( 'cfb-modal-open' );
 			currentEntryId = 0;
 		}
 
 		function openModal() {
 			overlay.classList.add( 'is-open' );
 			overlay.setAttribute( 'aria-hidden', 'false' );
-			document.body.classList.add( 'cf7vb-modal-open' );
+			document.body.classList.add( 'cfb-modal-open' );
 			closeBtn.focus();
 		}
 
@@ -108,18 +108,18 @@
 				statusSelect.value = entry.status || 'read';
 			}
 
-			let html = '<dl class="cf7vb-field-grid">';
+			let html = '<dl class="cfb-field-grid">';
 			if ( entry.fields && entry.fields.length ) {
 				entry.fields.forEach( function ( field ) {
-					html += '<div class="cf7vb-field-row"><dt>' + escapeHtml( field.label ) + '</dt><dd>' + escapeHtml( field.value ) + '</dd></div>';
+					html += '<div class="cfb-field-row"><dt>' + escapeHtml( field.label ) + '</dt><dd>' + escapeHtml( field.value ) + '</dd></div>';
 				} );
 			} else {
-				html += '<p class="cf7vb-empty">' + escapeHtml( ( cfg.strings && cfg.strings.noFields ) || 'No field data.' ) + '</p>';
+				html += '<p class="cfb-empty">' + escapeHtml( ( cfg.strings && cfg.strings.noFields ) || 'No field data.' ) + '</p>';
 			}
 			html += '</dl>';
 
 			if ( entry.referrer ) {
-				html += '<p class="cf7vb-modal-referrer"><strong>' + escapeHtml( ( cfg.strings && cfg.strings.referrer ) || 'Referrer' ) + ':</strong> <a href="' + escapeHtml( entry.referrer ) + '" target="_blank" rel="noopener">' + escapeHtml( entry.referrer ) + '</a></p>';
+				html += '<p class="cfb-modal-referrer"><strong>' + escapeHtml( ( cfg.strings && cfg.strings.referrer ) || 'Referrer' ) + ':</strong> <a href="' + escapeHtml( entry.referrer ) + '" target="_blank" rel="noopener">' + escapeHtml( entry.referrer ) + '</a></p>';
 			}
 
 			bodyEl.innerHTML = html;
@@ -132,7 +132,7 @@
 		}
 
 		function showLoading() {
-			bodyEl.innerHTML = '<div class="cf7vb-modal-loading"><span class="spinner is-active"></span><p>' + escapeHtml( ( cfg.strings && cfg.strings.loading ) || 'Loading…' ) + '</p></div>';
+			bodyEl.innerHTML = '<div class="cfb-modal-loading"><span class="spinner is-active"></span><p>' + escapeHtml( ( cfg.strings && cfg.strings.loading ) || 'Loading…' ) + '</p></div>';
 		}
 
 		function loadEntry( id ) {
@@ -142,11 +142,11 @@
 			apiFetch( '/entries/' + id )
 				.then( renderEntry )
 				.catch( function () {
-					bodyEl.innerHTML = '<p class="cf7vb-empty">' + escapeHtml( ( cfg.strings && cfg.strings.loadError ) || 'Could not load entry.' ) + '</p>';
+					bodyEl.innerHTML = '<p class="cfb-empty">' + escapeHtml( ( cfg.strings && cfg.strings.loadError ) || 'Could not load entry.' ) + '</p>';
 				} );
 		}
 
-		document.querySelectorAll( '.cf7vb-btn-view[data-entry-id]' ).forEach( function ( btn ) {
+		document.querySelectorAll( '.cfb-btn-view[data-entry-id]' ).forEach( function ( btn ) {
 			btn.addEventListener( 'click', function () {
 				loadEntry( parseInt( btn.getAttribute( 'data-entry-id' ), 10 ) );
 			} );
@@ -182,7 +182,7 @@
 						showToast( ( cfg.strings && cfg.strings.statusSaved ) || 'Status updated.' );
 						const row = document.querySelector( 'tr[data-entry-id="' + currentEntryId + '"]' );
 						if ( row ) {
-							const badge = row.querySelector( '.cf7vb-badge' );
+							const badge = row.querySelector( '.cfb-badge' );
 							if ( badge ) {
 								badge.className = badgeClass( statusSelect.value );
 								badge.textContent = statusSelect.value;

@@ -2,7 +2,7 @@
 	'use strict';
 
 	const { createElement: el } = wp.element;
-	const cfg = window.CF7VB_BUILDER || {};
+	const cfg = window.CFB_BUILDER || {};
 	const L = cfg.strings || {};
 
 	function updateSettings( props, patch ) {
@@ -20,19 +20,19 @@
 	function ToggleRow( props ) {
 		return el(
 			'label',
-			{ className: 'cf7vb-toggle-row' },
+			{ className: 'cfb-toggle-row' },
 			el( 'input', {
 				type: 'checkbox',
-				className: 'cf7vb-toggle-input',
+				className: 'cfb-toggle-input',
 				checked: !! props.checked,
 				onChange: function ( e ) {
 					props.onChange( e.target.checked );
 				},
 			} ),
-			el( 'span', { className: 'cf7vb-toggle-ui', 'aria-hidden': 'true' } ),
+			el( 'span', { className: 'cfb-toggle-ui', 'aria-hidden': 'true' } ),
 			el(
 				'span',
-				{ className: 'cf7vb-toggle-text' },
+				{ className: 'cfb-toggle-text' },
 				el( 'strong', null, props.label ),
 				props.hint ? el( 'small', null, props.hint ) : null
 			)
@@ -42,12 +42,12 @@
 	function SettingsSection( props ) {
 		return el(
 			'section',
-			{ className: 'cf7vb-settings-section' },
+			{ className: 'cfb-settings-section' },
 			el(
 				'header',
-				{ className: 'cf7vb-settings-section-head' },
+				{ className: 'cfb-settings-section-head' },
 				props.icon
-					? el( 'span', { className: 'cf7vb-settings-section-icon dashicons ' + props.icon } )
+					? el( 'span', { className: 'cfb-settings-section-icon dashicons ' + props.icon } )
 					: null,
 				el(
 					'div',
@@ -56,21 +56,21 @@
 					props.desc ? el( 'p', null, props.desc ) : null
 				)
 			),
-			el( 'div', { className: 'cf7vb-settings-section-body' }, props.children )
+			el( 'div', { className: 'cfb-settings-section-body' }, props.children )
 		);
 	}
 
 	function Field( props ) {
 		return el(
 			'div',
-			{ className: 'cf7vb-settings-field' },
+			{ className: 'cfb-settings-field' },
 			el( 'label', null, props.label ),
 			props.children,
-			props.hint ? el( 'span', { className: 'cf7vb-settings-hint' }, props.hint ) : null
+			props.hint ? el( 'span', { className: 'cfb-settings-hint' }, props.hint ) : null
 		);
 	}
 
-	window.CF7VB_SETTINGS = function SettingsPanel( props ) {
+	window.CFB_SETTINGS = function SettingsPanel( props ) {
 		const st = props.schema.settings || {};
 		const ty = st.thankYou || {};
 		const gdpr = st.gdpr || {};
@@ -81,10 +81,10 @@
 
 		return el(
 			'div',
-			{ className: 'cf7vb-settings-panel' },
+			{ className: 'cfb-settings-panel' },
 			el(
 				'header',
-				{ className: 'cf7vb-panel-intro' },
+				{ className: 'cfb-panel-intro' },
 				el( 'h2', null, L.settingsTitle || 'Form settings' ),
 				el( 'p', null, L.settingsIntro || 'Appearance, multistep behavior, thank-you page, privacy, security, and email.' )
 			),
@@ -97,14 +97,14 @@
 				},
 				el(
 					'div',
-					{ className: 'cf7vb-settings-row-2' },
+					{ className: 'cfb-settings-row-2' },
 					el(
 						Field,
 						{ label: L.setTheme || 'Form style' },
 						el(
 							'select',
 							{
-								className: 'cf7vb-settings-input',
+								className: 'cfb-settings-input',
 								value: app.theme || 'modern',
 								onChange: function ( e ) { patchNested( props, 'appearance', { theme: e.target.value } ); },
 							},
@@ -118,7 +118,7 @@
 						{ label: L.setPrimaryColor || 'Primary color' },
 						el( 'input', {
 							type: 'color',
-							className: 'cf7vb-settings-color',
+							className: 'cfb-settings-color',
 							value: app.primaryColor || '#3858e9',
 							onChange: function ( e ) { patchNested( props, 'appearance', { primaryColor: e.target.value } ); },
 						} )
@@ -126,14 +126,14 @@
 				),
 				el(
 					'div',
-					{ className: 'cf7vb-settings-row-2' },
+					{ className: 'cfb-settings-row-2' },
 					el(
 						Field,
 						{ label: L.setFormWidth || 'Form width' },
 						el(
 							'select',
 							{
-								className: 'cf7vb-settings-input',
+								className: 'cfb-settings-input',
 								value: app.formWidth || 'medium',
 								onChange: function ( e ) { patchNested( props, 'appearance', { formWidth: e.target.value } ); },
 							},
@@ -149,7 +149,7 @@
 						el(
 							'select',
 							{
-								className: 'cf7vb-settings-input',
+								className: 'cfb-settings-input',
 								value: app.borderRadius || 'medium',
 								onChange: function ( e ) { patchNested( props, 'appearance', { borderRadius: e.target.value } ); },
 							},
@@ -162,14 +162,14 @@
 				),
 				el(
 					'div',
-					{ className: 'cf7vb-settings-row-2' },
+					{ className: 'cfb-settings-row-2' },
 					el(
 						Field,
 						{ label: L.setFieldSpacing || 'Field spacing' },
 						el(
 							'select',
 							{
-								className: 'cf7vb-settings-input',
+								className: 'cfb-settings-input',
 								value: app.fieldSpacing || 'comfortable',
 								onChange: function ( e ) { patchNested( props, 'appearance', { fieldSpacing: e.target.value } ); },
 							},
@@ -183,7 +183,7 @@
 						el(
 							'select',
 							{
-								className: 'cf7vb-settings-input',
+								className: 'cfb-settings-input',
 								value: app.progressStyle || 'pills',
 								onChange: function ( e ) { patchNested( props, 'appearance', { progressStyle: e.target.value } ); },
 							},
@@ -195,7 +195,7 @@
 				),
 				el(
 					'div',
-					{ className: 'cf7vb-settings-toggles' },
+					{ className: 'cfb-settings-toggles' },
 					el( ToggleRow, {
 						label: L.setShowCounter || 'Show step counter',
 						checked: app.showStepCounter !== false,
@@ -224,7 +224,7 @@
 				},
 				el(
 					'div',
-					{ className: 'cf7vb-settings-toggles' },
+					{ className: 'cfb-settings-toggles' },
 					el( ToggleRow, {
 						label: L.setAutosave || 'Autosave progress',
 						hint: L.setAutosaveHint || 'Save field values locally as users type.',
@@ -264,7 +264,7 @@
 					el(
 						'select',
 						{
-							className: 'cf7vb-settings-input',
+							className: 'cfb-settings-input',
 							value: ty.type || 'message',
 							onChange: function ( e ) { patchNested( props, 'thankYou', { type: e.target.value } ); },
 						},
@@ -277,7 +277,7 @@
 					Field,
 					{ label: L.setThankMsg || 'Success message' },
 					el( 'textarea', {
-						className: 'cf7vb-settings-input',
+						className: 'cfb-settings-input',
 						rows: 3,
 						value: ty.message || '',
 						onChange: function ( e ) { patchNested( props, 'thankYou', { message: e.target.value } ); },
@@ -289,7 +289,7 @@
 						{ label: L.setRedirectUrl || 'Redirect URL' },
 						el( 'input', {
 							type: 'url',
-							className: 'cf7vb-settings-input',
+							className: 'cfb-settings-input',
 							value: ty.redirectUrl || '',
 							placeholder: 'https://',
 							onChange: function ( e ) { patchNested( props, 'thankYou', { redirectUrl: e.target.value } ); },
@@ -315,7 +315,7 @@
 						{ label: L.setGdprLabel || 'Consent label' },
 						el( 'input', {
 							type: 'text',
-							className: 'cf7vb-settings-input',
+							className: 'cfb-settings-input',
 							value: gdpr.label || '',
 							onChange: function ( e ) { patchNested( props, 'gdpr', { label: e.target.value } ); },
 						} )
@@ -331,7 +331,7 @@
 				},
 				el(
 					'div',
-					{ className: 'cf7vb-settings-toggles' },
+					{ className: 'cfb-settings-toggles' },
 					el( ToggleRow, {
 						label: L.setAria || 'ARIA labels',
 						checked: a11y.ariaLabels !== false,
@@ -358,7 +358,7 @@
 				},
 				el(
 					'div',
-					{ className: 'cf7vb-settings-toggles' },
+					{ className: 'cfb-settings-toggles' },
 					el( ToggleRow, {
 						label: L.setHoneypot || 'Honeypot field',
 						hint: L.setHoneypotHint || 'Hidden field that bots often fill.',
@@ -387,13 +387,13 @@
 				} ),
 				el(
 					'div',
-					{ className: 'cf7vb-settings-row-2' },
+					{ className: 'cfb-settings-row-2' },
 					el(
 						Field,
 						{ label: L.setBrandColor || 'Brand color' },
 						el( 'input', {
 							type: 'color',
-							className: 'cf7vb-settings-color',
+							className: 'cfb-settings-color',
 							value: emails.brandColor || '#3858e9',
 							onChange: function ( e ) { patchNested( props, 'emails', { brandColor: e.target.value } ); },
 						} )
@@ -403,7 +403,7 @@
 						{ label: L.setLogoUrl || 'Logo URL' },
 						el( 'input', {
 							type: 'url',
-							className: 'cf7vb-settings-input',
+							className: 'cfb-settings-input',
 							value: emails.logoUrl || '',
 							placeholder: 'https://',
 							onChange: function ( e ) { patchNested( props, 'emails', { logoUrl: e.target.value } ); },

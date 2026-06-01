@@ -2,14 +2,14 @@
 /**
  * Plugin bootstrap.
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_Plugin {
+final class CFB_Plugin {
 
 	private static $instance = null;
 
@@ -28,18 +28,18 @@ final class CF7VB_Plugin {
 	}
 
 	public function run() {
-		CF7VB_Activator::maybe_upgrade();
+		CFB_Activator::maybe_upgrade();
 
-		CF7VB_Admin::init();
-		CF7VB_REST_API::init();
-		CF7VB_Submissions::init();
-		CF7VB_Frontend::init();
-		CF7VB_Validation::init();
-		CF7VB_Security::init();
-		CF7VB_Email::init();
-		CF7VB_Thankyou::init();
-		CF7VB_Export::init();
-		CF7VB_Analytics::init();
+		CFB_Admin::init();
+		CFB_REST_API::init();
+		CFB_Submissions::init();
+		CFB_Frontend::init();
+		CFB_Validation::init();
+		CFB_Security::init();
+		CFB_Email::init();
+		CFB_Thankyou::init();
+		CFB_Export::init();
+		CFB_Analytics::init();
 
 		add_action( 'wpcf7_save_contact_form', array( $this, 'on_save_contact_form' ), 5, 3 );
 		add_action( 'wpcf7_after_save', array( $this, 'on_after_save' ), 10, 1 );
@@ -51,11 +51,11 @@ final class CF7VB_Plugin {
 	 * @return string
 	 */
 	public function additional_settings( $content ) {
-		if ( false !== strpos( $content, 'cf7vb:' ) ) {
+		if ( false !== strpos( $content, 'cfb:' ) ) {
 			return $content;
 		}
 
-		return $content . "\n" . 'cf7vb: enabled';
+		return $content . "\n" . 'cfb: enabled';
 	}
 
 	/**
@@ -68,28 +68,19 @@ final class CF7VB_Plugin {
 			return;
 		}
 
-		// Read the raw JSON via filter_input(): it returns the unslashed request value and
-		// every decoded field is sanitized in CF7VB_Parser::normalize_schema() below.
-		$raw = filter_input( INPUT_POST, 'cf7vb_schema' );
-		if ( ! is_string( $raw ) || '' === $raw ) {
+		$schema = CFB_Parser::get_schema_from_post();
+		if ( null === $schema ) {
 			return;
 		}
-
-		$schema = json_decode( $raw, true );
-		if ( ! is_array( $schema ) ) {
-			return;
-		}
-
-		$schema  = CF7VB_Parser::normalize_schema( $schema );
 		$form_id = (int) $contact_form->id();
 
 		if ( $form_id > 0 ) {
-			update_post_meta( $form_id, CF7VB_SCHEMA_META, $schema );
+			update_post_meta( $form_id, CFB_SCHEMA_META, $schema );
 		} else {
 			$this->pending_schema = $schema;
 		}
 
-		$compiled      = CF7VB_Compiler::compile( $schema );
+		$compiled      = CFB_Compiler::compile( $schema );
 		$props         = $contact_form->get_properties();
 		$props['form'] = wpcf7_sanitize_form( $compiled );
 		$contact_form->set_properties( $props );
@@ -107,10 +98,27 @@ final class CF7VB_Plugin {
 
 		$form_id = (int) $contact_form->id();
 		if ( $form_id > 0 ) {
-			update_post_meta( $form_id, CF7VB_SCHEMA_META, $this->pending_schema );
+			update_post_meta( $form_id, CFB_SCHEMA_META, $this->pending_schema );
 		}
 
 		$this->pending_schema = null;
+	}
+
+	/**
+	 * Whether this contact form was saved with the CraftForms visual builder.
+	 *
+	 * @param int $form_id Contact form post ID.
+	 * @return bool
+	 */
+	public static function form_uses_builder( $form_id ) {
+		$form_id = absint( $form_id );
+		if ( ! $form_id ) {
+			return false;
+		}
+
+		$schema = get_post_meta( $form_id, CFB_SCHEMA_META, true );
+
+		return is_array( $schema ) && ! empty( $schema['steps'] );
 	}
 
 	/**
@@ -120,22 +128,22 @@ final class CF7VB_Plugin {
 	public static function get_schema( $form_id ) {
 		$form_id = absint( $form_id );
 		if ( ! $form_id ) {
-			return CF7VB_Parser::default_schema();
+			return CFB_Parser::default_schema();
 		}
 
-		$stored = get_post_meta( $form_id, CF7VB_SCHEMA_META, true );
+		$stored = get_post_meta( $form_id, CFB_SCHEMA_META, true );
 		if ( is_array( $stored ) && ! empty( $stored['steps'] ) ) {
-			return CF7VB_Parser::normalize_schema( $stored );
+			return CFB_Parser::normalize_schema( $stored );
 		}
 
 		$contact_form = wpcf7_contact_form( $form_id );
 		if ( $contact_form ) {
-			$parsed = CF7VB_Parser::from_cf7_markup( $contact_form->prop( 'form' ) );
+			$parsed = CFB_Parser::from_cf7_markup( $contact_form->prop( 'form' ) );
 			if ( ! empty( $parsed['steps'][0]['sections'][0]['fields'] ) ) {
 				return $parsed;
 			}
 		}
 
-		return CF7VB_Parser::default_schema();
+		return CFB_Parser::default_schema();
 	}
 }

@@ -1,7 +1,7 @@
 ( function () {
 	'use strict';
 
-	const globalCfg = window.CF7VB_FRONT || {};
+	const globalCfg = window.CFB_FRONT || {};
 	const strings = globalCfg.strings || {};
 
 	function getAppearance( schema ) {
@@ -18,7 +18,7 @@
 			if ( required && ! label.contains( required ) ) {
 				label.appendChild( required );
 			}
-			row.classList.add( 'cf7vb-field-row' );
+			row.classList.add( 'cfb-field-row' );
 		} );
 	}
 
@@ -35,7 +35,7 @@
 	}
 
 	function parseSchema( wrapper ) {
-		const raw = wrapper.getAttribute( 'data-cf7vb-schema' );
+		const raw = wrapper.getAttribute( 'data-cfb-schema' );
 		if ( raw ) {
 			try {
 				return JSON.parse( raw );
@@ -44,7 +44,7 @@
 			}
 		}
 
-		const inline = wrapper.querySelector( 'script.cf7vb-schema-json' );
+		const inline = wrapper.querySelector( 'script.cfb-schema-json' );
 		if ( inline && inline.textContent ) {
 			try {
 				return JSON.parse( inline.textContent );
@@ -62,7 +62,7 @@
 			return null;
 		}
 		return {
-			formId: wrapper.getAttribute( 'data-cf7vb-form' ) || '',
+			formId: wrapper.getAttribute( 'data-cfb-form' ) || '',
 			schema: schema,
 			restUrl: globalCfg.restUrl || '',
 			nonce: globalCfg.nonce || '',
@@ -70,12 +70,12 @@
 	}
 
 	function getSession() {
-		const match = document.cookie.match( /cf7vb_session=([^;]+)/ );
+		const match = document.cookie.match( /cfb_session=([^;]+)/ );
 		if ( match ) {
 			return match[1];
 		}
-		const key = 'cf7vb_' + Math.random().toString( 36 ).slice( 2 );
-		document.cookie = 'cf7vb_session=' + key + ';path=/;max-age=' + ( 30 * 86400 );
+		const key = 'cfb_' + Math.random().toString( 36 ).slice( 2 );
+		document.cookie = 'cfb_session=' + key + ';path=/;max-age=' + ( 30 * 86400 );
 		return key;
 	}
 
@@ -105,7 +105,7 @@
 		return (
 			wrap.closest( 'p' ) ||
 			wrap.closest( 'label' ) ||
-			wrap.closest( '.cf7vb-field-row' ) ||
+			wrap.closest( '.cfb-field-row' ) ||
 			wrap
 		);
 	}
@@ -155,9 +155,9 @@
 		rows.forEach( function ( row ) {
 			if ( rowIsRequiredInvalid( row ) ) {
 				invalid = true;
-				row.classList.add( 'cf7vb-step-invalid' );
+				row.classList.add( 'cfb-step-invalid' );
 			} else {
-				row.classList.remove( 'cf7vb-step-invalid' );
+				row.classList.remove( 'cfb-step-invalid' );
 			}
 		} );
 		return ! invalid;
@@ -166,9 +166,9 @@
 	function buildGroupsFromSchema( form, schema ) {
 		const panels = schema.steps.map( function ( step, index ) {
 			const panel = document.createElement( 'div' );
-			panel.className = 'cf7vb-step-panel cf7vb-step-group';
-			panel.setAttribute( 'data-cf7vb-step', step.id );
-			panel.setAttribute( 'data-cf7vb-step-index', String( index ) );
+			panel.className = 'cfb-step-panel cfb-step-group';
+			panel.setAttribute( 'data-cfb-step', step.id );
+			panel.setAttribute( 'data-cfb-step-index', String( index ) );
 			return panel;
 		} );
 
@@ -218,16 +218,16 @@
 			return;
 		}
 
-		if ( wrapper.dataset.cf7vbMultistepReady === '1' ) {
+		if ( wrapper.dataset.cfbMultistepReady === '1' ) {
 			return;
 		}
-		wrapper.dataset.cf7vbMultistepReady = '1';
+		wrapper.dataset.cfbMultistepReady = '1';
 
-		let panels = Array.from( form.querySelectorAll( '.cf7vb-step-group' ) );
+		let panels = Array.from( form.querySelectorAll( '.cfb-step-group' ) );
 
 		panels.sort( function ( a, b ) {
-			const ai = parseInt( a.getAttribute( 'data-cf7vb-step-index' ), 10 );
-			const bi = parseInt( b.getAttribute( 'data-cf7vb-step-index' ), 10 );
+			const ai = parseInt( a.getAttribute( 'data-cfb-step-index' ), 10 );
+			const bi = parseInt( b.getAttribute( 'data-cfb-step-index' ), 10 );
 			if ( ! isNaN( ai ) && ! isNaN( bi ) ) {
 				return ai - bi;
 			}
@@ -255,7 +255,7 @@
 		}
 
 		panels.forEach( function ( panel ) {
-			panel.classList.add( 'cf7vb-step-panel' );
+			panel.classList.add( 'cfb-step-panel' );
 		} );
 
 		let current = 0;
@@ -263,16 +263,16 @@
 		const app = getAppearance( schema );
 
 		const progress = document.createElement( 'div' );
-		progress.className = 'cf7vb-step-progress cf7vb-progress-style-' + ( app.progressStyle || 'pills' );
+		progress.className = 'cfb-step-progress cfb-progress-style-' + ( app.progressStyle || 'pills' );
 		progress.innerHTML =
-			'<span class="cf7vb-step-label"></span>' +
-			'<div class="cf7vb-step-progress-bar"><div class="cf7vb-step-progress-fill"></div></div>' +
-			'<div class="cf7vb-step-dots"></div>' +
-			'<div class="cf7vb-step-heading" aria-live="polite"></div>';
-		const fill = progress.querySelector( '.cf7vb-step-progress-fill' );
-		const label = progress.querySelector( '.cf7vb-step-label' );
-		const dots = progress.querySelector( '.cf7vb-step-dots' );
-		const heading = progress.querySelector( '.cf7vb-step-heading' );
+			'<span class="cfb-step-label"></span>' +
+			'<div class="cfb-step-progress-bar"><div class="cfb-step-progress-fill"></div></div>' +
+			'<div class="cfb-step-dots"></div>' +
+			'<div class="cfb-step-heading" aria-live="polite"></div>';
+		const fill = progress.querySelector( '.cfb-step-progress-fill' );
+		const label = progress.querySelector( '.cfb-step-label' );
+		const dots = progress.querySelector( '.cfb-step-dots' );
+		const heading = progress.querySelector( '.cfb-step-heading' );
 
 		if ( app.showStepCounter === false ) {
 			label.hidden = true;
@@ -289,18 +289,18 @@
 				return;
 			}
 			const panel = panels[ i ];
-			const panelTitle = panel.getAttribute( 'data-cf7vb-step-title' );
+			const panelTitle = panel.getAttribute( 'data-cfb-step-title' );
 			if ( panelTitle ) {
 				step.panelTitle = panelTitle;
 			}
 			const titleText = stepDisplayTitle( step, i );
 
 			const dotWrap = document.createElement( 'div' );
-			dotWrap.className = 'cf7vb-step-dot-wrap';
+			dotWrap.className = 'cfb-step-dot-wrap';
 
 			const dot = document.createElement( 'button' );
 			dot.type = 'button';
-			dot.className = 'cf7vb-step-dot';
+			dot.className = 'cfb-step-dot';
 			dot.textContent = String( i + 1 );
 			dot.title = titleText;
 			dot.setAttribute( 'aria-label', titleText );
@@ -311,7 +311,7 @@
 			} );
 
 			const dotLabel = document.createElement( 'span' );
-			dotLabel.className = 'cf7vb-step-dot-label';
+			dotLabel.className = 'cfb-step-dot-label';
 			dotLabel.textContent = titleText;
 
 			dotWrap.appendChild( dot );
@@ -320,14 +320,14 @@
 		} );
 
 		const nav = document.createElement( 'div' );
-		nav.className = 'cf7vb-step-nav';
+		nav.className = 'cfb-step-nav';
 		const prevBtn = document.createElement( 'button' );
 		prevBtn.type = 'button';
-		prevBtn.className = 'cf7vb-prev';
+		prevBtn.className = 'cfb-prev';
 		prevBtn.textContent = strings.prev || 'Previous';
 		const nextBtn = document.createElement( 'button' );
 		nextBtn.type = 'button';
-		nextBtn.className = 'cf7vb-next';
+		nextBtn.className = 'cfb-next';
 		nextBtn.textContent = strings.next || 'Next';
 		nav.appendChild( prevBtn );
 		nav.appendChild( nextBtn );
@@ -335,7 +335,7 @@
 		if ( schema.settings.saveContinue ) {
 			const saveBtn = document.createElement( 'button' );
 			saveBtn.type = 'button';
-			saveBtn.className = 'cf7vb-save-draft';
+			saveBtn.className = 'cfb-save-draft';
 			saveBtn.textContent = strings.saveContinue || 'Save & continue';
 			saveBtn.addEventListener( 'click', function () {
 				autosave( form, cfg );
@@ -344,8 +344,8 @@
 			nav.insertBefore( saveBtn, nextBtn );
 		}
 
-		const existingProgress = wrapper.querySelector( '.cf7vb-step-progress' );
-		const existingNav = wrapper.querySelector( '.cf7vb-step-nav' );
+		const existingProgress = wrapper.querySelector( '.cfb-step-progress' );
+		const existingNav = wrapper.querySelector( '.cfb-step-nav' );
 		if ( existingProgress ) {
 			existingProgress.remove();
 		}
@@ -363,16 +363,16 @@
 			panels.forEach( function ( panel, i ) {
 				const active = i === current;
 				panel.hidden = ! active;
-				panel.classList.toggle( 'cf7vb-step-active', active );
+				panel.classList.toggle( 'cfb-step-active', active );
 				if ( animated && active ) {
-					panel.classList.remove( 'cf7vb-animate-in' );
+					panel.classList.remove( 'cfb-animate-in' );
 					void panel.offsetWidth;
-					panel.classList.add( 'cf7vb-animate-in' );
+					panel.classList.add( 'cfb-animate-in' );
 				}
 			} );
 
-			dots.querySelectorAll( '.cf7vb-step-dot-wrap' ).forEach( function ( wrap, i ) {
-				const d = wrap.querySelector( '.cf7vb-step-dot' );
+			dots.querySelectorAll( '.cfb-step-dot-wrap' ).forEach( function ( wrap, i ) {
+				const d = wrap.querySelector( '.cfb-step-dot' );
 				if ( d ) {
 					d.classList.toggle( 'is-active', i === current );
 					d.classList.toggle( 'is-done', i < current );
@@ -401,10 +401,10 @@
 
 			if ( current === panels.length - 1 ) {
 				nextBtn.textContent = strings.submit || 'Submit';
-				nextBtn.classList.add( 'cf7vb-next--submit' );
+				nextBtn.classList.add( 'cfb-next--submit' );
 			} else {
 				nextBtn.textContent = strings.next || 'Next';
-				nextBtn.classList.remove( 'cf7vb-next--submit' );
+				nextBtn.classList.remove( 'cfb-next--submit' );
 			}
 
 			fill.style.width = ( ( current + 1 ) / panels.length * 100 ) + '%';
@@ -489,11 +489,11 @@
 				data[ el.name ] = el.value;
 			}
 		} );
-		localStorage.setItem( 'cf7vb_autosave_' + cfg.formId, JSON.stringify( data ) );
+		localStorage.setItem( 'cfb_autosave_' + cfg.formId, JSON.stringify( data ) );
 	}
 
 	function initForm( wrapper ) {
-		if ( wrapper.dataset.cf7vbFormReady === '1' ) {
+		if ( wrapper.dataset.cfbFormReady === '1' ) {
 			return;
 		}
 
@@ -508,7 +508,7 @@
 			return;
 		}
 
-		wrapper.dataset.cf7vbFormReady = '1';
+		wrapper.dataset.cfbFormReady = '1';
 
 		fixRequiredMarkers( form );
 		track( cfg, 'view', {} );
@@ -516,10 +516,10 @@
 
 		document.addEventListener( 'wpcf7mailsent', function ( ev ) {
 			if ( ev.detail && String( ev.detail.contactFormId ) === String( cfg.formId ) ) {
-				localStorage.removeItem( 'cf7vb_autosave_' + cfg.formId );
+				localStorage.removeItem( 'cfb_autosave_' + cfg.formId );
 				const ty = cfg.schema.settings.thankYou || {};
-				if ( ev.detail.apiResponse && ev.detail.apiResponse.cf7vb_redirect ) {
-					window.location.href = ev.detail.apiResponse.cf7vb_redirect;
+				if ( ev.detail.apiResponse && ev.detail.apiResponse.cfb_redirect ) {
+					window.location.href = ev.detail.apiResponse.cfb_redirect;
 				} else if ( ty.redirectUrl ) {
 					window.location.href = ty.redirectUrl;
 				}
@@ -528,7 +528,7 @@
 	}
 
 	function boot() {
-		document.querySelectorAll( '.cf7vb-enhanced' ).forEach( initForm );
+		document.querySelectorAll( '.cfb-enhanced' ).forEach( initForm );
 	}
 
 	if ( document.readyState === 'loading' ) {

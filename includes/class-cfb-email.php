@@ -2,14 +2,14 @@
 /**
  * Conditional emails and HTML template overrides.
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_Email {
+final class CFB_Email {
 
 	public static function init() {
 		add_filter( 'wpcf7_mail_components', array( __CLASS__, 'filter_mail' ), 20, 2 );
@@ -22,10 +22,11 @@ final class CF7VB_Email {
 	 * @return array
 	 */
 	public static function filter_mail( $components, $form ) {
-		$schema = get_post_meta( $form->id(), CF7VB_SCHEMA_META, true );
-		if ( ! is_array( $schema ) ) {
+		if ( ! $form instanceof WPCF7_ContactForm || ! CFB_Plugin::form_uses_builder( $form->id() ) ) {
 			return $components;
 		}
+
+		$schema = get_post_meta( $form->id(), CFB_SCHEMA_META, true );
 
 		$emails = $schema['settings']['emails'] ?? array();
 		if ( empty( $emails['htmlTemplate'] ) ) {
@@ -49,10 +50,11 @@ final class CF7VB_Email {
 	 * @param WPCF7_ContactForm $contact_form Form.
 	 */
 	public static function maybe_send_conditional( $contact_form ) {
-		$schema = get_post_meta( $contact_form->id(), CF7VB_SCHEMA_META, true );
-		if ( ! is_array( $schema ) ) {
+		if ( ! $contact_form instanceof WPCF7_ContactForm || ! CFB_Plugin::form_uses_builder( $contact_form->id() ) ) {
 			return;
 		}
+
+		$schema = get_post_meta( $contact_form->id(), CFB_SCHEMA_META, true );
 
 		$submission = WPCF7_Submission::get_instance();
 		if ( ! $submission ) {
@@ -60,7 +62,7 @@ final class CF7VB_Email {
 		}
 
 		$posted  = $submission->get_posted_data();
-		$actions = CF7VB_Conditional::resolve_actions( $schema, $posted );
+		$actions = CFB_Conditional::resolve_actions( $schema, $posted );
 
 		foreach ( $actions['mail_overrides'] as $mail_action ) {
 			if ( empty( $mail_action['recipient'] ) || empty( $mail_action['subject'] ) ) {

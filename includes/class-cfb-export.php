@@ -2,31 +2,31 @@
 /**
  * CSV and PDF export for entries.
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_Export {
+final class CFB_Export {
 
 	public static function init() {
-		add_action( 'admin_post_cf7vb_export_csv', array( __CLASS__, 'export_csv' ) );
-		add_action( 'admin_post_cf7vb_export_pdf', array( __CLASS__, 'export_pdf' ) );
+		add_action( 'admin_post_cfb_export_csv', array( __CLASS__, 'export_csv' ) );
+		add_action( 'admin_post_cfb_export_pdf', array( __CLASS__, 'export_pdf' ) );
 	}
 
 	public static function export_csv() {
 		if ( ! current_user_can( 'wpcf7_read_contact_forms' ) ) {
-			wp_die( esc_html__( 'Forbidden.', 'form-studio-for-contact-form-7' ) );
+			wp_die( esc_html__( 'Forbidden.', 'craftforms-builder' ) );
 		}
-		check_admin_referer( 'cf7vb_export' );
+		check_admin_referer( 'cfb_export' );
 
 		$form_id = isset( $_GET['form_id'] ) ? absint( $_GET['form_id'] ) : 0;
 		$search  = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
 		$status  = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '';
 
-		$result = CF7VB_Submissions::query(
+		$result = CFB_Submissions::query(
 			array(
 				'form_id'  => $form_id,
 				'search'   => $search,
@@ -36,7 +36,7 @@ final class CF7VB_Export {
 			)
 		);
 
-		$filename = 'cf7vb-entries-' . gmdate( 'Y-m-d' ) . '.csv';
+		$filename = 'cfb-entries-' . gmdate( 'Y-m-d' ) . '.csv';
 		header( 'Content-Type: text/csv; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename=' . $filename );
 
@@ -54,22 +54,22 @@ final class CF7VB_Export {
 			);
 		}
 
-		// The CSV body is produced and RFC 4180 quoted by cf7vb_csv_from_rows(). It is
+		// The CSV body is produced and RFC 4180 quoted by cfb_csv_from_rows(). It is
 		// emitted through an indirect call so it is sent verbatim as the file body
 		// rather than being treated as HTML markup.
 		$emit = 'printf';
-		$emit( '%s', cf7vb_csv_from_rows( $rows ) );
+		$emit( '%s', cfb_csv_from_rows( $rows ) );
 		exit;
 	}
 
 	public static function export_pdf() {
 		if ( ! current_user_can( 'wpcf7_read_contact_forms' ) ) {
-			wp_die( esc_html__( 'Forbidden.', 'form-studio-for-contact-form-7' ) );
+			wp_die( esc_html__( 'Forbidden.', 'craftforms-builder' ) );
 		}
-		check_admin_referer( 'cf7vb_export' );
+		check_admin_referer( 'cfb_export' );
 
 		$form_id = isset( $_GET['form_id'] ) ? absint( $_GET['form_id'] ) : 0;
-		$result  = CF7VB_Submissions::query(
+		$result  = CFB_Submissions::query(
 			array(
 				'form_id'  => $form_id,
 				'per_page' => 500,
@@ -78,12 +78,12 @@ final class CF7VB_Export {
 		);
 
 		header( 'Content-Type: text/html; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename=cf7vb-entries-' . gmdate( 'Y-m-d' ) . '.html' );
+		header( 'Content-Disposition: attachment; filename=cfb-entries-' . gmdate( 'Y-m-d' ) . '.html' );
 
 		echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Entries</title>';
 		echo '<style>body{font-family:sans-serif;padding:24px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;font-size:12px}th{background:#f0f0f1}@media print{button{display:none}}</style></head><body>';
-		echo '<h1>' . esc_html__( 'Form Entries Export', 'form-studio-for-contact-form-7' ) . '</h1>';
-		echo '<p><button onclick="window.print()">' . esc_html__( 'Print / Save as PDF', 'form-studio-for-contact-form-7' ) . '</button></p>';
+		echo '<h1>' . esc_html__( 'Form Entries Export', 'craftforms-builder' ) . '</h1>';
+		echo '<p><button onclick="window.print()">' . esc_html__( 'Print / Save as PDF', 'craftforms-builder' ) . '</button></p>';
 		echo '<table><thead><tr><th>ID</th><th>Form</th><th>Status</th><th>Date</th><th>Data</th></tr></thead><tbody>';
 
 		foreach ( $result['items'] as $row ) {
@@ -106,7 +106,7 @@ final class CF7VB_Export {
 	}
 }
 
-if ( ! function_exists( 'cf7vb_csv_from_rows' ) ) {
+if ( ! function_exists( 'cfb_csv_from_rows' ) ) {
 	/**
 	 * Build an RFC 4180 CSV document from an array of rows.
 	 *
@@ -118,7 +118,7 @@ if ( ! function_exists( 'cf7vb_csv_from_rows' ) ) {
 	 * @param array $rows Array of rows, each row being an array of field values.
 	 * @return string Escaped CSV text.
 	 */
-	function cf7vb_csv_from_rows( $rows ) {
+	function cfb_csv_from_rows( $rows ) {
 		$lines = array();
 
 		foreach ( $rows as $fields ) {

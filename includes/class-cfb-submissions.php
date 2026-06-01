@@ -2,20 +2,20 @@
 /**
  * Store CF7 submissions when visual builder is active on a form.
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_Submissions {
+final class CFB_Submissions {
 
-	const CACHE_GROUP = 'cf7vb_entries';
+	const CACHE_GROUP = 'cfb_entries';
 
 	public static function init() {
 		add_action( 'wpcf7_before_send_mail', array( __CLASS__, 'store_submission' ), 5 );
-		add_shortcode( 'cf7vb_entries', array( __CLASS__, 'shortcode_entries' ) );
+		add_shortcode( 'cfb_entries', array( __CLASS__, 'shortcode_entries' ) );
 	}
 
 	/**
@@ -37,10 +37,12 @@ final class CF7VB_Submissions {
 	 * @param WPCF7_ContactForm $contact_form Form.
 	 */
 	public static function store_submission( $contact_form ) {
-		$form_id = $contact_form->id();
-		$schema  = get_post_meta( $form_id, CF7VB_SCHEMA_META, true );
+		if ( ! $contact_form instanceof WPCF7_ContactForm ) {
+			return;
+		}
 
-		if ( ! is_array( $schema ) ) {
+		$form_id = $contact_form->id();
+		if ( ! CFB_Plugin::form_uses_builder( $form_id ) ) {
 			return;
 		}
 
@@ -50,10 +52,10 @@ final class CF7VB_Submissions {
 		}
 
 		$data = $submission->get_posted_data();
-		unset( $data['_wpcf7'], $data['_wpcf7_version'], $data['_wpcf7_locale'], $data['_wpcf7_unit_tag'], $data['_wpcf7_container_post'], $data['_cf7vb'], $data['_cf7vb_session'] );
+		unset( $data['_wpcf7'], $data['_wpcf7_version'], $data['_wpcf7_locale'], $data['_wpcf7_unit_tag'], $data['_wpcf7_container_post'], $data['_cfb'], $data['_cfb_session'] );
 
-		$draft_key = filter_input( INPUT_POST, '_cf7vb_draft' );
-		$draft_key = $draft_key ? sanitize_key( $draft_key ) : '';
+		$draft_key = filter_input( INPUT_POST, '_cfb_draft', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$draft_key = ( is_string( $draft_key ) && '' !== $draft_key ) ? sanitize_key( $draft_key ) : '';
 
 		self::insert(
 			array(
@@ -65,10 +67,10 @@ final class CF7VB_Submissions {
 			)
 		);
 
-		$session = filter_input( INPUT_POST, '_cf7vb_session' );
-		$session = $session ? sanitize_text_field( $session ) : '';
+		$session = filter_input( INPUT_POST, '_cfb_session', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$session = is_string( $session ) ? sanitize_text_field( wp_unslash( $session ) ) : '';
 
-		CF7VB_Analytics::track( $form_id, 'submit', array( 'fields' => count( $data ) ), $session );
+		CFB_Analytics::track( $form_id, 'submit', array( 'fields' => count( $data ) ), $session );
 	}
 
 	/**
@@ -93,7 +95,7 @@ final class CF7VB_Submissions {
 
 		$db       = $wpdb;
 		$inserted = $db->insert(
-			$db->prefix . 'cf7vb_entries',
+			$db->prefix . 'cfb_entries',
 			array(
 				'form_id'    => absint( $args['form_id'] ),
 				'status'     => sanitize_key( $args['status'] ),
@@ -132,7 +134,7 @@ final class CF7VB_Submissions {
 		if ( false === $row ) {
 			$row = $db->get_row(
 				$db->prepare(
-					"SELECT * FROM {$db->prefix}cf7vb_entries WHERE id = %d",
+					"SELECT * FROM {$db->prefix}cfb_entries WHERE id = %d",
 					$id
 				)
 			);
@@ -206,12 +208,12 @@ final class CF7VB_Submissions {
 		if ( false === $rows ) {
 			if ( $form_id > 0 ) {
 				$rows = $db->get_results(
-					$db->prepare( "SELECT status, COUNT(*) AS cnt FROM {$db->prefix}cf7vb_entries WHERE form_id = %d GROUP BY status", $form_id ),
+					$db->prepare( "SELECT status, COUNT(*) AS cnt FROM {$db->prefix}cfb_entries WHERE form_id = %d GROUP BY status", $form_id ),
 					ARRAY_A
 				);
 			} else {
 				$rows = $db->get_results(
-					"SELECT status, COUNT(*) AS cnt FROM {$db->prefix}cf7vb_entries GROUP BY status",
+					"SELECT status, COUNT(*) AS cnt FROM {$db->prefix}cfb_entries GROUP BY status",
 					ARRAY_A
 				);
 			}
@@ -251,7 +253,7 @@ final class CF7VB_Submissions {
 			return false;
 		}
 		$updated = (bool) $db->update(
-			$db->prefix . 'cf7vb_entries',
+			$db->prefix . 'cfb_entries',
 			array(
 				'status'     => $status,
 				'updated_at' => current_time( 'mysql' ),
@@ -301,7 +303,7 @@ final class CF7VB_Submissions {
 		// The query string is static; every filter is an optional bound placeholder so empty filters match all rows.
 		$total = (int) $db->get_var(
 			$db->prepare(
-				"SELECT COUNT(*) FROM {$db->prefix}cf7vb_entries
+				"SELECT COUNT(*) FROM {$db->prefix}cfb_entries
 				WHERE ( %d = 0 OR form_id = %d )
 				AND ( %s = '' OR status = %s )
 				AND ( %s = '' OR data LIKE %s )",
@@ -316,7 +318,7 @@ final class CF7VB_Submissions {
 
 		$items = $db->get_results(
 			$db->prepare(
-				"SELECT * FROM {$db->prefix}cf7vb_entries
+				"SELECT * FROM {$db->prefix}cfb_entries
 				WHERE ( %d = 0 OR form_id = %d )
 				AND ( %s = '' OR status = %s )
 				AND ( %s = '' OR data LIKE %s )
@@ -350,10 +352,10 @@ final class CF7VB_Submissions {
 	 * @return string
 	 */
 	public static function shortcode_entries( $atts ) {
-		$atts = shortcode_atts( array( 'form_id' => 0 ), $atts, 'cf7vb_entries' );
+		$atts = shortcode_atts( array( 'form_id' => 0 ), $atts, 'cfb_entries' );
 
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to view your submissions.', 'form-studio-for-contact-form-7' ) . '</p>';
+			return '<p>' . esc_html__( 'Please log in to view your submissions.', 'craftforms-builder' ) . '</p>';
 		}
 
 		$user  = wp_get_current_user();
@@ -367,7 +369,7 @@ final class CF7VB_Submissions {
 		if ( false === $rows ) {
 			$rows = $db->get_results(
 				$db->prepare(
-					"SELECT * FROM {$db->prefix}cf7vb_entries WHERE data LIKE %s ORDER BY id DESC LIMIT 20",
+					"SELECT * FROM {$db->prefix}cfb_entries WHERE data LIKE %s ORDER BY id DESC LIMIT 20",
 					'%' . $db->esc_like( $email ) . '%'
 				)
 			);
@@ -375,10 +377,10 @@ final class CF7VB_Submissions {
 		}
 
 		if ( ! $rows ) {
-			return '<p>' . esc_html__( 'No submissions found.', 'form-studio-for-contact-form-7' ) . '</p>';
+			return '<p>' . esc_html__( 'No submissions found.', 'craftforms-builder' ) . '</p>';
 		}
 
-		$html = '<table class="cf7vb-frontend-entries"><thead><tr><th>' . esc_html__( 'Date', 'form-studio-for-contact-form-7' ) . '</th><th>' . esc_html__( 'Status', 'form-studio-for-contact-form-7' ) . '</th></tr></thead><tbody>';
+		$html = '<table class="cfb-frontend-entries"><thead><tr><th>' . esc_html__( 'Date', 'craftforms-builder' ) . '</th><th>' . esc_html__( 'Status', 'craftforms-builder' ) . '</th></tr></thead><tbody>';
 		foreach ( $rows as $row ) {
 			$html .= '<tr><td>' . esc_html( $row->created_at ) . '</td><td>' . esc_html( $row->status ) . '</td></tr>';
 		}

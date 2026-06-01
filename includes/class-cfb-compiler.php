@@ -2,21 +2,21 @@
 /**
  * Compile visual schema to Contact Form 7 form template markup.
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_Compiler {
+final class CFB_Compiler {
 
 	/**
 	 * @param array $schema Form schema.
 	 * @return string
 	 */
 	public static function compile( $schema ) {
-		$schema    = CF7VB_Parser::normalize_schema( $schema );
+		$schema    = CFB_Parser::normalize_schema( $schema );
 		$lines     = array();
 		$settings  = $schema['settings'] ?? array();
 		$multistep = ! empty( $settings['multistep'] ) && count( $schema['steps'] ) > 1;
@@ -27,7 +27,7 @@ final class CF7VB_Compiler {
 
 			foreach ( $step['sections'] as $section ) {
 				if ( ! empty( $section['title'] ) ) {
-					$step_lines[] = sprintf( '<h3 class="cf7vb-section-title">%s</h3>', esc_html( $section['title'] ) );
+					$step_lines[] = sprintf( '<h3 class="cfb-section-title">%s</h3>', esc_html( $section['title'] ) );
 				}
 
 				foreach ( $section['fields'] as $field ) {
@@ -40,7 +40,7 @@ final class CF7VB_Compiler {
 
 			if ( $multistep && $step_index === $last_step && ! empty( $settings['gdpr']['enabled'] ) ) {
 				$gn           = $settings['gdpr']['fieldName'] ?? 'gdpr-consent';
-				$gl           = $settings['gdpr']['label'] ?? __( 'I agree to the privacy policy.', 'form-studio-for-contact-form-7' );
+				$gl           = $settings['gdpr']['label'] ?? __( 'I agree to the privacy policy.', 'craftforms-builder' );
 				$step_lines[] = '[acceptance ' . esc_attr( $gn ) . ']' . "\n" . esc_html( $gl );
 			}
 
@@ -49,11 +49,11 @@ final class CF7VB_Compiler {
 			if ( $multistep ) {
 				$step_title = isset( $step['title'] ) ? trim( (string) $step['title'] ) : '';
 				$lines[]    = sprintf(
-					'<div class="cf7vb-step-group" data-cf7vb-step="%1$s" data-cf7vb-step-index="%2$d"%4$s>%3$s</div>',
+					'<div class="cfb-step-group" data-cfb-step="%1$s" data-cfb-step-index="%2$d"%4$s>%3$s</div>',
 					esc_attr( $step['id'] ),
 					(int) $step_index,
 					$step_body,
-					$step_title ? sprintf( ' data-cf7vb-step-title="%s"', esc_attr( $step_title ) ) : ''
+					$step_title ? sprintf( ' data-cfb-step-title="%s"', esc_attr( $step_title ) ) : ''
 				);
 			} elseif ( $step_body ) {
 				$lines[] = $step_body;
@@ -61,17 +61,17 @@ final class CF7VB_Compiler {
 		}
 
 		if ( ! empty( $settings['security']['honeypot'] ) ) {
-			$hp      = $settings['security']['honeypotField'] ?? 'cf7vb_hp';
+			$hp      = $settings['security']['honeypotField'] ?? 'cfb_hp';
 			$lines[] = sprintf(
-				'<span class="cf7vb-hp" aria-hidden="true" style="position:absolute;left:-9999px;"><label>%1$s [text %2$s]</label></span>',
-				esc_html__( 'Leave empty', 'form-studio-for-contact-form-7' ),
+				'<span class="cfb-hp" aria-hidden="true" style="position:absolute;left:-9999px;"><label>%1$s [text %2$s]</label></span>',
+				esc_html__( 'Leave empty', 'craftforms-builder' ),
 				esc_attr( $hp )
 			);
 		}
 
 		if ( ! $multistep && ! empty( $settings['gdpr']['enabled'] ) ) {
 			$gn      = $settings['gdpr']['fieldName'] ?? 'gdpr-consent';
-			$gl      = $settings['gdpr']['label'] ?? __( 'I agree to the privacy policy.', 'form-studio-for-contact-form-7' );
+			$gl      = $settings['gdpr']['label'] ?? __( 'I agree to the privacy policy.', 'craftforms-builder' );
 			$lines[] = '[acceptance ' . esc_attr( $gn ) . ']' . "\n" . esc_html( $gl );
 		}
 
@@ -83,7 +83,7 @@ final class CF7VB_Compiler {
 	 * @return string
 	 */
 	public static function compile_field( $field ) {
-		$field = CF7VB_Parser::normalize_field( $field );
+		$field = CFB_Parser::normalize_field( $field );
 		$type  = $field['type'];
 		$req   = ! empty( $field['required'] ) ? '*' : '';
 		$name  = $field['name'];
@@ -94,7 +94,7 @@ final class CF7VB_Compiler {
 		if ( $label && 'hidden' !== $type && 'submit' !== $type ) {
 			$lines[] = sprintf( '<label> %s', esc_html( $label ) );
 			if ( ! empty( $field['required'] ) ) {
-				$lines[] = ' <span class="cf7vb-req">*</span>';
+				$lines[] = ' <span class="cfb-req">*</span>';
 			}
 			$lines[] = '';
 			$lines[] = self::compile_tag( $field, $req );
@@ -104,7 +104,7 @@ final class CF7VB_Compiler {
 		}
 
 		if ( ! empty( $field['help'] ) ) {
-			$lines[] = sprintf( '<span class="cf7vb-help">%s</span>', esc_html( $field['help'] ) );
+			$lines[] = sprintf( '<span class="cfb-help">%s</span>', esc_html( $field['help'] ) );
 		}
 
 		return implode( "\n", array_filter( $lines ) );
@@ -190,19 +190,19 @@ final class CF7VB_Compiler {
 				return self::tag( 'hidden', $name, $opts, $field['attrs']['value'] ?? '' );
 
 			case 'rating':
-				$opts[] = 'cf7vb-rating';
+				$opts[] = 'cfb-rating';
 				return self::tag( 'number' . $req, $name, $opts );
 
 			case 'signature':
-				$opts[] = 'cf7vb-signature';
+				$opts[] = 'cfb-signature';
 				return self::tag( 'text' . $req, $name, $opts );
 
 			case 'repeater':
-				$opts[] = 'cf7vb-repeater';
-				return '<!-- cf7vb:repeater ' . esc_attr( $name ) . ' -->';
+				$opts[] = 'cfb-repeater';
+				return '<!-- cfb:repeater ' . esc_attr( $name ) . ' -->';
 
 			case 'submit':
-				$label = $field['label'] ? $field['label'] : __( 'Send', 'form-studio-for-contact-form-7' );
+				$label = $field['label'] ? $field['label'] : __( 'Send', 'craftforms-builder' );
 				return '[submit "' . self::escape_cf7_value( $label ) . '"]';
 
 			default:

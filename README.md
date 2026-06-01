@@ -1,4 +1,4 @@
-# Form Studio for Contact Form 7
+# CraftForms Builder
 
 **Contributors:** piyushmultidots
 **Tags:** contact form 7, form builder, drag and drop, multistep forms, conditional logic
@@ -75,11 +75,11 @@ Text, Textarea, Email, Phone, Number, Select, Checkbox, Radio, File, Date, Hidde
 ### Submissions
 | Feature | Status |
 |---------|--------|
-| Database storage | ✅ `wp_cf7vb_entries` |
+| Database storage | ✅ `wp_cfb_entries` |
 | Search & filters | ✅ |
 | CSV export | ✅ |
 | PDF export | ✅ (print-ready HTML) |
-| Frontend entry management | ✅ `[cf7vb_entries]` shortcode |
+| Frontend entry management | ✅ `[cfb_entries]` shortcode |
 | Status management | ✅ (unread/read/starred/spam/trash) |
 
 ### Email
@@ -102,7 +102,7 @@ Text, Textarea, Email, Phone, Number, Select, Checkbox, Radio, File, Date, Hidde
 | Conversational forms | ✅ |
 | Analytics dashboard | ✅ Contact → Analytics |
 
-## REST API (`cf7vb/v1`)
+## REST API (`cfb/v1`)
 
 - `GET/PUT /forms/{id}/schema`
 - `POST /forms/{id}/compile`

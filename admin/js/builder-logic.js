@@ -2,7 +2,7 @@
 	'use strict';
 
 	const { createElement: el } = wp.element;
-	const cfg = window.CF7VB_BUILDER || {};
+	const cfg = window.CFB_BUILDER || {};
 	const L = cfg.strings || {};
 
 	const COMPARES = [
@@ -55,11 +55,11 @@
 
 		return el(
 			'div',
-			{ className: 'cf7vb-logic-condition' },
+			{ className: 'cfb-logic-condition' },
 			el(
 				'select',
 				{
-					className: 'cf7vb-logic-select',
+					className: 'cfb-logic-select',
 					value: cond.field || '',
 					onChange: function ( e ) { onChange( ci, { field: e.target.value } ); },
 				},
@@ -71,7 +71,7 @@
 			el(
 				'select',
 				{
-					className: 'cf7vb-logic-select cf7vb-logic-select--compare',
+					className: 'cfb-logic-select cfb-logic-select--compare',
 					value: cond.compare || 'equals',
 					onChange: function ( e ) { onChange( ci, { compare: e.target.value } ); },
 				},
@@ -80,10 +80,10 @@
 				} )
 			),
 			hideValue
-				? el( 'span', { className: 'cf7vb-logic-value-placeholder' }, '—' )
+				? el( 'span', { className: 'cfb-logic-value-placeholder' }, '—' )
 				: el( 'input', {
 					type: 'text',
-					className: 'cf7vb-logic-input',
+					className: 'cfb-logic-input',
 					placeholder: L.conditionValue || 'Value',
 					value: cond.value || '',
 					onChange: function ( e ) { onChange( ci, { value: e.target.value } ); },
@@ -91,7 +91,7 @@
 			showRemove
 				? el( 'button', {
 					type: 'button',
-					className: 'cf7vb-logic-icon-btn',
+					className: 'cfb-logic-icon-btn',
 					title: L.remove || 'Remove',
 					onClick: function () { onRemove( ci ); },
 				}, el( 'span', { className: 'dashicons dashicons-no-alt' } ) )
@@ -99,7 +99,7 @@
 		);
 	}
 
-	window.CF7VB_LOGIC = function LogicPanel( props ) {
+	window.CFB_LOGIC = function LogicPanel( props ) {
 		const { schema, pushHistory, clone } = props;
 		const rules = schema.rules || [];
 		const fields = fieldOptions( schema );
@@ -132,7 +132,7 @@
 			const list = rule[ listKey ] || [];
 			return el(
 				'div',
-				{ className: 'cf7vb-logic-conditions' },
+				{ className: 'cfb-logic-conditions' },
 				list.map( function ( cond, ci ) {
 					return el( ConditionRow, {
 						key: ci,
@@ -154,7 +154,7 @@
 					'button',
 					{
 						type: 'button',
-						className: 'cf7vb-btn cf7vb-btn--ghost cf7vb-btn--sm',
+						className: 'cfb-btn cfb-btn--ghost cfb-btn--sm',
 						onClick: function () {
 							const next = list.concat( [ { field: '', compare: 'equals', value: '' } ] );
 							updateRule( ri, { [ listKey ]: next } );
@@ -169,7 +169,7 @@
 		function renderActions( rule, ri ) {
 			return el(
 				'div',
-				{ className: 'cf7vb-logic-actions' },
+				{ className: 'cfb-logic-actions' },
 				( rule.actions || [] ).map( function ( act, ai ) {
 					const isUrl = act.type === 'redirect';
 					const isEmail = act.type === 'conditional_email';
@@ -177,11 +177,11 @@
 
 					return el(
 						'div',
-						{ key: ai, className: 'cf7vb-logic-action' },
+						{ key: ai, className: 'cfb-logic-action' },
 						el(
 							'select',
 							{
-								className: 'cf7vb-logic-select',
+								className: 'cfb-logic-select',
 								value: act.type || 'show',
 								onChange: function ( e ) {
 									const acts = clone( rule.actions );
@@ -196,7 +196,7 @@
 						isUrl
 							? el( 'input', {
 								type: 'url',
-								className: 'cf7vb-logic-input',
+								className: 'cfb-logic-input',
 								placeholder: 'https://',
 								value: act.url || '',
 								onChange: function ( e ) {
@@ -208,7 +208,7 @@
 							: isEmail
 								? el( 'input', {
 									type: 'email',
-									className: 'cf7vb-logic-input',
+									className: 'cfb-logic-input',
 									placeholder: L.emailPlaceholder || 'recipient@example.com',
 									value: act.recipient || '',
 									onChange: function ( e ) {
@@ -220,7 +220,7 @@
 								: el(
 									'select',
 									{
-										className: 'cf7vb-logic-select',
+										className: 'cfb-logic-select',
 										value: act.target || '',
 										onChange: function ( e ) {
 											const acts = clone( rule.actions );
@@ -236,7 +236,7 @@
 						( rule.actions || [] ).length > 1
 							? el( 'button', {
 								type: 'button',
-								className: 'cf7vb-logic-icon-btn',
+								className: 'cfb-logic-icon-btn',
 								onClick: function () {
 									updateRule( ri, { actions: rule.actions.filter( function ( _, i ) { return i !== ai; } ) } );
 								},
@@ -248,7 +248,7 @@
 					'button',
 					{
 						type: 'button',
-						className: 'cf7vb-btn cf7vb-btn--ghost cf7vb-btn--sm',
+						className: 'cfb-btn cfb-btn--ghost cfb-btn--sm',
 						onClick: function () {
 							updateRule( ri, { actions: ( rule.actions || [] ).concat( [ { type: 'show', target: '' } ] ) } );
 						},
@@ -261,17 +261,17 @@
 
 		return el(
 			'div',
-			{ className: 'cf7vb-logic-panel' },
+			{ className: 'cfb-logic-panel' },
 			el(
 				'header',
-				{ className: 'cf7vb-panel-intro' },
+				{ className: 'cfb-panel-intro' },
 				el( 'h2', null, L.logicTitle || 'Conditional logic' ),
 				el( 'p', null, L.logicIntro || 'Create rules to show, hide, or require fields based on answers. Step titles from the Build tab are used for skip-step actions.' )
 			),
 			! fields.length
 				? el(
 					'div',
-					{ className: 'cf7vb-logic-empty' },
+					{ className: 'cfb-logic-empty' },
 					el( 'span', { className: 'dashicons dashicons-randomize' } ),
 					el( 'p', null, L.logicNoFields || 'Add fields on the Build tab before creating rules.' )
 				)
@@ -279,26 +279,26 @@
 			rules.length
 				? el(
 					'div',
-					{ className: 'cf7vb-logic-rules' },
+					{ className: 'cfb-logic-rules' },
 					rules.map( function ( rule, ri ) {
 						return el(
 							'article',
-							{ key: rule.id, className: 'cf7vb-logic-rule' + ( rule.enabled === false ? ' is-disabled' : '' ) },
+							{ key: rule.id, className: 'cfb-logic-rule' + ( rule.enabled === false ? ' is-disabled' : '' ) },
 							el(
 								'header',
-								{ className: 'cf7vb-logic-rule-head' },
+								{ className: 'cfb-logic-rule-head' },
 								el(
 									'div',
-									{ className: 'cf7vb-logic-rule-title' },
-									el( 'span', { className: 'cf7vb-logic-rule-num' }, String( ri + 1 ) ),
+									{ className: 'cfb-logic-rule-title' },
+									el( 'span', { className: 'cfb-logic-rule-num' }, String( ri + 1 ) ),
 									el( 'strong', null, ( L.ruleLabel || 'Rule %d' ).replace( '%d', String( ri + 1 ) ) )
 								),
 								el(
 									'div',
-									{ className: 'cf7vb-logic-rule-controls' },
+									{ className: 'cfb-logic-rule-controls' },
 									el(
 										'label',
-										{ className: 'cf7vb-logic-match' },
+										{ className: 'cfb-logic-match' },
 										el( 'span', null, L.match || 'Match' ),
 										el(
 											'select',
@@ -312,7 +312,7 @@
 									),
 									el(
 										'label',
-										{ className: 'cf7vb-logic-enabled' },
+										{ className: 'cfb-logic-enabled' },
 										el( 'input', {
 											type: 'checkbox',
 											checked: rule.enabled !== false,
@@ -322,7 +322,7 @@
 									),
 									el( 'button', {
 										type: 'button',
-										className: 'cf7vb-logic-icon-btn cf7vb-logic-icon-btn--danger',
+										className: 'cfb-logic-icon-btn cfb-logic-icon-btn--danger',
 										title: L.deleteRule || 'Delete rule',
 										onClick: function () {
 											updateRules( rules.filter( function ( _, i ) { return i !== ri; } ) );
@@ -332,21 +332,21 @@
 							),
 							el(
 								'div',
-								{ className: 'cf7vb-logic-rule-body' },
+								{ className: 'cfb-logic-rule-body' },
 								el(
 									'div',
-									{ className: 'cf7vb-logic-block cf7vb-logic-block--if' },
-									el( 'span', { className: 'cf7vb-logic-block-label' }, L.ifLabel || 'IF' ),
+									{ className: 'cfb-logic-block cfb-logic-block--if' },
+									el( 'span', { className: 'cfb-logic-block-label' }, L.ifLabel || 'IF' ),
 									renderConditions( rule, ri, 'conditions' )
 								),
 								( rule.groups || [] ).map( function ( group, gi ) {
 									return el(
 										'div',
-										{ key: gi, className: 'cf7vb-logic-block cf7vb-logic-block--nested' },
+										{ key: gi, className: 'cfb-logic-block cfb-logic-block--nested' },
 										el(
 											'div',
-											{ className: 'cf7vb-logic-nested-head' },
-											el( 'span', { className: 'cf7vb-logic-block-label' }, L.nestedGroup || 'AND ALSO' ),
+											{ className: 'cfb-logic-nested-head' },
+											el( 'span', { className: 'cfb-logic-block-label' }, L.nestedGroup || 'AND ALSO' ),
 											el(
 												'select',
 												{
@@ -362,7 +362,7 @@
 											),
 											el( 'button', {
 												type: 'button',
-												className: 'cf7vb-logic-icon-btn',
+												className: 'cfb-logic-icon-btn',
 												onClick: function () {
 													updateRule( ri, { groups: rule.groups.filter( function ( _, i ) { return i !== gi; } ) } );
 												},
@@ -393,7 +393,7 @@
 										} ),
 										el( 'button', {
 											type: 'button',
-											className: 'cf7vb-btn cf7vb-btn--ghost cf7vb-btn--sm',
+											className: 'cfb-btn cfb-btn--ghost cfb-btn--sm',
 											onClick: function () {
 												const groups = clone( rule.groups );
 												groups[ gi ].conditions = ( groups[ gi ].conditions || [] ).concat( [
@@ -406,7 +406,7 @@
 								} ),
 								el( 'button', {
 									type: 'button',
-									className: 'cf7vb-btn cf7vb-btn--ghost cf7vb-btn--sm',
+									className: 'cfb-btn cfb-btn--ghost cfb-btn--sm',
 									onClick: function () {
 										const groups = ( rule.groups || [] ).concat( [ {
 											operator: 'or',
@@ -417,8 +417,8 @@
 								}, el( 'span', { className: 'dashicons dashicons-plus-alt2' } ), L.addNested || 'Add nested group' ),
 								el(
 									'div',
-									{ className: 'cf7vb-logic-block cf7vb-logic-block--then' },
-									el( 'span', { className: 'cf7vb-logic-block-label' }, L.thenLabel || 'THEN' ),
+									{ className: 'cfb-logic-block cfb-logic-block--then' },
+									el( 'span', { className: 'cfb-logic-block-label' }, L.thenLabel || 'THEN' ),
 									renderActions( rule, ri )
 								)
 							)
@@ -427,18 +427,18 @@
 				)
 				: el(
 					'div',
-					{ className: 'cf7vb-logic-empty' },
+					{ className: 'cfb-logic-empty' },
 					el( 'span', { className: 'dashicons dashicons-randomize' } ),
 					el( 'p', null, L.rulesEmpty || 'No rules yet. Add your first rule to control the form dynamically.' )
 				),
 			el(
 				'footer',
-				{ className: 'cf7vb-logic-footer' },
+				{ className: 'cfb-logic-footer' },
 				el(
 					'button',
 					{
 						type: 'button',
-						className: 'cf7vb-btn cf7vb-btn--primary',
+						className: 'cfb-btn cfb-btn--primary',
 						onClick: addRule,
 						disabled: ! fields.length,
 					},

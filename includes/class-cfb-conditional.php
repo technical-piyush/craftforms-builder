@@ -2,14 +2,14 @@
 /**
  * Conditional logic evaluation (server-side).
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_Conditional {
+final class CFB_Conditional {
 
 	/**
 	 * Evaluate rule group against posted data.

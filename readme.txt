@@ -1,4 +1,4 @@
-=== Form Studio for Contact Form 7 ===
+=== CraftForms Builder ===
 Contributors: piyushmultidots
 Tags: contact form 7, form builder, drag and drop, multistep forms, conditional logic
 Requires at least: 6.2
@@ -12,7 +12,7 @@ Drag-and-drop visual form builder for Contact Form 7 with multistep forms, condi
 
 == Description ==
 
-Form Studio for Contact Form 7 is a professional drag-and-drop builder that adds a modern visual editing experience on top of Contact Form 7. Design forms in a live canvas, add multistep flows and conditional logic, store and manage submissions, and review built-in analytics — all without leaving the WordPress admin.
+CraftForms Builder is a professional drag-and-drop builder that adds a modern visual editing experience on top of Contact Form 7. Design forms in a live canvas, add multistep flows and conditional logic, store and manage submissions, and review built-in analytics — all without leaving the WordPress admin.
 
 This plugin is an add-on for Contact Form 7 and requires Contact Form 7 to be installed and active.
 
@@ -45,7 +45,7 @@ Text, Textarea, Email, Phone, Number, Select, Checkbox, Radio, File, Date, Hidde
 * Submissions stored in the site database
 * Search, filter and status management (unread / read / starred / spam / trash)
 * CSV export and print-ready (PDF) export
-* Front-end entry list via the `[cf7vb_entries]` shortcode
+* Front-end entry list via the `[cfb_entries]` shortcode
 
 **Email**
 
@@ -69,7 +69,7 @@ Text, Textarea, Email, Phone, Number, Select, Checkbox, Radio, File, Date, Hidde
 == Installation ==
 
 1. Make sure Contact Form 7 is installed and active.
-2. Upload the `form-studio-for-contact-form-7` folder to the `/wp-content/plugins/` directory, or install the plugin through the Plugins screen in WordPress.
+2. Upload the `craftforms-builder` folder to the `/wp-content/plugins/` directory, or install the plugin through the Plugins screen in WordPress.
 3. Activate the plugin through the "Plugins" screen. The required database tables are created automatically on activation.
 4. Go to **Contact &rarr; Contact Forms**, edit a form, and open the **Visual Builder** tab.
 5. Use **Contact &rarr; Entries** and **Contact &rarr; Analytics** for submission management and reporting.
@@ -90,7 +90,7 @@ Yes. Multistep forms support autosave and a "save & continue later" draft link s
 
 = How do I show a visitor their own submissions on the front end? =
 
-Add the `[cf7vb_entries]` shortcode to any page. Logged-in users will see the submissions associated with their account.
+Add the `[cfb_entries]` shortcode to any page. Logged-in users will see the submissions associated with their account.
 
 = Does it support conditional logic? =
 
@@ -112,7 +112,7 @@ Yes. You can build IF/THEN rules with AND/OR conditions and nested groups to sho
 * Multistep forms with autosave and save & continue later.
 * Conditional logic (AND/OR, nested groups, conditional emails and redirects).
 * Submission storage, search, filters, status management, CSV and print/PDF export.
-* Front-end entry list shortcode `[cf7vb_entries]`.
+* Front-end entry list shortcode `[cfb_entries]`.
 * Built-in form analytics (views, conversions, abandonment, devices, field interactions).
 * GDPR acceptance field, honeypot and rate-limit spam protection.
 

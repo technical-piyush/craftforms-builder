@@ -2,16 +2,16 @@
 /**
  * Analytics events and dashboard stats.
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_Analytics {
+final class CFB_Analytics {
 
-	const CACHE_GROUP = 'cf7vb_analytics';
+	const CACHE_GROUP = 'cfb_analytics';
 
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 21 );
@@ -34,10 +34,10 @@ final class CF7VB_Analytics {
 	public static function menu() {
 		add_submenu_page(
 			'wpcf7',
-			__( 'Form Analytics', 'form-studio-for-contact-form-7' ),
-			__( 'Analytics', 'form-studio-for-contact-form-7' ),
+			__( 'Form Analytics', 'craftforms-builder' ),
+			__( 'Analytics', 'craftforms-builder' ),
 			'wpcf7_read_contact_forms',
-			'cf7vb-analytics',
+			'cfb-analytics',
 			array( __CLASS__, 'render_page' )
 		);
 	}
@@ -53,7 +53,7 @@ final class CF7VB_Analytics {
 		$db = $wpdb;
 
 		$db->insert(
-			$db->prefix . 'cf7vb_analytics',
+			$db->prefix . 'cfb_analytics',
 			array(
 				'form_id'     => absint( $form_id ),
 				'event_type'  => sanitize_key( $type ),
@@ -84,15 +84,15 @@ final class CF7VB_Analytics {
 		}
 
 		if ( $form_id ) {
-			$event_rows = $db->get_results( $db->prepare( "SELECT event_type, COUNT(*) AS cnt FROM {$db->prefix}cf7vb_analytics WHERE form_id = %d GROUP BY event_type", $form_id ), ARRAY_A );
-			$submits = (int) $db->get_var( $db->prepare( "SELECT COUNT(*) FROM {$db->prefix}cf7vb_entries WHERE form_id = %d", $form_id ) );
-			$devices = $db->get_results( $db->prepare( "SELECT device, COUNT(*) as cnt FROM {$db->prefix}cf7vb_entries WHERE form_id = %d GROUP BY device", $form_id ), ARRAY_A );
-			$top_fields = $db->get_results( $db->prepare( "SELECT event_data, COUNT(*) as cnt FROM {$db->prefix}cf7vb_analytics WHERE form_id = %d AND event_type = 'field_focus' GROUP BY event_data ORDER BY cnt DESC LIMIT 10", $form_id ), ARRAY_A );
+			$event_rows = $db->get_results( $db->prepare( "SELECT event_type, COUNT(*) AS cnt FROM {$db->prefix}cfb_analytics WHERE form_id = %d GROUP BY event_type", $form_id ), ARRAY_A );
+			$submits = (int) $db->get_var( $db->prepare( "SELECT COUNT(*) FROM {$db->prefix}cfb_entries WHERE form_id = %d", $form_id ) );
+			$devices = $db->get_results( $db->prepare( "SELECT device, COUNT(*) as cnt FROM {$db->prefix}cfb_entries WHERE form_id = %d GROUP BY device", $form_id ), ARRAY_A );
+			$top_fields = $db->get_results( $db->prepare( "SELECT event_data, COUNT(*) as cnt FROM {$db->prefix}cfb_analytics WHERE form_id = %d AND event_type = 'field_focus' GROUP BY event_data ORDER BY cnt DESC LIMIT 10", $form_id ), ARRAY_A );
 		} else {
-			$event_rows = $db->get_results( "SELECT event_type, COUNT(*) AS cnt FROM {$db->prefix}cf7vb_analytics GROUP BY event_type", ARRAY_A );
-			$submits = (int) $db->get_var( "SELECT COUNT(*) FROM {$db->prefix}cf7vb_entries" );
-			$devices = $db->get_results( "SELECT device, COUNT(*) as cnt FROM {$db->prefix}cf7vb_entries GROUP BY device", ARRAY_A );
-			$top_fields = $db->get_results( "SELECT event_data, COUNT(*) as cnt FROM {$db->prefix}cf7vb_analytics WHERE event_type = 'field_focus' GROUP BY event_data ORDER BY cnt DESC LIMIT 10", ARRAY_A );
+			$event_rows = $db->get_results( "SELECT event_type, COUNT(*) AS cnt FROM {$db->prefix}cfb_analytics GROUP BY event_type", ARRAY_A );
+			$submits = (int) $db->get_var( "SELECT COUNT(*) FROM {$db->prefix}cfb_entries" );
+			$devices = $db->get_results( "SELECT device, COUNT(*) as cnt FROM {$db->prefix}cfb_entries GROUP BY device", ARRAY_A );
+			$top_fields = $db->get_results( "SELECT event_data, COUNT(*) as cnt FROM {$db->prefix}cfb_analytics WHERE event_type = 'field_focus' GROUP BY event_data ORDER BY cnt DESC LIMIT 10", ARRAY_A );
 		}
 
 		$event_counts = array();
@@ -144,7 +144,7 @@ final class CF7VB_Analytics {
 			if ( $form_id ) {
 				$rows = $db->get_results(
 					$db->prepare(
-						"SELECT event_type, event_data, device, created_at FROM {$db->prefix}cf7vb_analytics WHERE form_id = %d ORDER BY id DESC LIMIT %d",
+						"SELECT event_type, event_data, device, created_at FROM {$db->prefix}cfb_analytics WHERE form_id = %d ORDER BY id DESC LIMIT %d",
 						$form_id,
 						$limit
 					)
@@ -152,7 +152,7 @@ final class CF7VB_Analytics {
 			} else {
 				$rows = $db->get_results(
 					$db->prepare(
-						"SELECT event_type, event_data, device, created_at FROM {$db->prefix}cf7vb_analytics ORDER BY id DESC LIMIT %d",
+						"SELECT event_type, event_data, device, created_at FROM {$db->prefix}cfb_analytics ORDER BY id DESC LIMIT %d",
 						$limit
 					)
 				);
@@ -196,92 +196,92 @@ final class CF7VB_Analytics {
 		$funnel_max = max( 1, (int) $stats['views'] );
 		$funnel     = array(
 			array(
-				'label' => __( 'Views', 'form-studio-for-contact-form-7' ),
+				'label' => __( 'Views', 'craftforms-builder' ),
 				'value' => (int) $stats['views'],
 			),
 			array(
-				'label' => __( 'Started', 'form-studio-for-contact-form-7' ),
+				'label' => __( 'Started', 'craftforms-builder' ),
 				'value' => (int) $stats['starts'],
 			),
 			array(
-				'label' => __( 'Submissions', 'form-studio-for-contact-form-7' ),
+				'label' => __( 'Submissions', 'craftforms-builder' ),
 				'value' => (int) $stats['submissions'],
 			),
 		);
 		?>
-		<div class="wrap cf7vb-dash cf7vb-analytics-wrap">
-			<header class="cf7vb-dash-header">
+		<div class="wrap cfb-dash cfb-analytics-wrap">
+			<header class="cfb-dash-header">
 				<div>
-					<h1><?php esc_html_e( 'Form Analytics', 'form-studio-for-contact-form-7' ); ?></h1>
-					<p><?php esc_html_e( 'Track views, engagement, conversions, and device usage.', 'form-studio-for-contact-form-7' ); ?></p>
+					<h1><?php esc_html_e( 'Form Analytics', 'craftforms-builder' ); ?></h1>
+					<p><?php esc_html_e( 'Track views, engagement, conversions, and device usage.', 'craftforms-builder' ); ?></p>
 				</div>
-				<div class="cf7vb-dash-actions">
-					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=cf7vb-entries' ) ); ?>"><?php esc_html_e( 'View entries', 'form-studio-for-contact-form-7' ); ?></a>
+				<div class="cfb-dash-actions">
+					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=cfb-entries' ) ); ?>"><?php esc_html_e( 'View entries', 'craftforms-builder' ); ?></a>
 				</div>
 			</header>
 
-			<div class="cf7vb-panel">
-				<div class="cf7vb-filter-bar">
+			<div class="cfb-panel">
+				<div class="cfb-filter-bar">
 					<form method="get">
-						<input type="hidden" name="page" value="cf7vb-analytics" />
+						<input type="hidden" name="page" value="cfb-analytics" />
 						<select name="form_id">
-							<option value="0"><?php esc_html_e( 'All forms', 'form-studio-for-contact-form-7' ); ?></option>
+							<option value="0"><?php esc_html_e( 'All forms', 'craftforms-builder' ); ?></option>
 							<?php foreach ( $forms as $form ) : ?>
 								<option value="<?php echo esc_attr( (string) $form->id() ); ?>" <?php selected( $form_id, $form->id() ); ?>><?php echo esc_html( $form->title() ); ?></option>
 							<?php endforeach; ?>
 						</select>
-						<?php submit_button( __( 'Apply', 'form-studio-for-contact-form-7' ), 'secondary', '', false ); ?>
+						<?php submit_button( __( 'Apply', 'craftforms-builder' ), 'secondary', '', false ); ?>
 					</form>
 				</div>
 			</div>
 
-			<div class="cf7vb-kpi-grid">
+			<div class="cfb-kpi-grid">
 				<?php
 				$cards = array(
-					__( 'Views', 'form-studio-for-contact-form-7' )           => $stats['views'],
-					__( 'Started', 'form-studio-for-contact-form-7' )        => $stats['starts'],
-					__( 'Submissions', 'form-studio-for-contact-form-7' )      => $stats['submissions'],
-					__( 'Conversion', 'form-studio-for-contact-form-7' )     => $stats['conversion'] . '%',
-					__( 'Abandoned', 'form-studio-for-contact-form-7' )      => $stats['abandoned'],
-					__( 'Field focus', 'form-studio-for-contact-form-7' )    => $stats['field_focus'],
+					__( 'Views', 'craftforms-builder' )           => $stats['views'],
+					__( 'Started', 'craftforms-builder' )        => $stats['starts'],
+					__( 'Submissions', 'craftforms-builder' )      => $stats['submissions'],
+					__( 'Conversion', 'craftforms-builder' )     => $stats['conversion'] . '%',
+					__( 'Abandoned', 'craftforms-builder' )      => $stats['abandoned'],
+					__( 'Field focus', 'craftforms-builder' )    => $stats['field_focus'],
 				);
 				foreach ( $cards as $label => $val ) :
 					?>
-					<div class="cf7vb-stat-card">
-						<span class="cf7vb-stat-label"><?php echo esc_html( $label ); ?></span>
-						<p class="cf7vb-stat-value"><?php echo esc_html( (string) $val ); ?></p>
+					<div class="cfb-stat-card">
+						<span class="cfb-stat-label"><?php echo esc_html( $label ); ?></span>
+						<p class="cfb-stat-value"><?php echo esc_html( (string) $val ); ?></p>
 					</div>
 				<?php endforeach; ?>
 			</div>
 
-			<div class="cf7vb-analytics-grid">
-				<div class="cf7vb-panel">
-					<div class="cf7vb-panel-head">
-						<h2><?php esc_html_e( 'Conversion funnel', 'form-studio-for-contact-form-7' ); ?></h2>
+			<div class="cfb-analytics-grid">
+				<div class="cfb-panel">
+					<div class="cfb-panel-head">
+						<h2><?php esc_html_e( 'Conversion funnel', 'craftforms-builder' ); ?></h2>
 					</div>
-					<div class="cf7vb-funnel">
+					<div class="cfb-funnel">
 						<?php foreach ( $funnel as $step ) : ?>
 							<?php $pct = $funnel_max > 0 ? round( ( $step['value'] / $funnel_max ) * 100 ) : 0; ?>
-							<div class="cf7vb-funnel-step">
+							<div class="cfb-funnel-step">
 								<span><?php echo esc_html( $step['label'] ); ?></span>
-								<div class="cf7vb-funnel-bar"><i style="width:<?php echo esc_attr( (string) max( 4, $pct ) ); ?>%"></i></div>
+								<div class="cfb-funnel-bar"><i style="width:<?php echo esc_attr( (string) max( 4, $pct ) ); ?>%"></i></div>
 								<em><?php echo esc_html( (string) $step['value'] ); ?></em>
 							</div>
 						<?php endforeach; ?>
 					</div>
 				</div>
 
-				<div class="cf7vb-panel">
-					<div class="cf7vb-panel-head">
-						<h2><?php esc_html_e( 'Recent activity', 'form-studio-for-contact-form-7' ); ?></h2>
+				<div class="cfb-panel">
+					<div class="cfb-panel-head">
+						<h2><?php esc_html_e( 'Recent activity', 'craftforms-builder' ); ?></h2>
 					</div>
 					<?php if ( empty( $recent ) ) : ?>
-						<div class="cf7vb-empty">
+						<div class="cfb-empty">
 							<span class="dashicons dashicons-chart-bar"></span>
-							<p><?php esc_html_e( 'No events recorded yet.', 'form-studio-for-contact-form-7' ); ?></p>
+							<p><?php esc_html_e( 'No events recorded yet.', 'craftforms-builder' ); ?></p>
 						</div>
 					<?php else : ?>
-						<ul class="cf7vb-activity-list">
+						<ul class="cfb-activity-list">
 							<?php
 							foreach ( $recent as $event ) :
 								$type = sanitize_key( $event->event_type );
@@ -297,16 +297,16 @@ final class CF7VB_Analytics {
 								$data  = json_decode( $event->event_data, true );
 								if ( 'step_view' === $type && is_array( $data ) && isset( $data['step'] ) ) {
 									/* translators: %d: step number */
-									$label = sprintf( __( 'Step %d viewed', 'form-studio-for-contact-form-7' ), (int) $data['step'] + 1 );
+									$label = sprintf( __( 'Step %d viewed', 'craftforms-builder' ), (int) $data['step'] + 1 );
 								} elseif ( 'field_focus' === $type && is_array( $data ) && isset( $data['field'] ) ) {
 									/* translators: %s: field name */
-									$label = sprintf( __( 'Field: %s', 'form-studio-for-contact-form-7' ), $data['field'] );
+									$label = sprintf( __( 'Field: %s', 'craftforms-builder' ), $data['field'] );
 								} else {
 									$label = ucfirst( str_replace( '_', ' ', $type ) );
 								}
 								?>
 								<li>
-									<span class="cf7vb-activity-icon"><span class="dashicons dashicons-<?php echo esc_attr( $icon ); ?>"></span></span>
+									<span class="cfb-activity-icon"><span class="dashicons dashicons-<?php echo esc_attr( $icon ); ?>"></span></span>
 									<span>
 										<strong><?php echo esc_html( $label ); ?></strong><br />
 										<time><?php echo esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $event->created_at ) ); ?></time>
@@ -320,19 +320,19 @@ final class CF7VB_Analytics {
 					<?php endif; ?>
 				</div>
 
-				<div class="cf7vb-panel">
-					<div class="cf7vb-panel-head">
-						<h2><?php esc_html_e( 'Devices', 'form-studio-for-contact-form-7' ); ?></h2>
+				<div class="cfb-panel">
+					<div class="cfb-panel-head">
+						<h2><?php esc_html_e( 'Devices', 'craftforms-builder' ); ?></h2>
 					</div>
 					<?php if ( empty( $stats['devices'] ) ) : ?>
-						<div class="cf7vb-empty"><p><?php esc_html_e( 'No device data yet.', 'form-studio-for-contact-form-7' ); ?></p></div>
+						<div class="cfb-empty"><p><?php esc_html_e( 'No device data yet.', 'craftforms-builder' ); ?></p></div>
 					<?php else : ?>
-						<ul class="cf7vb-bar-list">
+						<ul class="cfb-bar-list">
 							<?php foreach ( $stats['devices'] as $row ) : ?>
 								<?php $pct = round( ( (int) $row['cnt'] / $max_device ) * 100 ); ?>
 								<li>
 									<span><?php echo esc_html( ucfirst( $row['device'] ? $row['device'] : 'unknown' ) ); ?></span>
-									<span class="cf7vb-bar-track"><span class="cf7vb-bar-fill" style="width:<?php echo esc_attr( (string) $pct ); ?>%"></span></span>
+									<span class="cfb-bar-track"><span class="cfb-bar-fill" style="width:<?php echo esc_attr( (string) $pct ); ?>%"></span></span>
 									<strong><?php echo esc_html( (string) $row['cnt'] ); ?></strong>
 								</li>
 							<?php endforeach; ?>
@@ -340,14 +340,14 @@ final class CF7VB_Analytics {
 					<?php endif; ?>
 				</div>
 
-				<div class="cf7vb-panel">
-					<div class="cf7vb-panel-head">
-						<h2><?php esc_html_e( 'Top field interactions', 'form-studio-for-contact-form-7' ); ?></h2>
+				<div class="cfb-panel">
+					<div class="cfb-panel-head">
+						<h2><?php esc_html_e( 'Top field interactions', 'craftforms-builder' ); ?></h2>
 					</div>
 					<?php if ( empty( $stats['top_fields'] ) ) : ?>
-						<div class="cf7vb-empty"><p><?php esc_html_e( 'No field interaction data yet.', 'form-studio-for-contact-form-7' ); ?></p></div>
+						<div class="cfb-empty"><p><?php esc_html_e( 'No field interaction data yet.', 'craftforms-builder' ); ?></p></div>
 					<?php else : ?>
-						<ul class="cf7vb-bar-list">
+						<ul class="cfb-bar-list">
 							<?php
 							foreach ( $stats['top_fields'] as $row ) :
 								$d    = json_decode( $row['event_data'], true );
@@ -356,7 +356,7 @@ final class CF7VB_Analytics {
 								?>
 								<li>
 									<span><?php echo esc_html( $name ); ?></span>
-									<span class="cf7vb-bar-track"><span class="cf7vb-bar-fill" style="width:<?php echo esc_attr( (string) $pct ); ?>%"></span></span>
+									<span class="cfb-bar-track"><span class="cfb-bar-fill" style="width:<?php echo esc_attr( (string) $pct ); ?>%"></span></span>
 									<strong><?php echo esc_html( (string) $row['cnt'] ); ?></strong>
 								</li>
 							<?php endforeach; ?>

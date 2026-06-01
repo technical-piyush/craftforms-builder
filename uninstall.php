@@ -2,7 +2,7 @@
 /**
  * Fired when the plugin is uninstalled.
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
@@ -12,22 +12,22 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 /**
  * Remove all rows from custom tables (WordPress Coding Standards allow TRUNCATE on uninstall).
  */
-function cf7vb_uninstall_truncate_tables() {
+function cfb_uninstall_truncate_tables() {
 	global $wpdb;
 
-	$cf7vb_tables = array(
-		$wpdb->prefix . 'cf7vb_entries',
-		$wpdb->prefix . 'cf7vb_analytics',
-		$wpdb->prefix . 'cf7vb_drafts',
+	$cfb_tables = array(
+		$wpdb->prefix . 'cfb_entries',
+		$wpdb->prefix . 'cfb_analytics',
+		$wpdb->prefix . 'cfb_drafts',
 	);
 
-	foreach ( $cf7vb_tables as $cf7vb_table ) {
-		$wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $cf7vb_table ) );
+	foreach ( $cfb_tables as $cfb_table ) {
+		$wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $cfb_table ) );
 	}
 }
 
-cf7vb_uninstall_truncate_tables();
+cfb_uninstall_truncate_tables();
 
-require_once __DIR__ . '/includes/class-cf7vb-activator.php';
+require_once __DIR__ . '/includes/class-cfb-activator.php';
 
-CF7VB_Activator::uninstall();
+CFB_Activator::uninstall();

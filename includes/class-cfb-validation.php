@@ -2,14 +2,14 @@
 /**
  * Custom validation from visual schema.
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_Validation {
+final class CFB_Validation {
 
 	public static function init() {
 		add_filter( 'wpcf7_validate', array( __CLASS__, 'validate' ), 20, 2 );
@@ -31,10 +31,11 @@ final class CF7VB_Validation {
 			return $result;
 		}
 
-		$schema = get_post_meta( $contact_form->id(), CF7VB_SCHEMA_META, true );
-		if ( ! is_array( $schema ) ) {
+		if ( ! CFB_Plugin::form_uses_builder( $contact_form->id() ) ) {
 			return $result;
 		}
+
+		$schema = get_post_meta( $contact_form->id(), CFB_SCHEMA_META, true );
 
 		$posted = $submission->get_posted_data();
 
@@ -70,7 +71,11 @@ final class CF7VB_Validation {
 
 			if ( ! empty( $rules['pattern'] ) ) {
 				$pattern = '/' . str_replace( '/', '\/', $rules['pattern'] ) . '/u';
-				if ( ! preg_match( $pattern, (string) $value ) ) {
+				$valid   = preg_match( $pattern, (string) $value );
+				if ( false === $valid ) {
+					continue;
+				}
+				if ( ! $valid ) {
 					$result->invalidate( null, self::message( $field, 'pattern' ) );
 				}
 			}
@@ -86,7 +91,7 @@ final class CF7VB_Validation {
 			if ( empty( $consent ) ) {
 				$result->invalidate(
 					null,
-					$gdpr['errorMessage'] ?? __( 'You must accept the privacy policy.', 'form-studio-for-contact-form-7' )
+					$gdpr['errorMessage'] ?? __( 'You must accept the privacy policy.', 'craftforms-builder' )
 				);
 			}
 		}
@@ -108,13 +113,13 @@ final class CF7VB_Validation {
 		switch ( $type ) {
 			case 'required':
 				/* translators: %s: field label. */
-				return sprintf( __( '%s is required.', 'form-studio-for-contact-form-7' ), $label );
+				return sprintf( __( '%s is required.', 'craftforms-builder' ), $label );
 			case 'email':
 				/* translators: %s: field label. */
-				return sprintf( __( '%s must be a valid email.', 'form-studio-for-contact-form-7' ), $label );
+				return sprintf( __( '%s must be a valid email.', 'craftforms-builder' ), $label );
 			default:
 				/* translators: %s: field label. */
-				return sprintf( __( '%s is invalid.', 'form-studio-for-contact-form-7' ), $label );
+				return sprintf( __( '%s is invalid.', 'craftforms-builder' ), $label );
 		}
 	}
 

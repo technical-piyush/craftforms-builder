@@ -6,12 +6,12 @@
 	function appearanceClasses( schema ) {
 		const app = ( schema.settings && schema.settings.appearance ) || {};
 		return [
-			'cf7vb-enhanced',
-			'cf7vb-theme-' + ( app.theme || 'modern' ),
-			'cf7vb-width-' + ( app.formWidth || 'medium' ),
-			'cf7vb-spacing-' + ( app.fieldSpacing || 'comfortable' ),
-			'cf7vb-radius-' + ( app.borderRadius || 'medium' ),
-			'cf7vb-progress-style-' + ( app.progressStyle || 'pills' ),
+			'cfb-enhanced',
+			'cfb-theme-' + ( app.theme || 'modern' ),
+			'cfb-width-' + ( app.formWidth || 'medium' ),
+			'cfb-spacing-' + ( app.fieldSpacing || 'comfortable' ),
+			'cfb-radius-' + ( app.borderRadius || 'medium' ),
+			'cfb-progress-style-' + ( app.progressStyle || 'pills' ),
 		].join( ' ' );
 	}
 
@@ -21,25 +21,25 @@
 		const width = { narrow: '480px', medium: '640px', wide: '760px', full: '100%' };
 		const gap = { compact: '14px', comfortable: '22px' };
 		return {
-			'--cf7vb-primary': app.primaryColor || '#3858e9',
-			'--cf7vb-radius': radius[ app.borderRadius ] || '10px',
-			'--cf7vb-form-width': width[ app.formWidth ] || '640px',
-			'--cf7vb-field-gap': gap[ app.fieldSpacing ] || '22px',
+			'--cfb-primary': app.primaryColor || '#3858e9',
+			'--cfb-radius': radius[ app.borderRadius ] || '10px',
+			'--cfb-form-width': width[ app.formWidth ] || '640px',
+			'--cfb-field-gap': gap[ app.fieldSpacing ] || '22px',
 		};
 	}
 
 	function fieldId( field ) {
-		return 'cf7vb-preview-' + ( field.name || field.id );
+		return 'cfb-preview-' + ( field.name || field.id );
 	}
 
 	function PreviewField( { field } ) {
 		const req = field.required ? el( 'abbr', { title: 'required', 'aria-hidden': 'true' }, '*' ) : null;
 		const help = field.help
-			? el( 'p', { className: 'cf7vb-preview-help' }, field.help )
+			? el( 'p', { className: 'cfb-preview-help' }, field.help )
 			: null;
 
 		const labelEl = field.type !== 'hidden' && field.type !== 'submit'
-			? el( 'label', { className: 'cf7vb-preview-label', htmlFor: fieldId( field ) },
+			? el( 'label', { className: 'cfb-preview-label', htmlFor: fieldId( field ) },
 				field.label || field.name,
 				req
 			)
@@ -59,23 +59,23 @@
 					...common,
 					rows: 4,
 					placeholder: field.placeholder || '',
-					className: 'cf7vb-preview-control',
+					className: 'cfb-preview-control',
 				} );
 				break;
 			case 'email':
-				control = el( 'input', { ...common, type: 'email', placeholder: field.placeholder || 'name@example.com', className: 'cf7vb-preview-control' } );
+				control = el( 'input', { ...common, type: 'email', placeholder: field.placeholder || 'name@example.com', className: 'cfb-preview-control' } );
 				break;
 			case 'phone':
-				control = el( 'input', { ...common, type: 'tel', placeholder: field.placeholder || '+1 (555) 000-0000', className: 'cf7vb-preview-control' } );
+				control = el( 'input', { ...common, type: 'tel', placeholder: field.placeholder || '+1 (555) 000-0000', className: 'cfb-preview-control' } );
 				break;
 			case 'number':
-				control = el( 'input', { ...common, type: 'number', placeholder: field.placeholder || '0', className: 'cf7vb-preview-control' } );
+				control = el( 'input', { ...common, type: 'number', placeholder: field.placeholder || '0', className: 'cfb-preview-control' } );
 				break;
 			case 'date':
-				control = el( 'input', { ...common, type: 'date', className: 'cf7vb-preview-control' } );
+				control = el( 'input', { ...common, type: 'date', className: 'cfb-preview-control' } );
 				break;
 			case 'file':
-				control = el( 'div', { className: 'cf7vb-preview-file' },
+				control = el( 'div', { className: 'cfb-preview-file' },
 					el( 'span', { className: 'dashicons dashicons-upload' } ),
 					' ',
 					field.label || 'Choose file'
@@ -84,7 +84,7 @@
 			case 'select':
 				control = el(
 					'select',
-					{ ...common, className: 'cf7vb-preview-control' },
+					{ ...common, className: 'cfb-preview-control' },
 					el( 'option', { value: '' }, field.placeholder || 'Select…' ),
 					( field.options || [] ).map( ( o, i ) =>
 						el( 'option', { key: i, value: o.value || o.label || o }, o.label || o.value || o )
@@ -94,11 +94,11 @@
 			case 'checkbox':
 				control = el(
 					'div',
-					{ className: 'cf7vb-preview-choice-group' },
+					{ className: 'cfb-preview-choice-group' },
 					( field.options || [ { label: 'Option', value: 'option' } ] ).map( ( o, i ) =>
 						el(
 							'label',
-							{ key: i, className: 'cf7vb-preview-choice' },
+							{ key: i, className: 'cfb-preview-choice' },
 							el( 'input', { type: 'checkbox', disabled: true, name: field.name } ),
 							' ',
 							o.label || o.value || o
@@ -109,11 +109,11 @@
 			case 'radio':
 				control = el(
 					'div',
-					{ className: 'cf7vb-preview-choice-group' },
+					{ className: 'cfb-preview-choice-group' },
 					( field.options || [ { label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' } ] ).map( ( o, i ) =>
 						el(
 							'label',
-							{ key: i, className: 'cf7vb-preview-choice' },
+							{ key: i, className: 'cfb-preview-choice' },
 							el( 'input', { type: 'radio', disabled: true, name: field.name } ),
 							' ',
 							o.label || o.value || o
@@ -124,51 +124,51 @@
 			case 'hidden':
 				return el(
 					'div',
-					{ className: 'cf7vb-preview-field cf7vb-preview-field--hidden' },
-					el( 'span', { className: 'cf7vb-preview-badge' }, 'Hidden: ' + ( field.name || '' ) )
+					{ className: 'cfb-preview-field cfb-preview-field--hidden' },
+					el( 'span', { className: 'cfb-preview-badge' }, 'Hidden: ' + ( field.name || '' ) )
 				);
 			case 'rating':
 				control = el(
 					'div',
-					{ className: 'cf7vb-preview-rating', 'aria-label': 'Rating' },
+					{ className: 'cfb-preview-rating', 'aria-label': 'Rating' },
 					[ 1, 2, 3, 4, 5 ].map( ( n ) =>
-						el( 'span', { key: n, className: 'cf7vb-preview-star' }, '★' )
+						el( 'span', { key: n, className: 'cfb-preview-star' }, '★' )
 					)
 				);
 				break;
 			case 'signature':
 				control = el(
 					'div',
-					{ className: 'cf7vb-preview-signature' },
+					{ className: 'cfb-preview-signature' },
 					el( 'span', null, 'Sign here' )
 				);
 				break;
 			case 'repeater':
 				control = el(
 					'div',
-					{ className: 'cf7vb-preview-repeater' },
+					{ className: 'cfb-preview-repeater' },
 					el( 'p', null, 'Repeater — respondents can add multiple rows' ),
-					el( 'button', { type: 'button', className: 'cf7vb-preview-btn', disabled: true }, '+ Add row' )
+					el( 'button', { type: 'button', className: 'cfb-preview-btn', disabled: true }, '+ Add row' )
 				);
 				break;
 			case 'submit':
 				return el(
 					'div',
-					{ className: 'cf7vb-preview-field cf7vb-preview-field--submit' },
-					el( 'button', { type: 'button', className: 'cf7vb-preview-submit', disabled: true }, field.label || 'Send' )
+					{ className: 'cfb-preview-field cfb-preview-field--submit' },
+					el( 'button', { type: 'button', className: 'cfb-preview-submit', disabled: true }, field.label || 'Send' )
 				);
 			default:
 				control = el( 'input', {
 					...common,
 					type: 'text',
 					placeholder: field.placeholder || field.label || '',
-					className: 'cf7vb-preview-control',
+					className: 'cfb-preview-control',
 				} );
 		}
 
 		return el(
 			'p',
-			{ className: 'cf7vb-preview-field cf7vb-preview-field--' + field.type },
+			{ className: 'cfb-preview-field cfb-preview-field--' + field.type },
 			labelEl,
 			el( 'span', { className: 'wpcf7-form-control-wrap' }, control ),
 			help
@@ -186,17 +186,17 @@
 
 		return el(
 			'div',
-			{ className: 'cf7vb-preview-form-inner' },
+			{ className: 'cfb-preview-form-inner' },
 			multistep && ! activeStepOnly
 				? el(
 					'div',
-					{ className: 'cf7vb-preview-steps-bar' },
+					{ className: 'cfb-preview-steps-bar' },
 					steps.map( ( step, i ) =>
 						el(
 							'span',
 							{
 								key: step.id,
-								className: 'cf7vb-preview-step-pill' + ( i === activeStepIndex ? ' is-active' : '' ),
+								className: 'cfb-preview-step-pill' + ( i === activeStepIndex ? ' is-active' : '' ),
 							},
 							step.title || 'Step ' + ( i + 1 )
 						)
@@ -206,18 +206,18 @@
 			stepsToRender.map( ( step, si ) =>
 				el(
 					'div',
-					{ key: step.id, className: 'cf7vb-preview-step' },
+					{ key: step.id, className: 'cfb-preview-step' },
 					multistep && activeStepOnly
-						? el( 'h4', { className: 'cf7vb-preview-step-title' }, step.title || 'Step ' + ( activeStepIndex + 1 ) )
+						? el( 'h4', { className: 'cfb-preview-step-title' }, step.title || 'Step ' + ( activeStepIndex + 1 ) )
 						: null,
 					! activeStepOnly && multistep
-						? el( 'h4', { className: 'cf7vb-preview-step-title' }, step.title || 'Step ' + ( si + 1 ) )
+						? el( 'h4', { className: 'cfb-preview-step-title' }, step.title || 'Step ' + ( si + 1 ) )
 						: null,
 					( step.sections || [] ).map( ( section ) =>
 						el(
 							'div',
-							{ key: section.id, className: 'cf7vb-preview-section' },
-							section.title ? el( 'h5', { className: 'cf7vb-preview-section-title' }, section.title ) : null,
+							{ key: section.id, className: 'cfb-preview-section' },
+							section.title ? el( 'h5', { className: 'cfb-preview-section-title' }, section.title ) : null,
 							( section.fields || [] ).map( ( field ) =>
 								el( PreviewField, { key: field.id, field } )
 							)
@@ -228,10 +228,10 @@
 			gdpr && gdpr.enabled
 				? el(
 					'div',
-					{ className: 'cf7vb-preview-field cf7vb-preview-gdpr' },
+					{ className: 'cfb-preview-field cfb-preview-gdpr' },
 					el(
 						'label',
-						{ className: 'cf7vb-preview-choice' },
+						{ className: 'cfb-preview-choice' },
 						el( 'input', { type: 'checkbox', disabled: true } ),
 						' ',
 						gdpr.label || 'I agree to the privacy policy.'
@@ -251,7 +251,7 @@
 	 * @param {string} props.compiled
 	 * @param {boolean} props.fullWidth
 	 */
-	window.CF7VB_PREVIEW = function VisualPreview( props ) {
+	window.CFB_PREVIEW = function VisualPreview( props ) {
 		const schema = props.schema || { steps: [] };
 		const device = props.device || 'desktop';
 		const activeStepOnly = props.activeStepOnly !== false && schema.settings?.multistep;
@@ -263,34 +263,34 @@
 			'div',
 			{
 				className:
-					'cf7vb-visual-preview cf7vb-visual-preview--' +
+					'cfb-visual-preview cfb-visual-preview--' +
 					device +
 					( props.fullWidth ? ' is-full' : ' is-compact' ),
 				'data-device': device,
 			},
 			el(
 				'div',
-				{ className: 'cf7vb-device-frame', 'data-device': device },
+				{ className: 'cfb-device-frame', 'data-device': device },
 				props.fullWidth
 					? el(
 						'div',
-						{ className: 'cf7vb-preview-chrome' },
-						el( 'span', { className: 'cf7vb-preview-chrome-dot' } ),
-						el( 'span', { className: 'cf7vb-preview-chrome-dot' } ),
-						el( 'span', { className: 'cf7vb-preview-chrome-dot' } ),
-						el( 'span', { className: 'cf7vb-preview-chrome-title' }, deviceLabel + ' — ' + ( 'Form preview' ) )
+						{ className: 'cfb-preview-chrome' },
+						el( 'span', { className: 'cfb-preview-chrome-dot' } ),
+						el( 'span', { className: 'cfb-preview-chrome-dot' } ),
+						el( 'span', { className: 'cfb-preview-chrome-dot' } ),
+						el( 'span', { className: 'cfb-preview-chrome-title' }, deviceLabel + ' — ' + ( 'Form preview' ) )
 					)
-					: el( 'div', { className: 'cf7vb-preview-device-badge' }, deviceLabel ),
+					: el( 'div', { className: 'cfb-preview-device-badge' }, deviceLabel ),
 				el(
 					'div',
 					{
-						className: 'cf7vb-preview-card ' + appearanceClasses( schema ),
+						className: 'cfb-preview-card ' + appearanceClasses( schema ),
 						style: appearanceStyle( schema ),
 					},
 					el(
 						'form',
 						{
-							className: 'wpcf7-form cf7vb-preview-form',
+							className: 'wpcf7-form cfb-preview-form',
 							onSubmit: function ( e ) {
 								e.preventDefault();
 							},
@@ -302,9 +302,9 @@
 			props.showCode && props.compiled
 				? el(
 					'details',
-					{ className: 'cf7vb-preview-code-details' },
+					{ className: 'cfb-preview-code-details' },
 					el( 'summary', null, 'Show CF7 code (advanced)' ),
-					el( 'pre', { className: 'cf7vb-preview-code' }, props.compiled )
+					el( 'pre', { className: 'cfb-preview-code' }, props.compiled )
 				)
 				: null
 		);

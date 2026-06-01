@@ -3,7 +3,7 @@
 
 	const { createElement: el, Fragment, useState, useEffect, useCallback, useRef, useMemo } = wp.element;
 	const apiFetch = wp.apiFetch;
-	const cfg = window.CF7VB_BUILDER || {};
+	const cfg = window.CFB_BUILDER || {};
 	const S = cfg.strings || {};
 
 	const WORKSPACE_TABS = [
@@ -14,10 +14,10 @@
 	];
 
 	function renderVisualPreview( props ) {
-		if ( ! window.CF7VB_PREVIEW ) {
-			return el( 'p', { className: 'cf7vb-preview-fallback' }, 'Preview loading…' );
+		if ( ! window.CFB_PREVIEW ) {
+			return el( 'p', { className: 'cfb-preview-fallback' }, 'Preview loading…' );
 		}
-		return el( window.CF7VB_PREVIEW, props );
+		return el( window.CFB_PREVIEW, props );
 	}
 
 	function StepsBar( props ) {
@@ -39,31 +39,31 @@
 
 		return el(
 			'div',
-			{ className: 'cf7vb-steps-panel' + ( compact ? ' cf7vb-steps-panel--compact' : '' ) },
+			{ className: 'cfb-steps-panel' + ( compact ? ' cfb-steps-panel--compact' : '' ) },
 			compact
 				? null
 				: el(
 					'div',
-					{ className: 'cf7vb-steps-panel-head' },
+					{ className: 'cfb-steps-panel-head' },
 					el( 'div', null,
 						el( 'strong', null, S.stepsTitle || 'Form steps' ),
 						el( 'p', null, S.stepsHint || 'Name each step — titles appear on the live form progress bar.' )
 					),
 					el(
 						'span',
-						{ className: 'cf7vb-steps-count' },
+						{ className: 'cfb-steps-count' },
 						schema.steps.length + ' ' + ( S.stepsLabel || 'steps' )
 					)
 				),
 			el(
 				'div',
-				{ className: 'cf7vb-steps-list', role: 'tablist', 'aria-label': S.stepsTitle || 'Form steps' },
+				{ className: 'cfb-steps-list', role: 'tablist', 'aria-label': S.stepsTitle || 'Form steps' },
 				schema.steps.map( ( step, i ) =>
 					el(
 						'div',
 						{
 							key: step.id,
-							className: 'cf7vb-step-item' + ( activeStep === i ? ' is-active' : '' ),
+							className: 'cfb-step-item' + ( activeStep === i ? ' is-active' : '' ),
 							role: 'tab',
 							'aria-selected': activeStep === i ? 'true' : 'false',
 						},
@@ -71,15 +71,15 @@
 							'button',
 							{
 								type: 'button',
-								className: 'cf7vb-step-select',
+								className: 'cfb-step-select',
 								onClick: () => setActiveStep( i ),
 								title: S.editStep || 'Select step',
 							},
-							el( 'span', { className: 'cf7vb-step-num' }, String( i + 1 ) )
+							el( 'span', { className: 'cfb-step-num' }, String( i + 1 ) )
 						),
 						el( 'input', {
 							type: 'text',
-							className: 'cf7vb-step-title-input',
+							className: 'cfb-step-title-input',
 							value: step.title || '',
 							placeholder: ( S.stepPlaceholder || 'Step %d' ).replace( '%d', String( i + 1 ) ),
 							onFocus: () => setActiveStep( i ),
@@ -90,7 +90,7 @@
 						schema.steps.length > 2
 							? el( 'button', {
 								type: 'button',
-								className: 'cf7vb-step-remove',
+								className: 'cfb-step-remove',
 								title: S.removeStep || 'Remove step',
 								onClick: ( e ) => {
 									e.stopPropagation();
@@ -104,7 +104,7 @@
 					'button',
 					{
 						type: 'button',
-						className: 'cf7vb-btn cf7vb-btn--dashed cf7vb-add-step-btn',
+						className: 'cfb-btn cfb-btn--dashed cfb-add-step-btn',
 						onClick: onAddStep,
 					},
 					el( 'span', { className: 'dashicons dashicons-plus-alt2' } ),
@@ -117,14 +117,14 @@
 	function DeviceToggle( { device, setDevice, compact } ) {
 		return el(
 			'div',
-			{ className: 'cf7vb-device-toggle' + ( compact ? ' cf7vb-device-toggle--compact' : '' ), role: 'group', 'aria-label': 'Preview device size' },
+			{ className: 'cfb-device-toggle' + ( compact ? ' cfb-device-toggle--compact' : '' ), role: 'group', 'aria-label': 'Preview device size' },
 			[ 'desktop', 'tablet', 'mobile' ].map( ( d ) =>
 				el(
 					'button',
 					{
 						key: d,
 						type: 'button',
-						className: 'cf7vb-btn' + ( device === d ? ' cf7vb-btn--active' : '' ),
+						className: 'cfb-btn' + ( device === d ? ' cfb-btn--active' : '' ),
 						'aria-pressed': device === d ? 'true' : 'false',
 						onClick: ( e ) => {
 							e.preventDefault();
@@ -165,13 +165,13 @@
 	}
 
 	function loadInitialSchema() {
-		const input = document.getElementById( 'cf7vb-schema-input' );
+		const input = document.getElementById( 'cfb-schema-input' );
 		if ( input && input.value ) {
 			try {
 				return JSON.parse( input.value );
 			} catch ( e ) { /* noop */ }
 		}
-		const boot = document.getElementById( 'cf7vb-default-schema' );
+		const boot = document.getElementById( 'cfb-default-schema' );
 		if ( boot && boot.textContent ) {
 			try {
 				return JSON.parse( boot.textContent );
@@ -209,18 +209,18 @@
 		const stepLines = [];
 		( step.sections || [] ).forEach( ( section ) => {
 			if ( section.title ) {
-				stepLines.push( '<h3 class="cf7vb-section-title">' + section.title + '</h3>' );
+				stepLines.push( '<h3 class="cfb-section-title">' + section.title + '</h3>' );
 			}
 			( section.fields || [] ).forEach( ( field ) => {
 				if ( field.label && field.type !== 'hidden' && field.type !== 'submit' ) {
-					stepLines.push( '<label> ' + field.label + ( field.required ? ' <span class="cf7vb-req">*</span>' : '' ) );
+					stepLines.push( '<label> ' + field.label + ( field.required ? ' <span class="cfb-req">*</span>' : '' ) );
 					stepLines.push( compileField( field ) );
 					stepLines.push( '</label>' );
 				} else {
 					stepLines.push( compileField( field ) );
 				}
 				if ( field.help ) {
-					stepLines.push( '<span class="cf7vb-help">' + field.help + '</span>' );
+					stepLines.push( '<span class="cfb-help">' + field.help + '</span>' );
 				}
 			} );
 		} );
@@ -237,10 +237,10 @@
 			if ( multistep ) {
 				const stepTitle = String( step.title || '' ).trim();
 				const titleAttr = stepTitle
-					? ' data-cf7vb-step-title="' + stepTitle.replace( /"/g, '&quot;' ) + '"'
+					? ' data-cfb-step-title="' + stepTitle.replace( /"/g, '&quot;' ) + '"'
 					: '';
 				lines.push(
-					'<div class="cf7vb-step-group" data-cf7vb-step="' + step.id + '" data-cf7vb-step-index="' + stepIndex + '"' + titleAttr + '>' +
+					'<div class="cfb-step-group" data-cfb-step="' + step.id + '" data-cfb-step-index="' + stepIndex + '"' + titleAttr + '>' +
 					stepBody +
 					'</div>'
 				);
@@ -250,9 +250,9 @@
 		} );
 
 		if ( settings.security && settings.security.honeypot ) {
-			const hp = settings.security.honeypotField || 'cf7vb_hp';
+			const hp = settings.security.honeypotField || 'cfb_hp';
 			lines.push(
-				'<span class="cf7vb-hp" aria-hidden="true" style="position:absolute;left:-9999px;"><label>Leave empty [text ' + hp + ']</label></span>'
+				'<span class="cfb-hp" aria-hidden="true" style="position:absolute;left:-9999px;"><label>Leave empty [text ' + hp + ']</label></span>'
 			);
 		}
 
@@ -362,7 +362,7 @@
 
 		function applyStepTitlesFromDom( baseSchema ) {
 			const next = clone( baseSchema );
-			document.querySelectorAll( '.cf7vb-step-title-input' ).forEach( ( input, index ) => {
+			document.querySelectorAll( '.cfb-step-title-input' ).forEach( ( input, index ) => {
 				if ( ! next.steps[ index ] ) {
 					return;
 				}
@@ -386,7 +386,7 @@
 
 		const syncDom = useCallback( ( nextSchema, markup ) => {
 			const json = JSON.stringify( nextSchema );
-			const schemaInput = document.getElementById( 'cf7vb-schema-input' );
+			const schemaInput = document.getElementById( 'cfb-schema-input' );
 			const cf7Form = document.getElementById( 'wpcf7-form' );
 			if ( schemaInput ) {
 				schemaInput.value = json;
@@ -567,13 +567,13 @@
 
 		const onPaletteDragStart = ( type ) => ( e ) => {
 			setDragType( type );
-			e.dataTransfer.setData( 'text/cf7vb-type', type );
+			e.dataTransfer.setData( 'text/cfb-type', type );
 			e.dataTransfer.effectAllowed = 'copy';
 		};
 
 		const onFieldDragStart = ( fieldId ) => ( e ) => {
 			setDragFieldId( fieldId );
-			e.dataTransfer.setData( 'text/cf7vb-field', fieldId );
+			e.dataTransfer.setData( 'text/cfb-field', fieldId );
 			e.dataTransfer.effectAllowed = 'move';
 		};
 
@@ -586,8 +586,8 @@
 		const onDropAtIndex = ( stepIndex, sectionIndex, atIndex ) => ( e ) => {
 			e.preventDefault();
 			e.stopPropagation();
-			const type = e.dataTransfer.getData( 'text/cf7vb-type' ) || dragType;
-			const fieldId = e.dataTransfer.getData( 'text/cf7vb-field' ) || dragFieldId;
+			const type = e.dataTransfer.getData( 'text/cfb-type' ) || dragType;
+			const fieldId = e.dataTransfer.getData( 'text/cfb-field' ) || dragFieldId;
 
 			if ( type ) {
 				addFieldToSection( stepIndex, sectionIndex, type, atIndex );
@@ -627,10 +627,10 @@
 
 		return el(
 			'div',
-			{ className: 'cf7vb-app' },
+			{ className: 'cfb-app' },
 			el(
 				'nav',
-				{ className: 'cf7vb-main-tabs', role: 'tablist', 'aria-label': 'Form builder sections' },
+				{ className: 'cfb-main-tabs', role: 'tablist', 'aria-label': 'Form builder sections' },
 				WORKSPACE_TABS.map( ( tab ) =>
 					el(
 						'button',
@@ -639,13 +639,13 @@
 							type: 'button',
 							role: 'tab',
 							'aria-selected': workspace === tab.id ? 'true' : 'false',
-							className: 'cf7vb-main-tab' + ( workspace === tab.id ? ' is-active' : '' ),
+							className: 'cfb-main-tab' + ( workspace === tab.id ? ' is-active' : '' ),
 							onClick: () => setWorkspace( tab.id ),
 						},
-						el( 'span', { className: 'cf7vb-main-tab-icon dashicons ' + tab.icon } ),
+						el( 'span', { className: 'cfb-main-tab-icon dashicons ' + tab.icon } ),
 						el(
 							'span',
-							{ className: 'cf7vb-main-tab-text' },
+							{ className: 'cfb-main-tab-text' },
 							el( 'strong', null, tab.label ),
 							el( 'small', null, tab.desc )
 						)
@@ -655,28 +655,28 @@
 			workspace === 'build'
 				? el(
 					'div',
-					{ className: 'cf7vb-subtoolbar' },
-					el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: undo, disabled: ! history.current.length, title: S.undo }, '↶ ' + ( S.undo || 'Undo' ) ),
-					el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: redo, disabled: ! future.current.length, title: S.redo }, '↷ ' + ( S.redo || 'Redo' ) ),
-					el( 'span', { className: 'cf7vb-subtoolbar-sep' } ),
+					{ className: 'cfb-subtoolbar' },
+					el( 'button', { type: 'button', className: 'cfb-btn', onClick: undo, disabled: ! history.current.length, title: S.undo }, '↶ ' + ( S.undo || 'Undo' ) ),
+					el( 'button', { type: 'button', className: 'cfb-btn', onClick: redo, disabled: ! future.current.length, title: S.redo }, '↷ ' + ( S.redo || 'Redo' ) ),
+					el( 'span', { className: 'cfb-subtoolbar-sep' } ),
 					el( 'button', {
 						type: 'button',
-						className: 'cf7vb-btn' + ( schema.settings?.multistep && schema.steps.length > 1 ? ' cf7vb-btn--active' : '' ),
+						className: 'cfb-btn' + ( schema.settings?.multistep && schema.steps.length > 1 ? ' cfb-btn--active' : '' ),
 						onClick: toggleMultistep,
 					}, S.multistep || 'Multistep' ),
-					el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: addStep }, S.addStep || 'Add step' ),
-					el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: addSection }, S.addSection || 'Add section' ),
-					el( 'span', { className: 'cf7vb-subtoolbar-sep' } ),
-					el( 'button', { type: 'button', className: 'cf7vb-btn cf7vb-btn--primary', onClick: () => setWorkspace( 'preview' ) }, '👁 ' + ( S.preview || 'Preview' ) )
+					el( 'button', { type: 'button', className: 'cfb-btn', onClick: addStep }, S.addStep || 'Add step' ),
+					el( 'button', { type: 'button', className: 'cfb-btn', onClick: addSection }, S.addSection || 'Add section' ),
+					el( 'span', { className: 'cfb-subtoolbar-sep' } ),
+					el( 'button', { type: 'button', className: 'cfb-btn cfb-btn--primary', onClick: () => setWorkspace( 'preview' ) }, '👁 ' + ( S.preview || 'Preview' ) )
 				)
 				: null,
 			workspace === 'preview'
 				? el(
 					'div',
-					{ className: 'cf7vb-preview-workspace' },
+					{ className: 'cfb-preview-workspace' },
 					el(
 						'div',
-						{ className: 'cf7vb-preview-workspace-head' },
+						{ className: 'cfb-preview-workspace-head' },
 						el( 'p', null, S.previewHint || 'This is how your form will look on the website.' ),
 						el( DeviceToggle, { device, setDevice } )
 					),
@@ -684,29 +684,29 @@
 					renderVisualPreview( Object.assign( {}, previewProps, { fullWidth: true, showCode: true } ) )
 				)
 				: null,
-			workspace === 'logic' && window.CF7VB_LOGIC
-				? el( 'div', { className: 'cf7vb-workspace-panel' }, el( window.CF7VB_LOGIC, logicProps ) )
+			workspace === 'logic' && window.CFB_LOGIC
+				? el( 'div', { className: 'cfb-workspace-panel' }, el( window.CFB_LOGIC, logicProps ) )
 				: null,
-			workspace === 'settings' && window.CF7VB_SETTINGS
-				? el( 'div', { className: 'cf7vb-workspace-panel' }, el( window.CF7VB_SETTINGS, settingsProps ) )
+			workspace === 'settings' && window.CFB_SETTINGS
+				? el( 'div', { className: 'cfb-workspace-panel' }, el( window.CFB_SETTINGS, settingsProps ) )
 				: null,
 			workspace === 'build'
 				? el(
 				'div',
-				{ className: 'cf7vb-layout' },
+				{ className: 'cfb-layout' },
 				el(
 					'aside',
-					{ className: 'cf7vb-palette' },
-					el( 'div', { className: 'cf7vb-col-head' }, S.palette || 'Fields' ),
+					{ className: 'cfb-palette' },
+					el( 'div', { className: 'cfb-col-head' }, S.palette || 'Fields' ),
 					el(
 						'div',
-						{ className: 'cf7vb-palette-list' },
+						{ className: 'cfb-palette-list' },
 						( cfg.fieldTypes || [] ).map( ( item ) =>
 							el(
 								'div',
 								{
 									key: item.type,
-									className: 'cf7vb-palette-item',
+									className: 'cfb-palette-item',
 									draggable: true,
 									onDragStart: onPaletteDragStart( item.type ),
 									onDragEnd: clearDragState,
@@ -720,43 +720,43 @@
 				),
 				el(
 					'main',
-					{ className: 'cf7vb-canvas-wrap' },
+					{ className: 'cfb-canvas-wrap' },
 					el(
 						'div',
-						{ className: 'cf7vb-canvas-toolbar' },
+						{ className: 'cfb-canvas-toolbar' },
 						el( 'strong', null, S.canvas || 'Canvas' ),
 						el( DeviceToggle, { device, setDevice } )
 					),
 					el( StepsBar, stepsBarProps ),
 					el(
 						'div',
-						{ className: 'cf7vb-canvas-stage' },
+						{ className: 'cfb-canvas-stage' },
 						el(
 							'div',
-							{ className: 'cf7vb-canvas-device cf7vb-canvas-device--' + device },
+							{ className: 'cfb-canvas-device cfb-canvas-device--' + device },
 							el(
 								'div',
-								{ className: 'cf7vb-canvas-card' },
+								{ className: 'cfb-canvas-card' },
 								( currentStep.sections || [] ).map( ( section, sectionIndex ) =>
 									el(
 										'div',
-										{ key: section.id, className: 'cf7vb-section' },
-										section.title ? el( 'h3', { className: 'cf7vb-section-title' }, section.title ) : null,
+										{ key: section.id, className: 'cfb-section' },
+										section.title ? el( 'h3', { className: 'cfb-section-title' }, section.title ) : null,
 										el(
 											'div',
-											{ className: 'cf7vb-fields-list' },
+											{ className: 'cfb-fields-list' },
 											! section.fields.length
 												? el(
 													'div',
 													{
 														className:
-															'cf7vb-drop-slot cf7vb-drop-slot--empty' +
+															'cfb-drop-slot cfb-drop-slot--empty' +
 															( dropTarget === section.id + ':0' ? ' is-drag-over' : '' ),
 														onDragOver: onDragOverSlot( section.id + ':0' ),
 														onDragLeave: () => setDropTarget( null ),
 														onDrop: onDropAtIndex( activeStep, sectionIndex, 0 ),
 													},
-													el( 'span', { className: 'cf7vb-drop-slot-label' }, S.dropHint || 'Drop fields here' )
+													el( 'span', { className: 'cfb-drop-slot-label' }, S.dropHint || 'Drop fields here' )
 												)
 												: null,
 											section.fields.map( ( field, fieldIndex ) =>
@@ -765,7 +765,7 @@
 													{ key: field.id },
 													el( 'div', {
 														className:
-															'cf7vb-drop-slot' +
+															'cfb-drop-slot' +
 															( dropTarget === section.id + ':' + fieldIndex ? ' is-drag-over' : '' ),
 														onDragOver: onDragOverSlot( section.id + ':' + fieldIndex ),
 														onDragLeave: () => setDropTarget( null ),
@@ -775,7 +775,7 @@
 													'div',
 													{
 														className:
-															'cf7vb-field-card' +
+															'cfb-field-card' +
 															( selectedId === field.id ? ' is-selected' : '' ) +
 															( dragFieldId === field.id ? ' is-dragging' : '' ),
 														draggable: true,
@@ -783,14 +783,14 @@
 														onDragEnd: clearDragState,
 														onClick: () => setSelectedId( field.id ),
 													},
-													el( 'span', { className: 'cf7vb-field-grip dashicons dashicons-move' } ),
+													el( 'span', { className: 'cfb-field-grip dashicons dashicons-move' } ),
 													el(
 														'div',
-														{ className: 'cf7vb-field-body' },
+														{ className: 'cfb-field-body' },
 														inlineEditId === field.id
 															? el( 'input', {
 																type: 'text',
-																className: 'cf7vb-inline-edit',
+																className: 'cfb-inline-edit',
 																autoFocus: true,
 																value: field.label || '',
 																onBlur: ( e ) => {
@@ -807,16 +807,16 @@
 															: el(
 																'div',
 																{
-																	className: 'cf7vb-field-label',
+																	className: 'cfb-field-label',
 																	onDoubleClick: () => setInlineEditId( field.id ),
 																	title: 'Double-click to edit label',
 																},
 																field.label || field.name,
-																field.required ? el( 'span', { className: 'cf7vb-req' }, ' *' ) : null
+																field.required ? el( 'span', { className: 'cfb-req' }, ' *' ) : null
 															),
 														el(
 															'div',
-															{ className: 'cf7vb-field-mock' },
+															{ className: 'cfb-field-mock' },
 															el( MockControl, { field } )
 														)
 													)
@@ -826,7 +826,7 @@
 											section.fields.length
 												? el( 'div', {
 													className:
-														'cf7vb-drop-slot cf7vb-drop-slot--end' +
+														'cfb-drop-slot cfb-drop-slot--end' +
 														( dropTarget === section.id + ':end' ? ' is-drag-over' : '' ),
 													onDragOver: onDragOverSlot( section.id + ':end' ),
 													onDragLeave: () => setDropTarget( null ),
@@ -842,16 +842,16 @@
 				),
 				el(
 					'aside',
-					{ className: 'cf7vb-inspector' },
-					el( 'div', { className: 'cf7vb-col-head' }, S.inspector || 'Inspector' ),
+					{ className: 'cfb-inspector' },
+					el( 'div', { className: 'cfb-col-head' }, S.inspector || 'Inspector' ),
 					! selectedField
-						? el( 'p', { className: 'cf7vb-inspector-empty' }, S.clickFieldHint || S.noField || 'Select a field' )
+						? el( 'p', { className: 'cfb-inspector-empty' }, S.clickFieldHint || S.noField || 'Select a field' )
 						: el(
 							'div',
-							{ className: 'cf7vb-inspector-form' },
+							{ className: 'cfb-inspector-form' },
 							el(
 								'div',
-								{ className: 'cf7vb-field-group' },
+								{ className: 'cfb-field-group' },
 								el( 'label', null, S.label || 'Label' ),
 								el( 'input', {
 									type: 'text',
@@ -861,7 +861,7 @@
 							),
 							el(
 								'div',
-								{ className: 'cf7vb-field-group' },
+								{ className: 'cfb-field-group' },
 								el( 'label', null, S.name || 'Name' ),
 								el( 'input', {
 									type: 'text',
@@ -871,7 +871,7 @@
 							),
 							el(
 								'div',
-								{ className: 'cf7vb-field-group' },
+								{ className: 'cfb-field-group' },
 								el( 'label', null, S.placeholder || 'Placeholder' ),
 								el( 'input', {
 									type: 'text',
@@ -881,7 +881,7 @@
 							),
 							el(
 								'div',
-								{ className: 'cf7vb-field-group' },
+								{ className: 'cfb-field-group' },
 								el( 'label', null, S.help || 'Help' ),
 								el( 'textarea', {
 									rows: 2,
@@ -891,18 +891,18 @@
 							),
 							el(
 								'div',
-								{ className: 'cf7vb-check-row' },
+								{ className: 'cfb-check-row' },
 								el( 'input', {
 									type: 'checkbox',
-									id: 'cf7vb-req',
+									id: 'cfb-req',
 									checked: !! selectedField.required,
 									onChange: ( e ) => updateField( selectedField.id, { required: e.target.checked } ),
 								} ),
-								el( 'label', { htmlFor: 'cf7vb-req' }, S.required || 'Required' )
+								el( 'label', { htmlFor: 'cfb-req' }, S.required || 'Required' )
 							),
 							el(
 								'div',
-								{ className: 'cf7vb-field-group' },
+								{ className: 'cfb-field-group' },
 								el( 'label', null, 'Min length' ),
 								el( 'input', {
 									type: 'number',
@@ -916,7 +916,7 @@
 							),
 							el(
 								'div',
-								{ className: 'cf7vb-field-group' },
+								{ className: 'cfb-field-group' },
 								el( 'label', null, 'Max length' ),
 								el( 'input', {
 									type: 'number',
@@ -930,7 +930,7 @@
 							),
 							el(
 								'div',
-								{ className: 'cf7vb-field-group' },
+								{ className: 'cfb-field-group' },
 								el( 'label', null, 'Regex pattern' ),
 								el( 'input', {
 									type: 'text',
@@ -945,15 +945,15 @@
 							[ 'select', 'checkbox', 'radio' ].includes( selectedField.type )
 								? el(
 									'div',
-									{ className: 'cf7vb-field-group' },
+									{ className: 'cfb-field-group' },
 									el( 'label', null, S.options || 'Options' ),
 									el(
 										'div',
-										{ className: 'cf7vb-options-list' },
+										{ className: 'cfb-options-list' },
 										( selectedField.options || [] ).map( ( opt, oi ) =>
 											el(
 												'div',
-												{ key: oi, className: 'cf7vb-option-row' },
+												{ key: oi, className: 'cfb-option-row' },
 												el( 'input', {
 													type: 'text',
 													value: opt.label || opt.value || '',
@@ -965,7 +965,7 @@
 												} ),
 												el( 'button', {
 													type: 'button',
-													className: 'cf7vb-btn cf7vb-btn--ghost',
+													className: 'cfb-btn cfb-btn--ghost',
 													onClick: () => {
 														const options = clone( selectedField.options || [] );
 														options.splice( oi, 1 );
@@ -976,7 +976,7 @@
 										),
 										el( 'button', {
 											type: 'button',
-											className: 'cf7vb-btn',
+											className: 'cfb-btn',
 											onClick: () => {
 												const options = clone( selectedField.options || [] );
 												options.push( { label: 'New option', value: 'New option' } );
@@ -988,9 +988,9 @@
 								: null,
 							el(
 								'div',
-								{ className: 'cf7vb-toolbar-group', style: { marginTop: 8 } },
-								el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: () => duplicateField( selectedField.id ) }, S.duplicate || 'Duplicate' ),
-								el( 'button', { type: 'button', className: 'cf7vb-btn', onClick: () => removeField( selectedField.id ) }, S.delete || 'Delete' )
+								{ className: 'cfb-toolbar-group', style: { marginTop: 8 } },
+								el( 'button', { type: 'button', className: 'cfb-btn', onClick: () => duplicateField( selectedField.id ) }, S.duplicate || 'Duplicate' ),
+								el( 'button', { type: 'button', className: 'cfb-btn', onClick: () => removeField( selectedField.id ) }, S.delete || 'Delete' )
 							)
 						)
 				)
@@ -1000,7 +1000,7 @@
 	}
 
 	function mount() {
-		const root = document.getElementById( 'cf7vb-builder-root' );
+		const root = document.getElementById( 'cfb-builder-root' );
 		if ( ! root || ! wp.element ) return;
 
 		if ( wp.element.createRoot ) {

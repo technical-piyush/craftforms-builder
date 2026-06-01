@@ -2,16 +2,16 @@
 /**
  * REST API for builder schema, entries, analytics, drafts.
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_REST_API {
+final class CFB_REST_API {
 
-	const NS = 'cf7vb/v1';
+	const NS = 'cfb/v1';
 
 	public static function init() {
 		add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
@@ -127,16 +127,16 @@ final class CF7VB_REST_API {
 		if ( current_user_can( 'wpcf7_edit_contact_form', $id ) ) {
 			return true;
 		}
-		return new WP_Error( 'cf7vb_forbidden', __( 'Forbidden.', 'form-studio-for-contact-form-7' ), array( 'status' => 403 ) );
+		return new WP_Error( 'cfb_forbidden', __( 'Forbidden.', 'craftforms-builder' ), array( 'status' => 403 ) );
 	}
 
 	public static function get_schema( WP_REST_Request $request ) {
 		$id     = (int) $request['id'];
-		$schema = CF7VB_Plugin::get_schema( $id );
+		$schema = CFB_Plugin::get_schema( $id );
 		return rest_ensure_response(
 			array(
 				'schema'   => $schema,
-				'compiled' => CF7VB_Compiler::compile( $schema ),
+				'compiled' => CFB_Compiler::compile( $schema ),
 			)
 		);
 	}
@@ -146,13 +146,13 @@ final class CF7VB_REST_API {
 		$schema = $request->get_param( 'schema' );
 
 		if ( ! is_array( $schema ) ) {
-			return new WP_Error( 'cf7vb_invalid_schema', __( 'Invalid schema.', 'form-studio-for-contact-form-7' ), array( 'status' => 400 ) );
+			return new WP_Error( 'cfb_invalid_schema', __( 'Invalid schema.', 'craftforms-builder' ), array( 'status' => 400 ) );
 		}
 
-		$schema   = CF7VB_Parser::normalize_schema( $schema );
-		$compiled = CF7VB_Compiler::compile( $schema );
+		$schema   = CFB_Parser::normalize_schema( $schema );
+		$compiled = CFB_Compiler::compile( $schema );
 
-		update_post_meta( $id, CF7VB_SCHEMA_META, $schema );
+		update_post_meta( $id, CFB_SCHEMA_META, $schema );
 
 		$contact_form = wpcf7_contact_form( $id );
 		if ( $contact_form ) {
@@ -173,14 +173,14 @@ final class CF7VB_REST_API {
 	public static function compile_preview( WP_REST_Request $request ) {
 		$schema = $request->get_param( 'schema' );
 		if ( ! is_array( $schema ) ) {
-			$schema = CF7VB_Parser::default_schema();
+			$schema = CFB_Parser::default_schema();
 		}
-		return rest_ensure_response( array( 'compiled' => CF7VB_Compiler::compile( $schema ) ) );
+		return rest_ensure_response( array( 'compiled' => CFB_Compiler::compile( $schema ) ) );
 	}
 
 	public static function list_entries( WP_REST_Request $request ) {
 		return rest_ensure_response(
-			CF7VB_Submissions::query(
+			CFB_Submissions::query(
 				array(
 					'form_id'  => (int) $request->get_param( 'form_id' ),
 					'status'   => sanitize_key( (string) $request->get_param( 'status' ) ),
@@ -193,23 +193,23 @@ final class CF7VB_REST_API {
 	}
 
 	public static function get_entry( WP_REST_Request $request ) {
-		$row = CF7VB_Submissions::get( (int) $request['id'] );
+		$row = CFB_Submissions::get( (int) $request['id'] );
 		if ( ! $row ) {
-			return new WP_Error( 'cf7vb_not_found', __( 'Entry not found.', 'form-studio-for-contact-form-7' ), array( 'status' => 404 ) );
+			return new WP_Error( 'cfb_not_found', __( 'Entry not found.', 'craftforms-builder' ), array( 'status' => 404 ) );
 		}
-		return rest_ensure_response( CF7VB_Submissions::format_entry( $row ) );
+		return rest_ensure_response( CFB_Submissions::format_entry( $row ) );
 	}
 
 	public static function get_analytics_stats( WP_REST_Request $request ) {
 		$form_id = (int) $request->get_param( 'form_id' );
-		return rest_ensure_response( CF7VB_Analytics::get_stats( $form_id ) );
+		return rest_ensure_response( CFB_Analytics::get_stats( $form_id ) );
 	}
 
 	public static function update_entry( WP_REST_Request $request ) {
 		$id     = (int) $request['id'];
 		$status = sanitize_key( (string) $request->get_param( 'status' ) );
-		if ( ! CF7VB_Submissions::update_status( $id, $status ) ) {
-			return new WP_Error( 'cf7vb_update_failed', __( 'Update failed.', 'form-studio-for-contact-form-7' ), array( 'status' => 400 ) );
+		if ( ! CFB_Submissions::update_status( $id, $status ) ) {
+			return new WP_Error( 'cfb_update_failed', __( 'Update failed.', 'craftforms-builder' ), array( 'status' => 400 ) );
 		}
 		return rest_ensure_response( array( 'success' => true ) );
 	}
@@ -221,10 +221,11 @@ final class CF7VB_REST_API {
 		$session = sanitize_text_field( (string) $request->get_param( 'session_key' ) );
 
 		if ( ! $form_id || ! $type ) {
-			return new WP_Error( 'cf7vb_invalid', __( 'Invalid event.', 'form-studio-for-contact-form-7' ), array( 'status' => 400 ) );
+			return new WP_Error( 'cfb_invalid', __( 'Invalid event.', 'craftforms-builder' ), array( 'status' => 400 ) );
 		}
 
-		CF7VB_Analytics::track( $form_id, $type, is_array( $data ) ? $data : array(), $session );
+		$event_data = is_array( $data ) ? CFB_Parser::sanitize_posted_data( $data ) : array();
+		CFB_Analytics::track( $form_id, $type, $event_data, $session );
 		return rest_ensure_response( array( 'ok' => true ) );
 	}
 
@@ -235,13 +236,14 @@ final class CF7VB_REST_API {
 		$email     = sanitize_email( (string) $request->get_param( 'email' ) );
 
 		if ( ! $form_id || ! is_array( $data ) ) {
-			return new WP_Error( 'cf7vb_invalid', __( 'Invalid draft.', 'form-studio-for-contact-form-7' ), array( 'status' => 400 ) );
+			return new WP_Error( 'cfb_invalid', __( 'Invalid draft.', 'craftforms-builder' ), array( 'status' => 400 ) );
 		}
 
-		$key  = CF7VB_Autosave::save_draft( $form_id, $draft_key, $data, $email );
+		$data = CFB_Parser::sanitize_posted_data( $data );
+		$key  = CFB_Autosave::save_draft( $form_id, $draft_key, $data, $email );
 		$link = add_query_arg(
 			array(
-				'cf7vb_draft' => $key,
+				'cfb_draft' => $key,
 			),
 			get_permalink()
 		);
@@ -256,9 +258,9 @@ final class CF7VB_REST_API {
 
 	public static function get_draft( WP_REST_Request $request ) {
 		$key   = sanitize_key( (string) $request->get_param( 'draft_key' ) );
-		$draft = CF7VB_Autosave::get_draft( $key );
+		$draft = CFB_Autosave::get_draft( $key );
 		if ( ! $draft ) {
-			return new WP_Error( 'cf7vb_not_found', __( 'Draft not found.', 'form-studio-for-contact-form-7' ), array( 'status' => 404 ) );
+			return new WP_Error( 'cfb_not_found', __( 'Draft not found.', 'craftforms-builder' ), array( 'status' => 404 ) );
 		}
 		return rest_ensure_response( $draft );
 	}

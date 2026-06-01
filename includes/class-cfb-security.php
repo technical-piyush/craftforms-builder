@@ -2,14 +2,14 @@
 /**
  * Honeypot, rate limiting, spam checks.
  *
- * @package CF7VB
+ * @package CraftFormsBuilder
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class CF7VB_Security {
+final class CFB_Security {
 
 	public static function init() {
 		add_filter( 'wpcf7_validate', array( __CLASS__, 'validate_spam' ), 5, 1 );
@@ -30,18 +30,19 @@ final class CF7VB_Security {
 			return $result;
 		}
 
-		$schema = get_post_meta( $form->id(), CF7VB_SCHEMA_META, true );
-		if ( ! is_array( $schema ) ) {
+		if ( ! CFB_Plugin::form_uses_builder( $form->id() ) ) {
 			return $result;
 		}
+
+		$schema = get_post_meta( $form->id(), CFB_SCHEMA_META, true );
 
 		$security = $schema['settings']['security'] ?? array();
 		$posted   = $submission->get_posted_data();
 
 		if ( ! empty( $security['honeypot'] ) ) {
-			$hp = $security['honeypotField'] ?? 'cf7vb_hp';
+			$hp = $security['honeypotField'] ?? 'cfb_hp';
 			if ( ! empty( $posted[ $hp ] ) ) {
-				$result->invalidate( null, __( 'Spam detected.', 'form-studio-for-contact-form-7' ) );
+				$result->invalidate( null, __( 'Spam detected.', 'craftforms-builder' ) );
 				return $result;
 			}
 		}
@@ -49,10 +50,10 @@ final class CF7VB_Security {
 		if ( ! empty( $security['rateLimit'] ) ) {
 			$limit  = max( 1, (int) ( $security['rateLimitCount'] ?? 5 ) );
 			$window = max( 60, (int) ( $security['rateLimitWindow'] ?? 3600 ) );
-			$key    = 'cf7vb_rl_' . $form->id() . '_' . CF7VB_Submissions::hash_ip();
+			$key    = 'cfb_rl_' . $form->id() . '_' . CFB_Submissions::hash_ip();
 			$count  = (int) get_transient( $key );
 			if ( $count >= $limit ) {
-				$result->invalidate( null, __( 'Too many submissions. Please try again later.', 'form-studio-for-contact-form-7' ) );
+				$result->invalidate( null, __( 'Too many submissions. Please try again later.', 'craftforms-builder' ) );
 				return $result;
 			}
 			set_transient( $key, $count + 1, $window );
@@ -65,22 +66,22 @@ final class CF7VB_Security {
 	/**
 	 * Track rate-limit transient keys so uninstall can remove them without a direct DB query.
 	 *
-	 * @param string $cf7vb_key Transient name.
+	 * @param string $cfb_key Transient name.
 	 */
-	private static function remember_rate_limit_key( $cf7vb_key ) {
-		$cf7vb_key = sanitize_key( $cf7vb_key );
-		if ( '' === $cf7vb_key ) {
+	private static function remember_rate_limit_key( $cfb_key ) {
+		$cfb_key = sanitize_key( $cfb_key );
+		if ( '' === $cfb_key ) {
 			return;
 		}
 
-		$cf7vb_keys = get_option( 'cf7vb_rate_limit_keys', array() );
-		if ( ! is_array( $cf7vb_keys ) ) {
-			$cf7vb_keys = array();
+		$cfb_keys = get_option( 'cfb_rate_limit_keys', array() );
+		if ( ! is_array( $cfb_keys ) ) {
+			$cfb_keys = array();
 		}
 
-		if ( ! in_array( $cf7vb_key, $cf7vb_keys, true ) ) {
-			$cf7vb_keys[] = $cf7vb_key;
-			update_option( 'cf7vb_rate_limit_keys', $cf7vb_keys, false );
+		if ( ! in_array( $cfb_key, $cfb_keys, true ) ) {
+			$cfb_keys[] = $cfb_key;
+			update_option( 'cfb_rate_limit_keys', $cfb_keys, false );
 		}
 	}
 }
