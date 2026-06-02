@@ -1,0 +1,27 @@
+# Composer (dev dependencies — installed in CI via composer install)
+/vendor/
+
+# Node (if added later)
+/node_modules/
+
+# PHPUnit
+.phpunit.result.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
