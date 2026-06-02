@@ -9,8 +9,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Main plugin bootstrap and schema persistence.
+ */
 final class CFB_Plugin {
 
+	/**
+	 * Singleton instance.
+	 *
+	 * @var self|null
+	 */
 	private static $instance = null;
 
 	/**
@@ -20,6 +28,11 @@ final class CFB_Plugin {
 	 */
 	private $pending_schema = null;
 
+	/**
+	 * Get the plugin singleton.
+	 *
+	 * @return self
+	 */
 	public static function instance() {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -27,6 +40,9 @@ final class CFB_Plugin {
 		return self::$instance;
 	}
 
+	/**
+	 * Load components and register hooks.
+	 */
 	public function run() {
 		CFB_Activator::maybe_upgrade();
 
@@ -49,6 +65,8 @@ final class CFB_Plugin {
 	}
 
 	/**
+	 * Ensure CF7 additional settings include the builder flag.
+	 *
 	 * @param string $content Additional settings.
 	 * @return string
 	 */
@@ -61,6 +79,8 @@ final class CFB_Plugin {
 	}
 
 	/**
+	 * Compile schema to CF7 markup when a contact form is saved.
+	 *
 	 * @param WPCF7_ContactForm $contact_form Contact form.
 	 * @param array             $data         Save payload.
 	 * @param string            $context      Save context.
@@ -124,6 +144,8 @@ final class CFB_Plugin {
 	}
 
 	/**
+	 * Load normalized builder schema for a contact form.
+	 *
 	 * @param int $form_id Post ID.
 	 * @return array
 	 */

@@ -9,9 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Compiles visual builder schema to Contact Form 7 markup.
+ */
 final class CFB_Compiler {
 
 	/**
+	 * Compile a full schema to CF7 form template text.
+	 *
 	 * @param array $schema Form schema.
 	 * @return string
 	 */
@@ -79,6 +84,8 @@ final class CFB_Compiler {
 	}
 
 	/**
+	 * Compile one field to labeled CF7 markup.
+	 *
 	 * @param array $field Field definition.
 	 * @return string
 	 */
@@ -120,6 +127,8 @@ final class CFB_Compiler {
 	}
 
 	/**
+	 * Build the CF7 shortcode for a single field.
+	 *
 	 * @param array  $field Field.
 	 * @param string $req   Asterisk for required.
 	 * @return string
@@ -178,7 +187,7 @@ final class CFB_Compiler {
 
 			case 'select':
 				list( $blank_opt, $values ) = self::select_blank_and_values( $field, self::option_values( $field ) );
-				$opts[] = $blank_opt;
+				$opts[]                     = $blank_opt;
 				return self::tag( 'select' . $req, $name, $opts, array_merge( $quoted, $values ) );
 
 			case 'multiselect':
@@ -187,10 +196,10 @@ final class CFB_Compiler {
 				return self::tag( 'select' . $req, $name, $opts, array_merge( $quoted, self::option_values( $field ) ) );
 
 			case 'country':
-				$opts[] = 'class:cfb-country';
-				$opts[] = 'data:cfb_countries';
+				$opts[]                     = 'class:cfb-country';
+				$opts[]                     = 'data:cfb_countries';
 				list( $blank_opt, $values ) = self::select_blank_and_values( $field, array() );
-				$opts[] = $blank_opt;
+				$opts[]                     = $blank_opt;
 				return self::tag( 'select' . $req, $name, $opts, array_merge( $quoted, $values ) );
 
 			case 'checkbox':
@@ -328,6 +337,8 @@ final class CFB_Compiler {
 	}
 
 	/**
+	 * Resolve select option values for a country field.
+	 *
 	 * @param array $field Country field.
 	 * @return array
 	 */
@@ -344,6 +355,8 @@ final class CFB_Compiler {
 	}
 
 	/**
+	 * Extract quoted option values from a field definition.
+	 *
 	 * @param array $field Field.
 	 * @return array
 	 */
@@ -369,10 +382,12 @@ final class CFB_Compiler {
 	}
 
 	/**
+	 * Assemble a CF7 form tag shortcode string.
+	 *
 	 * @param string $basetype CF7 tag type.
 	 * @param string $name     Field name.
 	 * @param array  $options  Options.
-	 * @param array $quoted_values Quoted values (must come after all options in CF7 tags).
+	 * @param array  $quoted_values Quoted values (must come after all options in CF7 tags).
 	 * @return string
 	 */
 	private static function tag( $basetype, $name, $options = array(), $quoted_values = array() ) {
@@ -389,6 +404,8 @@ final class CFB_Compiler {
 	}
 
 	/**
+	 * Escape a value for use inside CF7 quoted tag parts.
+	 *
 	 * @param string $value Value.
 	 * @return string
 	 */

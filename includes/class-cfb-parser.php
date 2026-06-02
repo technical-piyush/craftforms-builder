@@ -9,9 +9,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Parses and normalizes visual builder schema JSON.
+ */
 final class CFB_Parser {
 
-	/** @var string[] */
+	/**
+	 * Supported top-level field types.
+	 *
+	 * @var string[]
+	 */
 	private const FIELD_TYPES = array(
 		'text',
 		'textarea',
@@ -33,7 +40,11 @@ final class CFB_Parser {
 		'submit',
 	);
 
-	/** @var string[] Field types that may be nested inside a repeater. */
+	/**
+	 * Field types allowed inside a repeater.
+	 *
+	 * @var string[]
+	 */
 	private const REPEATER_CHILD_TYPES = array(
 		'text',
 		'email',
@@ -43,7 +54,11 @@ final class CFB_Parser {
 		'textarea',
 	);
 
-	/** @var string[] */
+	/**
+	 * Allowed conditional compare operators.
+	 *
+	 * @var string[]
+	 */
 	private const RULE_COMPARES = array(
 		'equals',
 		'not_equals',
@@ -55,7 +70,11 @@ final class CFB_Parser {
 		'less',
 	);
 
-	/** @var string[] */
+	/**
+	 * Allowed conditional THEN action types.
+	 *
+	 * @var string[]
+	 */
 	private const RULE_ACTIONS = array(
 		'show',
 		'hide',
@@ -138,6 +157,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Coerce a value to boolean.
+	 *
 	 * @param mixed $value Value.
 	 * @return bool
 	 */
@@ -146,6 +167,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Sanitize an element id slug with fallback.
+	 *
 	 * @param string $value   Raw id.
 	 * @param string $fallback Fallback id.
 	 * @return string
@@ -158,6 +181,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Restrict a string to an allowed enum list.
+	 *
 	 * @param string $value   Raw value.
 	 * @param array  $allowed Allowed values.
 	 * @param string $default Default value.
@@ -170,6 +195,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Sanitize select/radio/checkbox options.
+	 *
 	 * @param mixed $options Options list.
 	 * @return array<int, array{label: string, value: string}>
 	 */
@@ -199,6 +226,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Sanitize arbitrary HTML attribute map.
+	 *
 	 * @param mixed $attrs HTML attributes map.
 	 * @return array<string, string>
 	 */
@@ -221,6 +250,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Sanitize field validation rules.
+	 *
 	 * @param mixed $validation Validation rules.
 	 * @return array<string, mixed>
 	 */
@@ -247,8 +278,8 @@ final class CFB_Parser {
 			$clean['step'] = is_numeric( $validation['step'] ) ? (float) $validation['step'] : '';
 		}
 		if ( isset( $validation['pattern'] ) ) {
-			$pattern = (string) $validation['pattern'];
-			$pattern = preg_replace( '/[^\w\s\[\]()^$.*+?|\\\\\-]/', '', $pattern );
+			$pattern          = (string) $validation['pattern'];
+			$pattern          = preg_replace( '/[^\w\s\[\]()^$.*+?|\\\\\-]/', '', $pattern );
 			$clean['pattern'] = substr( $pattern, 0, 200 );
 		}
 		if ( isset( $validation['filetypes'] ) ) {
@@ -269,6 +300,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Sanitize one conditional IF clause.
+	 *
 	 * @param mixed $condition Single IF condition.
 	 * @return array<string, string>
 	 */
@@ -289,6 +322,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Sanitize one conditional THEN action.
+	 *
 	 * @param mixed $action THEN action.
 	 * @return array<string, string>
 	 */
@@ -318,6 +353,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Sanitize a rule group (operator, conditions, nested groups).
+	 *
 	 * @param mixed $group Rule or nested condition group.
 	 * @return array<string, mixed>
 	 */
@@ -357,6 +394,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Sanitize the full conditional rules array.
+	 *
 	 * @param mixed $rules Conditional logic rules.
 	 * @return array<int, array<string, mixed>>
 	 */
@@ -429,6 +468,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Build a minimal field array for defaults and imports.
+	 *
 	 * @param string $type Field type.
 	 * @param string $name Field name.
 	 * @param string $label Label.
@@ -451,6 +492,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Normalize and sanitize a full builder schema.
+	 *
 	 * @param array $schema Raw schema.
 	 * @return array
 	 */
@@ -488,7 +531,7 @@ final class CFB_Parser {
 		}
 
 		foreach ( $schema['steps'] as $si => $step ) {
-			$step = is_array( $step ) ? $step : array();
+			$step       = is_array( $step ) ? $step : array();
 			$step['id'] = self::sanitize_slug_id( (string) ( $step['id'] ?? '' ), 'step-' . ( $si + 1 ) );
 			if ( ! array_key_exists( 'title', $step ) ) {
 				/* translators: %d: step number. */
@@ -547,6 +590,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Default form settings structure.
+	 *
 	 * @return array
 	 */
 	public static function default_settings() {
@@ -603,6 +648,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Merge and sanitize form settings.
+	 *
 	 * @param array $settings Settings.
 	 * @return array
 	 */
@@ -658,29 +705,29 @@ final class CFB_Parser {
 		$settings['emails']['logoUrl']      = esc_url_raw( (string) ( $settings['emails']['logoUrl'] ?? '' ) );
 		$settings['emails']['attachPdf']    = self::sanitize_bool( $settings['emails']['attachPdf'] ?? false );
 
-		$settings['appearance']['theme'] = self::sanitize_enum(
+		$settings['appearance']['theme']           = self::sanitize_enum(
 			$settings['appearance']['theme'] ?? 'modern',
 			array( 'modern', 'minimal', 'bordered' ),
 			'modern'
 		);
-		$primary_color                     = sanitize_hex_color( (string) ( $settings['appearance']['primaryColor'] ?? '#3858e9' ) );
-		$settings['appearance']['primaryColor'] = $primary_color ? $primary_color : '#3858e9';
-		$settings['appearance']['borderRadius'] = self::sanitize_enum(
+		$primary_color                             = sanitize_hex_color( (string) ( $settings['appearance']['primaryColor'] ?? '#3858e9' ) );
+		$settings['appearance']['primaryColor']    = $primary_color ? $primary_color : '#3858e9';
+		$settings['appearance']['borderRadius']    = self::sanitize_enum(
 			$settings['appearance']['borderRadius'] ?? 'medium',
 			array( 'none', 'small', 'medium', 'large' ),
 			'medium'
 		);
-		$settings['appearance']['formWidth'] = self::sanitize_enum(
+		$settings['appearance']['formWidth']       = self::sanitize_enum(
 			$settings['appearance']['formWidth'] ?? 'medium',
 			array( 'narrow', 'medium', 'wide', 'full' ),
 			'medium'
 		);
-		$settings['appearance']['fieldSpacing'] = self::sanitize_enum(
+		$settings['appearance']['fieldSpacing']    = self::sanitize_enum(
 			$settings['appearance']['fieldSpacing'] ?? 'comfortable',
 			array( 'comfortable', 'compact' ),
 			'comfortable'
 		);
-		$settings['appearance']['progressStyle'] = self::sanitize_enum(
+		$settings['appearance']['progressStyle']   = self::sanitize_enum(
 			$settings['appearance']['progressStyle'] ?? 'pills',
 			array( 'pills', 'bar', 'minimal' ),
 			'pills'
@@ -693,6 +740,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Normalize and sanitize a single field definition.
+	 *
 	 * @param array $field Field data.
 	 * @return array
 	 */
@@ -773,6 +822,8 @@ final class CFB_Parser {
 	}
 
 	/**
+	 * Generate a unique field or step id.
+	 *
 	 * @return string
 	 */
 	private static function uuid() {

@@ -9,14 +9,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * REST API for builder schema, entries, analytics, and drafts.
+ */
 final class CFB_REST_API {
 
 	const NS = 'cfb/v1';
 
+	/**
+	 * Register REST routes on rest_api_init.
+	 */
 	public static function init() {
 		add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
 	}
 
+	/**
+	 * Register all CraftForms REST routes.
+	 */
 	public static function register_routes() {
 		register_rest_route(
 			self::NS,
@@ -119,6 +128,8 @@ final class CFB_REST_API {
 	}
 
 	/**
+	 * Permission check for schema read/write routes.
+	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return bool|WP_Error
 	 */
@@ -130,6 +141,12 @@ final class CFB_REST_API {
 		return new WP_Error( 'cfb_forbidden', __( 'Forbidden.', 'craftforms-builder' ), array( 'status' => 403 ) );
 	}
 
+	/**
+	 * GET /forms/{id}/schema — return schema and compiled markup.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public static function get_schema( WP_REST_Request $request ) {
 		$id     = (int) $request['id'];
 		$schema = CFB_Plugin::get_schema( $id );
@@ -141,6 +158,12 @@ final class CFB_REST_API {
 		);
 	}
 
+	/**
+	 * PUT /forms/{id}/schema — save schema and update CF7 form body.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public static function update_schema( WP_REST_Request $request ) {
 		$id     = (int) $request['id'];
 		$schema = $request->get_param( 'schema' );
@@ -170,6 +193,12 @@ final class CFB_REST_API {
 		);
 	}
 
+	/**
+	 * POST /forms/{id}/compile — return compiled markup for a schema payload.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response
+	 */
 	public static function compile_preview( WP_REST_Request $request ) {
 		$schema = $request->get_param( 'schema' );
 		if ( ! is_array( $schema ) ) {
@@ -178,6 +207,12 @@ final class CFB_REST_API {
 		return rest_ensure_response( array( 'compiled' => CFB_Compiler::compile( $schema ) ) );
 	}
 
+	/**
+	 * GET /entries — list entries with filters.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response
+	 */
 	public static function list_entries( WP_REST_Request $request ) {
 		return rest_ensure_response(
 			CFB_Submissions::query(
@@ -192,6 +227,12 @@ final class CFB_REST_API {
 		);
 	}
 
+	/**
+	 * GET /entries/{id} — return one formatted entry.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public static function get_entry( WP_REST_Request $request ) {
 		$row = CFB_Submissions::get( (int) $request['id'] );
 		if ( ! $row ) {
@@ -200,11 +241,23 @@ final class CFB_REST_API {
 		return rest_ensure_response( CFB_Submissions::format_entry( $row ) );
 	}
 
+	/**
+	 * GET /analytics/stats — aggregate analytics for a form.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response
+	 */
 	public static function get_analytics_stats( WP_REST_Request $request ) {
 		$form_id = (int) $request->get_param( 'form_id' );
 		return rest_ensure_response( CFB_Analytics::get_stats( $form_id ) );
 	}
 
+	/**
+	 * PATCH /entries/{id} — update entry status.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public static function update_entry( WP_REST_Request $request ) {
 		$id     = (int) $request['id'];
 		$status = sanitize_key( (string) $request->get_param( 'status' ) );
@@ -214,6 +267,12 @@ final class CFB_REST_API {
 		return rest_ensure_response( array( 'success' => true ) );
 	}
 
+	/**
+	 * POST /analytics/track — record a frontend analytics event.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public static function track_event( WP_REST_Request $request ) {
 		$form_id = (int) $request->get_param( 'form_id' );
 		$type    = sanitize_key( (string) $request->get_param( 'event_type' ) );
@@ -229,6 +288,12 @@ final class CFB_REST_API {
 		return rest_ensure_response( array( 'ok' => true ) );
 	}
 
+	/**
+	 * POST /drafts — create or update a save-and-continue draft.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public static function save_draft( WP_REST_Request $request ) {
 		$form_id   = (int) $request->get_param( 'form_id' );
 		$draft_key = sanitize_key( (string) $request->get_param( 'draft_key' ) );
@@ -256,6 +321,12 @@ final class CFB_REST_API {
 		);
 	}
 
+	/**
+	 * GET /drafts — load draft field data by key.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public static function get_draft( WP_REST_Request $request ) {
 		$key   = sanitize_key( (string) $request->get_param( 'draft_key' ) );
 		$draft = CFB_Autosave::get_draft( $key );

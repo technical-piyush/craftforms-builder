@@ -9,10 +9,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Persists and queries CF7 submissions for builder-enabled forms.
+ */
 final class CFB_Submissions {
 
 	const CACHE_GROUP = 'cfb_entries';
 
+	/**
+	 * Register submission storage and shortcode hooks.
+	 */
 	public static function init() {
 		add_action( 'wpcf7_before_send_mail', array( __CLASS__, 'store_submission' ), 5 );
 		add_shortcode( 'cfb_entries', array( __CLASS__, 'shortcode_entries' ) );
@@ -34,6 +40,8 @@ final class CFB_Submissions {
 
 
 	/**
+	 * Save the current submission to the entries table.
+	 *
 	 * @param WPCF7_ContactForm $contact_form Form.
 	 */
 	public static function store_submission( $contact_form ) {
@@ -74,6 +82,8 @@ final class CFB_Submissions {
 	}
 
 	/**
+	 * Insert a new entry row.
+	 *
 	 * @param array $args Row args.
 	 * @return int|false
 	 */
@@ -116,6 +126,8 @@ final class CFB_Submissions {
 	}
 
 	/**
+	 * Fetch one entry by ID.
+	 *
 	 * @param int $id Entry ID.
 	 * @return object|null
 	 */
@@ -145,6 +157,8 @@ final class CFB_Submissions {
 	}
 
 	/**
+	 * Format a database row for REST and admin display.
+	 *
 	 * @param object $row DB row.
 	 * @return array
 	 */
@@ -194,6 +208,8 @@ final class CFB_Submissions {
 	}
 
 	/**
+	 * Count entries grouped by status.
+	 *
 	 * @param array $args Filter args (form_id).
 	 * @return array
 	 */
@@ -241,6 +257,8 @@ final class CFB_Submissions {
 	}
 
 	/**
+	 * Update an entry status.
+	 *
 	 * @param int    $id     Entry ID.
 	 * @param string $status Status.
 	 * @return bool
@@ -269,6 +287,8 @@ final class CFB_Submissions {
 	}
 
 	/**
+	 * Query entries with filters and pagination.
+	 *
 	 * @param array $args Query args.
 	 * @return array
 	 */
@@ -389,6 +409,8 @@ final class CFB_Submissions {
 	}
 
 	/**
+	 * Hash the visitor IP for privacy-preserving storage.
+	 *
 	 * @return string
 	 */
 	public static function hash_ip() {
@@ -400,6 +422,8 @@ final class CFB_Submissions {
 	}
 
 	/**
+	 * Detect device class from the user agent.
+	 *
 	 * @return string
 	 */
 	private static function detect_device() {

@@ -9,10 +9,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Analytics event tracking and admin dashboard stats.
+ */
 final class CFB_Analytics {
 
 	const CACHE_GROUP = 'cfb_analytics';
 
+	/**
+	 * Register analytics admin menu.
+	 */
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 21 );
 	}
@@ -31,6 +37,9 @@ final class CFB_Analytics {
 		return $token;
 	}
 
+	/**
+	 * Add Analytics submenu under Contact Form 7.
+	 */
 	public static function menu() {
 		add_submenu_page(
 			'wpcf7',
@@ -43,6 +52,8 @@ final class CFB_Analytics {
 	}
 
 	/**
+	 * Record an analytics event for a form.
+	 *
 	 * @param int    $form_id Form ID.
 	 * @param string $type    Event type.
 	 * @param array  $data    Event payload.
@@ -69,6 +80,8 @@ final class CFB_Analytics {
 	}
 
 	/**
+	 * Aggregate funnel and device stats for a form.
+	 *
 	 * @param int $form_id Form ID (0 = all).
 	 * @return array
 	 */
@@ -85,13 +98,13 @@ final class CFB_Analytics {
 
 		if ( $form_id ) {
 			$event_rows = $db->get_results( $db->prepare( "SELECT event_type, COUNT(*) AS cnt FROM {$db->prefix}cfb_analytics WHERE form_id = %d GROUP BY event_type", $form_id ), ARRAY_A );
-			$submits = (int) $db->get_var( $db->prepare( "SELECT COUNT(*) FROM {$db->prefix}cfb_entries WHERE form_id = %d", $form_id ) );
-			$devices = $db->get_results( $db->prepare( "SELECT device, COUNT(*) as cnt FROM {$db->prefix}cfb_entries WHERE form_id = %d GROUP BY device", $form_id ), ARRAY_A );
+			$submits    = (int) $db->get_var( $db->prepare( "SELECT COUNT(*) FROM {$db->prefix}cfb_entries WHERE form_id = %d", $form_id ) );
+			$devices    = $db->get_results( $db->prepare( "SELECT device, COUNT(*) as cnt FROM {$db->prefix}cfb_entries WHERE form_id = %d GROUP BY device", $form_id ), ARRAY_A );
 			$top_fields = $db->get_results( $db->prepare( "SELECT event_data, COUNT(*) as cnt FROM {$db->prefix}cfb_analytics WHERE form_id = %d AND event_type = 'field_focus' GROUP BY event_data ORDER BY cnt DESC LIMIT 10", $form_id ), ARRAY_A );
 		} else {
 			$event_rows = $db->get_results( "SELECT event_type, COUNT(*) AS cnt FROM {$db->prefix}cfb_analytics GROUP BY event_type", ARRAY_A );
-			$submits = (int) $db->get_var( "SELECT COUNT(*) FROM {$db->prefix}cfb_entries" );
-			$devices = $db->get_results( "SELECT device, COUNT(*) as cnt FROM {$db->prefix}cfb_entries GROUP BY device", ARRAY_A );
+			$submits    = (int) $db->get_var( "SELECT COUNT(*) FROM {$db->prefix}cfb_entries" );
+			$devices    = $db->get_results( "SELECT device, COUNT(*) as cnt FROM {$db->prefix}cfb_entries GROUP BY device", ARRAY_A );
 			$top_fields = $db->get_results( "SELECT event_data, COUNT(*) as cnt FROM {$db->prefix}cfb_analytics WHERE event_type = 'field_focus' GROUP BY event_data ORDER BY cnt DESC LIMIT 10", ARRAY_A );
 		}
 
@@ -126,6 +139,8 @@ final class CFB_Analytics {
 	}
 
 	/**
+	 * Fetch the most recent analytics events.
+	 *
 	 * @param int $form_id Form ID (0 = all).
 	 * @param int $limit   Max rows.
 	 * @return array
@@ -164,6 +179,8 @@ final class CFB_Analytics {
 	}
 
 	/**
+	 * Detect device class from the user agent.
+	 *
 	 * @return string
 	 */
 	private static function device() {
@@ -177,6 +194,9 @@ final class CFB_Analytics {
 		return 'desktop';
 	}
 
+	/**
+	 * Render the analytics admin dashboard page.
+	 */
 	public static function render_page() {
 		$form_id = absint( filter_input( INPUT_GET, 'form_id', FILTER_VALIDATE_INT ) );
 		$stats   = self::get_stats( $form_id );
@@ -238,12 +258,12 @@ final class CFB_Analytics {
 			<div class="cfb-kpi-grid">
 				<?php
 				$cards = array(
-					__( 'Views', 'craftforms-builder' )           => $stats['views'],
-					__( 'Started', 'craftforms-builder' )        => $stats['starts'],
-					__( 'Submissions', 'craftforms-builder' )      => $stats['submissions'],
-					__( 'Conversion', 'craftforms-builder' )     => $stats['conversion'] . '%',
-					__( 'Abandoned', 'craftforms-builder' )      => $stats['abandoned'],
-					__( 'Field focus', 'craftforms-builder' )    => $stats['field_focus'],
+					__( 'Views', 'craftforms-builder' )   => $stats['views'],
+					__( 'Started', 'craftforms-builder' ) => $stats['starts'],
+					__( 'Submissions', 'craftforms-builder' ) => $stats['submissions'],
+					__( 'Conversion', 'craftforms-builder' ) => $stats['conversion'] . '%',
+					__( 'Abandoned', 'craftforms-builder' ) => $stats['abandoned'],
+					__( 'Field focus', 'craftforms-builder' ) => $stats['field_focus'],
 				);
 				foreach ( $cards as $label => $val ) :
 					?>

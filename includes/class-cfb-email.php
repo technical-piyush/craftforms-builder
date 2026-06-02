@@ -9,14 +9,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Conditional emails and HTML template overrides.
+ */
 final class CFB_Email {
 
+	/**
+	 * Register mail component filters and hooks.
+	 */
 	public static function init() {
 		add_filter( 'wpcf7_mail_components', array( __CLASS__, 'filter_mail' ), 20, 2 );
 		add_action( 'wpcf7_before_send_mail', array( __CLASS__, 'maybe_send_conditional' ), 15 );
 	}
 
 	/**
+	 * Apply HTML template wrapper to outgoing mail.
+	 *
 	 * @param array             $components Mail components.
 	 * @param WPCF7_ContactForm $form       Form.
 	 * @return array
@@ -80,6 +88,8 @@ final class CFB_Email {
 	}
 
 	/**
+	 * Wrap mail body in branded HTML layout.
+	 *
 	 * @param string $body   Body HTML.
 	 * @param array  $emails Email settings.
 	 * @return string

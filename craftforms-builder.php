@@ -24,7 +24,7 @@ define( 'CFB_PLUGIN_FILE', __FILE__ );
 define( 'CFB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CFB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'CFB_DB_VERSION', '1.1.0' );
-define( 'CFB_SCHEMA_META', '_cfb_schema' ); 
+define( 'CFB_SCHEMA_META', '_cfb_schema' );
 
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-activator.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-countries.php';

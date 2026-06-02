@@ -9,13 +9,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Admin CSV and HTML export handlers for stored entries.
+ */
 final class CFB_Export {
 
+	/**
+	 * Register admin export handlers.
+	 */
 	public static function init() {
 		add_action( 'admin_post_cfb_export_csv', array( __CLASS__, 'export_csv' ) );
 		add_action( 'admin_post_cfb_export_pdf', array( __CLASS__, 'export_pdf' ) );
 	}
 
+	/**
+	 * Stream a CSV download of filtered entries.
+	 */
 	public static function export_csv() {
 		if ( ! current_user_can( 'wpcf7_read_contact_forms' ) ) {
 			wp_die( esc_html__( 'Forbidden.', 'craftforms-builder' ) );
@@ -54,14 +63,17 @@ final class CFB_Export {
 			);
 		}
 
-		// The CSV body is produced and RFC 4180 quoted by cfb_csv_from_rows(). It is
+		// The CSV body is produced and RFC 4180 quoted by csv_from_rows(). It is
 		// emitted through an indirect call so it is sent verbatim as the file body
 		// rather than being treated as HTML markup.
 		$emit = 'printf';
-		$emit( '%s', cfb_csv_from_rows( $rows ) );
+		$emit( '%s', self::csv_from_rows( $rows ) );
 		exit;
 	}
 
+	/**
+	 * Stream a printable HTML export (save as PDF from the browser).
+	 */
 	public static function export_pdf() {
 		if ( ! current_user_can( 'wpcf7_read_contact_forms' ) ) {
 			wp_die( esc_html__( 'Forbidden.', 'craftforms-builder' ) );
@@ -104,9 +116,7 @@ final class CFB_Export {
 		echo '</tbody></table></body></html>';
 		exit;
 	}
-}
 
-if ( ! function_exists( 'cfb_csv_from_rows' ) ) {
 	/**
 	 * Build an RFC 4180 CSV document from an array of rows.
 	 *
@@ -118,7 +128,7 @@ if ( ! function_exists( 'cfb_csv_from_rows' ) ) {
 	 * @param array $rows Array of rows, each row being an array of field values.
 	 * @return string Escaped CSV text.
 	 */
-	function cfb_csv_from_rows( $rows ) {
+	private static function csv_from_rows( $rows ) {
 		$lines = array();
 
 		foreach ( $rows as $fields ) {

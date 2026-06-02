@@ -9,8 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * CF7 editor integration and entries admin UI.
+ */
 final class CFB_Admin {
 
+	/**
+	 * Register admin hooks for the builder and entries screens.
+	 */
 	public static function init() {
 		add_filter( 'wpcf7_editor_panels', array( __CLASS__, 'add_visual_panel' ), 5 );
 		add_action( 'wpcf7_admin_footer', array( __CLASS__, 'render_schema_bootstrap' ), 5 );
@@ -38,6 +44,8 @@ final class CFB_Admin {
 	}
 
 	/**
+	 * Output the Visual Builder panel in the CF7 editor.
+	 *
 	 * @param WPCF7_ContactForm $post Contact form.
 	 */
 	public static function render_visual_panel( $post ) {
@@ -90,6 +98,8 @@ final class CFB_Admin {
 	}
 
 	/**
+	 * Open the Visual Builder tab by default on new forms.
+	 *
 	 * @param string $page_slug Admin page slug.
 	 */
 	public static function maybe_set_default_tab( $page_slug ) {
@@ -103,6 +113,8 @@ final class CFB_Admin {
 	}
 
 	/**
+	 * Enqueue builder scripts and styles on CF7 admin screens.
+	 *
 	 * @param string $hook_suffix Hook suffix.
 	 */
 	public static function enqueue_builder_assets( $hook_suffix ) {
@@ -167,22 +179,40 @@ final class CFB_Admin {
 			'cfb-builder',
 			'CFB_BUILDER',
 			array(
-				'root'           => esc_url_raw( rest_url( CFB_REST_API::NS ) ),
-				'nonce'          => wp_create_nonce( 'wp_rest' ),
-				'formId'         => $form_id,
-				'fieldTypes'     => self::field_palette(),
-				'countries'      => CFB_Countries::get_options(),
-				'phoneCountries' => CFB_Countries::get_phone_countries(),
+				'root'            => esc_url_raw( rest_url( CFB_REST_API::NS ) ),
+				'nonce'           => wp_create_nonce( 'wp_rest' ),
+				'formId'          => $form_id,
+				'fieldTypes'      => self::field_palette(),
+				'countries'       => CFB_Countries::get_options(),
+				'phoneCountries'  => CFB_Countries::get_phone_countries(),
 				'defaultPhoneIso' => CFB_Countries::get_default_phone_iso(),
-				'strings'        => array(
+				'strings'         => array(
 					'countries'             => CFB_Countries::get_options(),
 					'repeaterChildTypes'    => array(
-						array( 'type' => 'text', 'label' => __( 'Text', 'craftforms-builder' ) ),
-						array( 'type' => 'email', 'label' => __( 'Email', 'craftforms-builder' ) ),
-						array( 'type' => 'phone', 'label' => __( 'Phone', 'craftforms-builder' ) ),
-						array( 'type' => 'number', 'label' => __( 'Number', 'craftforms-builder' ) ),
-						array( 'type' => 'select', 'label' => __( 'Dropdown', 'craftforms-builder' ) ),
-						array( 'type' => 'textarea', 'label' => __( 'Textarea', 'craftforms-builder' ) ),
+						array(
+							'type'  => 'text',
+							'label' => __( 'Text', 'craftforms-builder' ),
+						),
+						array(
+							'type'  => 'email',
+							'label' => __( 'Email', 'craftforms-builder' ),
+						),
+						array(
+							'type'  => 'phone',
+							'label' => __( 'Phone', 'craftforms-builder' ),
+						),
+						array(
+							'type'  => 'number',
+							'label' => __( 'Number', 'craftforms-builder' ),
+						),
+						array(
+							'type'  => 'select',
+							'label' => __( 'Dropdown', 'craftforms-builder' ),
+						),
+						array(
+							'type'  => 'textarea',
+							'label' => __( 'Textarea', 'craftforms-builder' ),
+						),
 					),
 					'palette'               => __( 'Fields', 'craftforms-builder' ),
 					'selectCountry'         => __( 'Select a country', 'craftforms-builder' ),
@@ -306,6 +336,8 @@ final class CFB_Admin {
 	}
 
 	/**
+	 * Field types shown in the builder palette.
+	 *
 	 * @return array
 	 */
 	public static function field_palette() {
@@ -404,6 +436,9 @@ final class CFB_Admin {
 		);
 	}
 
+	/**
+	 * Add Entries submenu under Contact Form 7.
+	 */
 	public static function add_entries_menu() {
 		add_submenu_page(
 			'wpcf7',
@@ -416,6 +451,8 @@ final class CFB_Admin {
 	}
 
 	/**
+	 * Enqueue assets for entries and analytics admin pages.
+	 *
 	 * @param string $hook_suffix Admin hook.
 	 */
 	public static function enqueue_dashboard_assets( $hook_suffix ) {
@@ -471,6 +508,8 @@ final class CFB_Admin {
 	}
 
 	/**
+	 * Build a one-line preview from stored entry JSON.
+	 *
 	 * @param string $data_json Entry data JSON.
 	 * @return string
 	 */
@@ -494,6 +533,9 @@ final class CFB_Admin {
 		return '—';
 	}
 
+	/**
+	 * Render the form entries list admin page.
+	 */
 	public static function render_entries_page() {
 		if ( ! current_user_can( 'wpcf7_read_contact_forms' ) ) {
 			wp_die( esc_html__( 'You are not allowed to view entries.', 'craftforms-builder' ) );

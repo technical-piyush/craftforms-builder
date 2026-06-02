@@ -9,13 +9,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Normalizes posted field values before mail and storage.
+ */
 final class CFB_Posted_Data {
 
+	/**
+	 * Register posted-data filter.
+	 */
 	public static function init() {
 		add_filter( 'wpcf7_posted_data', array( __CLASS__, 'normalize' ), 99 );
 	}
 
 	/**
+	 * Normalize phone and multi-value fields in posted data.
+	 *
 	 * @param array $posted Posted data.
 	 * @return array
 	 */

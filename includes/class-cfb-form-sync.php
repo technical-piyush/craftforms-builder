@@ -9,8 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Keeps CF7 form markup in sync with the visual builder schema.
+ */
 final class CFB_Form_Sync {
 
+	/**
+	 * Register CF7 property and data filters.
+	 */
 	public static function init() {
 		add_filter( 'wpcf7_contact_form_properties', array( __CLASS__, 'apply_compiled_form' ), 20, 2 );
 		add_filter( 'wpcf7_form_tag_data_option', array( __CLASS__, 'country_data_option' ), 10, 3 );
@@ -29,7 +35,7 @@ final class CFB_Form_Sync {
 			return $properties;
 		}
 
-		$schema = CFB_Plugin::get_schema( $form_id );
+		$schema             = CFB_Plugin::get_schema( $form_id );
 		$properties['form'] = wpcf7_sanitize_form( CFB_Compiler::compile( $schema ) );
 
 		return $properties;

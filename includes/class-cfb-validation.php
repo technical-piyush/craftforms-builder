@@ -9,13 +9,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Custom field validation from the visual builder schema.
+ */
 final class CFB_Validation {
 
+	/**
+	 * Register CF7 validation filter.
+	 */
 	public static function init() {
 		add_filter( 'wpcf7_validate', array( __CLASS__, 'validate' ), 20, 2 );
 	}
 
 	/**
+	 * Apply schema validation rules to the current submission.
+	 *
 	 * @param WPCF7_Validation $result Validation result.
 	 * @param array            $tags   Form tags.
 	 * @return WPCF7_Validation
@@ -114,6 +122,8 @@ final class CFB_Validation {
 	}
 
 	/**
+	 * Resolve a validation error message for a field.
+	 *
 	 * @param array  $field Field.
 	 * @param string $type  Message type.
 	 * @return string
@@ -144,6 +154,8 @@ final class CFB_Validation {
 	}
 
 	/**
+	 * Flatten all fields from a schema (including repeater children).
+	 *
 	 * @param array $schema Schema.
 	 * @return array
 	 */

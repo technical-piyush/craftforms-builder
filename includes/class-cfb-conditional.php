@@ -9,6 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Server-side conditional logic evaluation.
+ */
 final class CFB_Conditional {
 
 	/**
@@ -50,6 +53,8 @@ final class CFB_Conditional {
 	}
 
 	/**
+	 * Evaluate a single IF condition against posted data.
+	 *
 	 * @param array $cond   Single condition.
 	 * @param array $posted Posted data.
 	 * @return bool

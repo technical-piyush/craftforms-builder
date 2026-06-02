@@ -9,8 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Frontend assets, multistep markup, and hidden fields.
+ */
 final class CFB_Frontend {
 
+	/**
+	 * Register frontend hooks and asset loaders.
+	 */
 	public static function init() {
 		add_action( 'wpcf7_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_filter( 'wpcf7_form_hidden_fields', array( __CLASS__, 'hidden_fields' ), 10, 1 );
@@ -34,7 +40,7 @@ final class CFB_Frontend {
 			$allowed['div'] = array();
 		}
 
-		$allowed['div']['class']                 = true;
+		$allowed['div']['class']               = true;
 		$allowed['div']['data-cfb-step']       = true;
 		$allowed['div']['data-cfb-step-index'] = true;
 		$allowed['div']['data-cfb-step-title'] = true;
@@ -42,6 +48,9 @@ final class CFB_Frontend {
 		return $allowed;
 	}
 
+	/**
+	 * Enqueue Select2, intl-tel-input, and builder frontend scripts.
+	 */
 	public static function enqueue_assets() {
 		$vendor = CFB_PLUGIN_URL . 'assets/vendor/';
 
@@ -94,36 +103,38 @@ final class CFB_Frontend {
 			'cfb-frontend',
 			'CFB_FRONT',
 			array(
-				'restUrl' => esc_url_raw( rest_url( CFB_REST_API::NS ) ),
-				'nonce'   => wp_create_nonce( 'wp_rest' ),
-				'phoneCountries'    => CFB_Countries::get_phone_countries(),
-				'defaultPhoneIso'   => CFB_Countries::get_default_phone_iso(),
-				'itiUtilsUrl'       => esc_url_raw( $vendor . 'intl-tel-input/js/utils.js' ),
-				'strings'           => array(
-					'next'            => __( 'Next', 'craftforms-builder' ),
-					'prev'            => __( 'Previous', 'craftforms-builder' ),
-					'submit'          => __( 'Submit', 'craftforms-builder' ),
-					'step'            => __( 'Step', 'craftforms-builder' ),
-					'of'              => __( 'of', 'craftforms-builder' ),
-					'saveContinue'    => __( 'Save & continue later', 'craftforms-builder' ),
-					'draftSaved'      => __( 'Progress saved.', 'craftforms-builder' ),
-					'signClear'       => __( 'Clear signature', 'craftforms-builder' ),
-					'stepError'       => __( 'Please fill in the required fields before continuing.', 'craftforms-builder' ),
-					'selectCountry'   => __( 'Select a country', 'craftforms-builder' ),
-					'countrySearch'   => __( 'Search countries…', 'craftforms-builder' ),
-					'countryEmpty'    => __( 'No countries match your search.', 'craftforms-builder' ),
-					'multiselectHint' => __( 'Choose one or more options', 'craftforms-builder' ),
+				'restUrl'         => esc_url_raw( rest_url( CFB_REST_API::NS ) ),
+				'nonce'           => wp_create_nonce( 'wp_rest' ),
+				'phoneCountries'  => CFB_Countries::get_phone_countries(),
+				'defaultPhoneIso' => CFB_Countries::get_default_phone_iso(),
+				'itiUtilsUrl'     => esc_url_raw( $vendor . 'intl-tel-input/js/utils.js' ),
+				'strings'         => array(
+					'next'                  => __( 'Next', 'craftforms-builder' ),
+					'prev'                  => __( 'Previous', 'craftforms-builder' ),
+					'submit'                => __( 'Submit', 'craftforms-builder' ),
+					'step'                  => __( 'Step', 'craftforms-builder' ),
+					'of'                    => __( 'of', 'craftforms-builder' ),
+					'saveContinue'          => __( 'Save & continue later', 'craftforms-builder' ),
+					'draftSaved'            => __( 'Progress saved.', 'craftforms-builder' ),
+					'signClear'             => __( 'Clear signature', 'craftforms-builder' ),
+					'stepError'             => __( 'Please fill in the required fields before continuing.', 'craftforms-builder' ),
+					'selectCountry'         => __( 'Select a country', 'craftforms-builder' ),
+					'countrySearch'         => __( 'Search countries…', 'craftforms-builder' ),
+					'countryEmpty'          => __( 'No countries match your search.', 'craftforms-builder' ),
+					'multiselectHint'       => __( 'Choose one or more options', 'craftforms-builder' ),
 					/* translators: %d: number of options selected in a multiselect field. */
-					'selectedCount'        => __( '%d selected', 'craftforms-builder' ),
+					'selectedCount'         => __( '%d selected', 'craftforms-builder' ),
 					'phoneLocalPlaceholder' => __( '555 000 0000', 'craftforms-builder' ),
-					'phoneCodeSearch'      => __( 'Search country or code…', 'craftforms-builder' ),
-					'phoneCodeEmpty'       => __( 'No matching country code.', 'craftforms-builder' ),
+					'phoneCodeSearch'       => __( 'Search country or code…', 'craftforms-builder' ),
+					'phoneCodeEmpty'        => __( 'No matching country code.', 'craftforms-builder' ),
 				),
 			)
 		);
 	}
 
 	/**
+	 * Add builder session and draft hidden inputs.
+	 *
 	 * @param array $fields Hidden fields.
 	 * @return array
 	 */
@@ -153,6 +164,8 @@ final class CFB_Frontend {
 	}
 
 	/**
+	 * Wrap form markup with builder data attributes and progress UI.
+	 *
 	 * @param string $elements Form HTML.
 	 * @return string
 	 */
@@ -220,9 +233,9 @@ final class CFB_Frontend {
 
 		$schema_json = wp_json_encode( $schema );
 		$attrs       = array(
-			'class'           => implode( ' ', $classes ),
+			'class'         => implode( ' ', $classes ),
 			'data-cfb-form' => (string) $contact_form->id(),
-			'style'           => $style,
+			'style'         => $style,
 		);
 
 		$attr_html = '';

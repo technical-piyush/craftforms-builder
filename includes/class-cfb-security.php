@@ -9,13 +9,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Honeypot, rate limiting, and spam checks.
+ */
 final class CFB_Security {
 
+	/**
+	 * Register submission validation hooks.
+	 */
 	public static function init() {
 		add_filter( 'wpcf7_validate', array( __CLASS__, 'validate_spam' ), 5, 1 );
 	}
 
 	/**
+	 * Reject submissions that fail honeypot or rate-limit checks.
+	 *
 	 * @param WPCF7_Validation $result Result.
 	 * @return WPCF7_Validation
 	 */

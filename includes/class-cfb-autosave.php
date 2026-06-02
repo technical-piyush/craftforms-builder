@@ -9,10 +9,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Autosave and save-and-continue-later draft storage.
+ */
 final class CFB_Autosave {
 
 	const CACHE_GROUP = 'cfb_drafts';
 
+	/**
+	 * Placeholder init (REST routes live in CFB_REST_API).
+	 */
 	public static function init() {
 		// REST routes registered in CFB_REST_API.
 	}
@@ -32,6 +38,8 @@ final class CFB_Autosave {
 	}
 
 	/**
+	 * Insert or update a draft row and return its key.
+	 *
 	 * @param int    $form_id  Form ID.
 	 * @param string $draft_key Draft key.
 	 * @param array  $data     Field data.
@@ -74,6 +82,8 @@ final class CFB_Autosave {
 	}
 
 	/**
+	 * Load a non-expired draft by key.
+	 *
 	 * @param string $draft_key Draft key.
 	 * @return array|null
 	 */

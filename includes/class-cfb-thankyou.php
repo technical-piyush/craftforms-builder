@@ -9,14 +9,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Thank-you message and redirect after successful submit.
+ */
 final class CFB_Thankyou {
 
+	/**
+	 * Register mail-sent and feedback hooks.
+	 */
 	public static function init() {
 		add_action( 'wpcf7_mail_sent', array( __CLASS__, 'on_sent' ), 5 );
 		add_filter( 'wpcf7_feedback_response', array( __CLASS__, 'feedback_response' ), 10, 2 );
 	}
 
 	/**
+	 * Attach conditional redirect to the AJAX feedback response.
+	 *
 	 * @param WPCF7_ContactForm $contact_form Form.
 	 */
 	public static function on_sent( $contact_form ) {
@@ -54,6 +62,8 @@ final class CFB_Thankyou {
 	}
 
 	/**
+	 * Merge custom thank-you message and page redirect into feedback.
+	 *
 	 * @param array $response REST/AJAX feedback payload.
 	 * @param array $result   Submission result from WPCF7_ContactForm::submit() (not a contact form object).
 	 * @return array

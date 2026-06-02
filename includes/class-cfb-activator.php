@@ -9,8 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Plugin activation, database tables, and upgrades.
+ */
 final class CFB_Activator {
 
+	/**
+	 * Run on plugin activation.
+	 */
 	public static function activate() {
 		self::create_tables();
 		update_option( 'cfb_db_version', CFB_DB_VERSION );
@@ -83,6 +89,9 @@ final class CFB_Activator {
 		}
 	}
 
+	/**
+	 * Create or update custom database tables via dbDelta.
+	 */
 	private static function create_tables() {
 		global $wpdb;
 
