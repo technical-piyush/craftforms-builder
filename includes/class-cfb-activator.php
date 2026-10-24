@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin activation, database tables, and upgrades.
  */
-final class CFB_Activator {
+final class CFB_Activator { 
 
 	/**
 	 * Run on plugin activation.

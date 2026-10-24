@@ -44,7 +44,7 @@ require_once CFB_PLUGIN_DIR . 'includes/class-cfb-admin.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-frontend.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-form-sync.php';
 require_once CFB_PLUGIN_DIR . 'includes/class-cfb-posted-data.php';
-require_once CFB_PLUGIN_DIR . 'includes/class-cfb-plugin.php';
+require_once CFB_PLUGIN_DIR . 'includes/class-cfb-plugin.php'; 
 
 register_activation_hook( __FILE__, array( 'CFB_Activator', 'activate' ) );
 
